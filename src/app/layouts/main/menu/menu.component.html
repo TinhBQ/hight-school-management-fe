@@ -1,0 +1,45 @@
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+<!-- eslint-disable @angular-eslint/template/mouse-events-have-key-events -->
+<div
+  class="layout-sidebar"
+  [ngClass]="{ 'layout-sidebar-active': appMain.sidebarActive }"
+  [attr.tabindex]="0"
+  (click)="appMain.onSidebarClick($event)"
+  (mouseover)="appMain.sidebarActive = true"
+  (mouseleave)="appMain.sidebarActive = false"
+>
+  <div class="sidebar-logo">
+    <a
+      href="#"
+      class="sidebar-pin"
+      title="Toggle Menu"
+      (click)="appMain.onToggleMenuClick($event)"
+    >
+      @if (appMain.staticMenuActive) {
+        <i class="pi pi-lock"></i>
+      } @else {
+        <i class="pi pi-lock-open"></i>
+      }
+    </a>
+    <a routerLink="/">
+      <img
+        src="assets/layout/images/logo@2x.png"
+        alt="SMSEdu-logo"
+      />
+      <span class="app-name">SMSEdu</span>
+    </a>
+  </div>
+
+  <div class="layout-menu-container">
+    <ul class="layout-menu">
+      @for (item of model; track $index) {
+        <li
+          menu-item
+          [item]="item"
+          [index]="$index"
+          [root]="true"
+        ></li>
+      }
+    </ul>
+  </div>
+</div>

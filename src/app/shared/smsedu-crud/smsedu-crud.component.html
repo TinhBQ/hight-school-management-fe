@@ -1,0 +1,205 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <!-- * Tooolbar -->
+      <p-toolbar styleClass="mb-4">
+        <!-- ! Action Buttons: Create, Delete -->
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <!-- @ Create -->
+            <button
+              pButton
+              pRipple
+              label="Thêm"
+              icon="pi pi-plus"
+              class="p-button-success mr-2"
+              (click)="onCreate()"
+            ></button>
+            <!-- @ Delete Colection-->
+            <button
+              pButton
+              pRipple
+              label="Xóa"
+              icon="pi pi-trash"
+              class="p-button-danger mr-2"
+              (click)="onDeleteCollection($event, selected)"
+              [disabled]="selected.length === 0"
+            ></button>
+          </div>
+        </ng-template>
+
+        <!-- ! Action Buttons: Upload, Export -->
+        <ng-template pTemplate="right">
+          <!-- @ Upload File -->
+          <p-fileUpload
+            mode="basic"
+            accept=".xlsx"
+            [maxFileSize]="1000000"
+            chooseLabel="Chọn file"
+            uploadLabel="Xử lý dữ liệu"
+            class="mr-2 inline-block"
+            url="https://www.primefaces.org/cdn/api/upload.php"
+            (onSelect)="onSelectFile($event)"
+            (onUpload)="onUploadFile($event)"
+          ></p-fileUpload>
+          <!-- @ Export File -->
+          <button
+            pButton
+            pRipple
+            label="Export"
+            icon="pi pi-upload"
+            class="p-button-help"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <!-- * Table data -->
+      <p-table
+        #dt
+        [value]="data ?? []"
+        [columns]="columns"
+        [lazy]="true"
+        [(selection)]="selected"
+        (onLazyLoad)="onLazyLoad($event)"
+        styleClass="p-datatable-gridlines"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        responsiveLayout="scroll"
+        [paginator]="true"
+        [rows]="10"
+        [totalRecords]="pagination?.totalCount ?? 0"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Hiển thị từ {first} đến {last} của mục {totalRecords}"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        [resizableColumns]="true"
+        [loading]="loading"
+        selectionMode="multiple"
+        [rowHover]="true"
+        dataKey="id"
+      >
+        <!-- ! Caption -->
+        <ng-template pTemplate="caption">
+          <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+          >
+            <!-- @ Title -->
+            <h5 class="m-0">{{ title }}</h5>
+
+            <!-- @ Search, Action Clear -->
+            <div class="flex gap-2">
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                  pInputText
+                  type="text"
+                  [value]="searchString"
+                  placeholder="Tìm kiếm..."
+                  (keyup)="onSearch(getSearchValue($event))"
+                  class="w-full sm:w-auto"
+                />
+              </span>
+              <button
+                pButton
+                label="Clear"
+                class="p-button-outlined"
+                icon="pi pi-filter-slash"
+                (click)="onclear()"
+              ></button>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- ! Header -->
+        <ng-template
+          pTemplate="header"
+          let-columns
+        >
+          <tr class="text-center">
+            <th
+              style="width: 3rem"
+              class="text-center"
+            >
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            @for (col of columns; track $index) {
+              <th
+                [pSortableColumn]="col.field"
+                class="text-center"
+                [pSortableColumnDisabled]="!col.isSort"
+              >
+                {{ col.header }}
+                @if (col.isSort) {
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                }
+              </th>
+            }
+            <th></th>
+          </tr>
+        </ng-template>
+
+        <!-- ! Body -->
+        <ng-template
+          pTemplate="body"
+          let-rowData
+          let-columns="columns"
+        >
+          <tr>
+            <td class="text-center">
+              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            @for (col of columns; track $index) {
+              <td
+                [pSortableColumn]="col.field"
+                [class]="'text-center ' + col.class"
+                [style]="styleWitdth + col.style"
+                [pSortableColumnDisabled]="col.isSort"
+              >
+                <span class="p-column-title">{{ col.header }}</span>
+                @if (!col.field.includes('.')) {
+                  @if (col.pipe) {
+                    {{
+                      col.pipe.transform(rowData[col.field]) || 'Chưa xác định'
+                    }}
+                  } @else {
+                    {{ rowData[col.field] || 'Chưa xác định' }}
+                  }
+                } @else {
+                  @if (col.pipe) {
+                    {{
+                      col.pipe.transform(getNestedValue(rowData, col.field)) ||
+                        'Chưa xác định'
+                    }}
+                  } @else {
+                    {{ getNestedValue(rowData, col.field) }}
+                  }
+                }
+              </td>
+            }
+
+            <!-- ! Action Buttons: Edit, Delete -->
+            <td class="text-justify">
+              <div class="flex align-items-center justify-content-center gap-2">
+                <!-- @ Edit -->
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-pencil"
+                  class="p-button-rounded p-button-success"
+                  (click)="onEdit(rowData)"
+                ></button>
+                <!-- @ Delete -->
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-warning"
+                  (click)="onDelete($event, rowData)"
+                ></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

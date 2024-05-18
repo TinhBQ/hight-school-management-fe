@@ -1,0 +1,343 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<smsedu-crud
+  [columns]="columns"
+  [data]="data"
+  [pagination]="pagination"
+  [loading]="loading"
+  title="Danh sách lớp học"
+  [searchString]="searchClass"
+  [searchText$]="searchText$"
+  [onCreate]="onShowDialogForCreate.bind(this)"
+  [onEdit]="onShowDialogForEdit.bind(this)"
+  [onDeleteCollection]="onDeleteClasses.bind(this)"
+  [onDelete]="onDeleteClass.bind(this)"
+  (lazyLoad)="onLoadClasses($event)"
+  (selectFile)="onSelect($event)"
+  (uploadFile)="onUpload($event)"
+/>
+
+<!-- * Dialog: Add Class, Edit Class -->
+<p-dialog
+  [(visible)]="classDialog"
+  [style]="{ width: '450px' }"
+  header="Chi tiết lớp học"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form
+      class="class-form"
+      [formGroup]="classForm"
+    >
+      <div class="grid p-fluid mt-3">
+        <!-- * Khối -->
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-dropdown
+              inputId="dropdown"
+              [autoDisplayFirst]="false"
+              [options]="grades"
+              formControlName="grade"
+            ></p-dropdown>
+            <label for="dropdown">Khối</label>
+          </span>
+          <small
+            *ngIf="
+              classForm.controls['grade'].invalid &&
+              (classForm.controls['grade'].dirty ||
+                classForm.controls['grade'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="classForm.controls['grade'].errors?.['required']">
+              Khối là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Lớp -->
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input
+              type="text"
+              id="inputtext"
+              pInputText
+              formControlName="name"
+              [disabled]="true"
+            />
+            <label for="inputtext">Lớp</label>
+          </span>
+          <small
+            *ngIf="
+              (classForm.controls['name'].invalid &&
+                (classForm.controls['name'].dirty ||
+                  classForm.controls['name'].touched)) ||
+              classForm.hasError('checkClassName')
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="classForm.controls['name'].errors?.['required']">
+              Lớp là bắt buộc.
+            </div>
+
+            <div
+              *ngIf="
+                !classForm.controls['name'].errors?.['required'] &&
+                classForm.hasError('checkClassName')
+              "
+            >
+              Hai ký tự đầu tiên của tên lớp là khối.
+            </div>
+          </small>
+        </div>
+        <!-- * Buổi -->
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-dropdown
+              inputId="dropdown"
+              [autoDisplayFirst]="false"
+              [options]="schoolShifts"
+              optionLabel="name"
+              formControlName="schoolShift"
+            ></p-dropdown>
+            <label for="inputtext">Buổi</label>
+          </span>
+          <small
+            *ngIf="
+              classForm.controls['schoolShift'].invalid &&
+              (classForm.controls['schoolShift'].dirty ||
+                classForm.controls['schoolShift'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="classForm.controls['schoolShift'].errors?.['required']">
+              Buổi là bắt buộc.
+            </div>
+          </small>
+        </div>
+        <!-- * Năm học -->
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label p-input-icon-right">
+            <p-inputMask
+              mask="9999-9999"
+              placeholder="2024-2025"
+              formControlName="year"
+            />
+            <label for="righticon">Năm học</label>
+          </span>
+          <small
+            *ngIf="
+              (classForm.controls['year'].invalid &&
+                (classForm.controls['year'].dirty ||
+                  classForm.controls['year'].touched)) ||
+              classForm.hasError('checkClassYear')
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="classForm.controls['year'].errors?.['required']">
+              Năm học là bắt buộc.
+            </div>
+
+            <div
+              *ngIf="
+                !classForm.controls['year'].errors?.['required'] &&
+                classForm.hasError('checkClassYear')
+              "
+            >
+              Năm học không hợp lệ.
+            </div>
+          </small>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Hủy"
+      icon="pi pi-times"
+      class="p-button-outlined p-button-secondary"
+      (click)="onHideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Lưu"
+      icon="pi pi-check"
+      [disabled]="classForm.invalid"
+      (click)="onSaveClass()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- * Dialog: Add Class Collection -->
+<p-dialog
+  [(visible)]="addClassCollectionDialog"
+  [style]="{ minWidth: '450px' }"
+  header="Danh sách lớp học"
+  [modal]="true"
+  class="p-fluid"
+>
+  <p-table
+    #dtAddClasses
+    [value]="excelData"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-gridlines"
+  >
+    <ng-template pTemplate="caption">
+      <div
+        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+      >
+        <div>
+          <h5 class="m-0">Tổng: {{ excelData.length }} lớp</h5>
+
+          <ul class="p-error">
+            @if (!isCheckClassNameAndGradeColection()) {
+              <li>Hai ký tự đầu tiên của tên lớp là khối.</li>
+            }
+            @if (!isCheckClassYearColection()) {
+              <li>Năm học không hợp lệ.</li>
+            }
+            @if (!isCheckClassNotNull()) {
+              <li>Các trường là bắt buộc.</li>
+            }
+          </ul>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            pButton
+            pRipple
+            label="Thêm danh sách"
+            icon="pi pi-plus"
+            class="p-button-success"
+            [disabled]="
+              !isCheckClassNameAndGradeColection() ||
+              !isCheckClassYearColection() ||
+              !isCheckClassNotNull()
+            "
+            (click)="onSaveClasses($event)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="text-center">Lớp</th>
+        <th class="text-center">Buổi</th>
+        <th class="text-center">Khối</th>
+        <th class="text-center">Năm học</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-data
+      let-editing="editing"
+    >
+      <tr>
+        <td
+          [pEditableColumn]="data.grade"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="data.grade === null && { 'background-color': 'red' }"
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <p-dropdown
+                inputId="dropdown"
+                [autoDisplayFirst]="false"
+                [options]="grades"
+                [(ngModel)]="data.grade"
+              ></p-dropdown>
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ data.grade }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td
+          [pEditableColumn]="data.name"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="
+            !isCheckClassNameAndGrade(data.name, data.grade) && {
+              'background-color': 'red'
+            }
+          "
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="data.name"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              <span class="text-center">
+                {{ data.name }}
+              </span>
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td
+          [pEditableColumn]="data.schoolShift"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="data.schoolShift === null && { 'background-color': 'red' }"
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <p-dropdown
+                inputId="dropdown"
+                [autoDisplayFirst]="false"
+                [options]="schoolShifts"
+                optionLabel="name"
+                [(ngModel)]="data.schoolShift"
+              ></p-dropdown>
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ data.schoolShift.name }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td
+          [pEditableColumn]="data.year"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="
+            !isCheckClassYear(data.year) && { 'background-color': 'red' }
+          "
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="data.year"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ data.year }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td class="text-center">
+          <!-- @ Delete -->
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="onRemoveRowData($event, data)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

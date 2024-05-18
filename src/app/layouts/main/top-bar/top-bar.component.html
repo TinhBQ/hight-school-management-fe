@@ -1,0 +1,221 @@
+<div class="layout-topbar">
+  <div class="layout-topbar-wrapper">
+    <div class="layout-topbar-left">
+      <div class="layout-topbar-logo-wrapper">
+        <!-- Logo -->
+        <a
+          href="#"
+          class="layout-topbar-logo"
+        >
+          <img
+            src="assets/layout/images/logo@2x.png"
+            alt="SMSEdu-logo"
+          />
+          <span class="app-name">SMSEdu</span>
+        </a>
+      </div>
+
+      <a
+        href="#"
+        class="sidebar-menu-button"
+        (click)="appMain.onMenuButtonClick($event)"
+      >
+        <i class="pi pi-bars"></i>
+      </a>
+
+      <a
+        href="#"
+        class="topbar-menu-mobile-button"
+        (click)="appMain.onTopbarMobileMenuButtonClick($event)"
+      >
+        <i class="pi pi-ellipsis-v"></i>
+      </a>
+    </div>
+
+    <div class="layout-topbar-right fadeInDown">
+      <ul
+        class="layout-topbar-actions"
+        [ngClass]="{
+          'active-topmenuitem': appMain.activeTopbarItem === profile
+        }"
+      >
+        <li
+          #profile
+          class="topbar-item profile-item"
+          [ngClass]="{
+            'active-topmenuitem': appMain.activeTopbarItem === profile
+          }"
+        >
+          <a
+            href="#"
+            (click)="appMain.onTopbarItemClick($event, profile)"
+          >
+            <span class="profile-image-wrapper">
+              <img
+                src="assets/layout/images/topbar/avatar-eklund.png"
+                alt="mirage-layout"
+              />
+            </span>
+            <span class="profile-info-wrapper">
+              <h3>Olivia Eklund</h3>
+              <span>Design</span>
+            </span>
+          </a>
+          <ul class="profile-item-submenu fadeInDown">
+            <li class="profile-submenu-header">
+              <div class="performance">
+                <span>Weekly Performance</span>
+                <img
+                  src="assets/layout/images/topbar/asset-bars.svg"
+                  alt="mirage-layout"
+                />
+              </div>
+              <div class="profile">
+                <img
+                  src="assets/layout/images/topbar/avatar-eklund.png"
+                  alt="mirage-layout"
+                  width="40"
+                />
+                <h1>Olivia Eklund</h1>
+                <span>Design</span>
+              </div>
+            </li>
+            <li class="layout-submenu-item">
+              <i class="pi pi-list icon icon-1"></i>
+              <div class="menu-text">
+                <p>Tasks</p>
+                <span>3 open issues</span>
+              </div>
+              <i class="pi pi-angle-right"></i>
+            </li>
+            <li class="layout-submenu-item">
+              <i class="pi pi-shopping-cart icon icon-2"></i>
+              <div class="menu-text">
+                <p>Payments</p>
+                <span>24 new</span>
+              </div>
+              <i class="pi pi-angle-right"></i>
+            </li>
+            <li class="layout-submenu-item">
+              <i class="pi pi-users icon icon-3"></i>
+              <div class="menu-text">
+                <p>Clients</p>
+                <span>+80%</span>
+              </div>
+              <i class="pi pi-angle-right"></i>
+            </li>
+            <li class="layout-submenu-footer">
+              <button
+                type="button"
+                class="signout-button"
+              >
+                Sign Out
+              </button>
+              <button
+                type="button"
+                class="buy-mirage-button"
+              >
+                Buy Mirage
+              </button>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Right Panel Toggle -->
+        <!-- <li>
+          <a
+            href="#"
+            class="layout-rightpanel-button"
+            (click)="appMain.onRightPanelButtonClick($event)"
+          >
+            <i class="pi pi-arrow-left"></i>
+          </a>
+        </li> -->
+      </ul>
+
+      <ul class="profile-mobile-wrapper">
+        <li
+          #mobileProfile
+          class="topbar-item profile-item"
+          [ngClass]="{
+            'active-topmenuitem': appMain.activeTopbarItem === mobileProfile
+          }"
+        >
+          <a
+            href="#"
+            (click)="appMain.onTopbarItemClick($event, mobileProfile)"
+          >
+            <span class="profile-image-wrapper">
+              <img
+                src="assets/layout/images/topbar/avatar-eklund.png"
+                alt="mirage-layout"
+              />
+            </span>
+            <span class="profile-info-wrapper">
+              <h3>Olivia Eklund</h3>
+              <span>Design</span>
+            </span>
+          </a>
+          <ul class="fadeInDown">
+            <li class="profile-submenu-header">
+              <div class="performance">
+                <span>Weekly Performance</span>
+                <img
+                  src="assets/layout/images/topbar/asset-bars.svg"
+                  alt="mirage-layout"
+                />
+              </div>
+              <div class="profile">
+                <img
+                  src="assets/layout/images/topbar/avatar-eklund.png"
+                  alt="mirage-layout"
+                  width="45"
+                />
+                <h1>Olivia Eklund</h1>
+                <span>Design</span>
+              </div>
+            </li>
+            <li>
+              <i class="pi pi-list icon icon-1"></i>
+              <div class="menu-text">
+                <p>Tasks</p>
+                <span>3 open issues</span>
+              </div>
+              <i class="pi pi-angle-right"></i>
+            </li>
+            <li>
+              <i class="pi pi-shopping-cart icon icon-2"></i>
+              <div class="menu-text">
+                <p>Payments</p>
+                <span>24 new</span>
+              </div>
+              <i class="pi pi-angle-right"></i>
+            </li>
+            <li>
+              <i class="pi pi-users icon icon-3"></i>
+              <div class="menu-text">
+                <p>Clients</p>
+                <span>+80%</span>
+              </div>
+              <i class="pi pi-angle-right"></i>
+            </li>
+            <li class="layout-submenu-footer">
+              <button
+                type="button"
+                class="signout-button"
+              >
+                Sign Out
+              </button>
+              <button
+                type="button"
+                class="buy-mirage-button"
+              >
+                Buy Mirage
+              </button>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

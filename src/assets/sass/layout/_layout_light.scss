@@ -1,0 +1,23 @@
+//general
+$fontSize: 14px;
+$fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+  'Segoe UI Symbol';
+$transitionDuration: 0.15s;
+$letterSpacing: normal;
+$borderRadius: 4px;
+$mobileBreakpoint: 991px;
+
+$bodyBgColor: #eceff4;
+$textColor: #4c566a;
+$textSecondaryColor: #9199a9;
+
+$topbarBgColor: #eceff4;
+$breadcrumbBgColor: #d8dee9;
+$contentBgColor: #ffffff;
+$contentAltBgColor: #f9fafb;
+$contentAltBorderColor: #e5e9f0;
+$dividerColor: rgba(145, 153, 169, 0.3);
+$menuShadow: 3px 0 5px 0 rgba(33, 35, 39, 0.15);
+
+@import '../overrides/layout_variables';

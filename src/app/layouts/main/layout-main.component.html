@@ -1,0 +1,24 @@
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+<div
+  class="layout-wrapper"
+  tabindex="0"
+  [ngClass]="{
+    'layout-wrapper-static': staticMenuActive,
+    'layout-rightpanel-active': rightPanelActive,
+    'layout-topbar-mobile-active': topbarMobileMenuActive,
+    'layout-sidebar-mobile-active': menuMobileActive,
+    'p-input-filled': app.inputStyle === 'filled'
+  }"
+  (click)="onLayoutClick()"
+  [class]="app.menuColor"
+>
+  <layout-main-menu />
+
+  <div class="layout-main">
+    <layout-main-top-bar />
+
+    <div class="layout-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

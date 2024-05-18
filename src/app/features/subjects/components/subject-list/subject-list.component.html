@@ -1,0 +1,17 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<smsedu-crud
+  [columns]="columns"
+  [data]="result?.data ?? []"
+  [pagination]="pagination"
+  [loading]="loading"
+  title="Danh sách môn học học"
+  [searchString]="searchClass"
+  [searchText$]="searchText$"
+  [onCreate]="onShowDialogForCreate.bind(this)"
+  [onEdit]="onShowDialogForEdit.bind(this)"
+  [onDelete]="onDeleteClass.bind(this)"
+  (lazyLoad)="onLoadClasses($event)"
+  [onDeleteCollection]="onDeleteClasses.bind(this)"
+/>
+
+<smsedu-subject-dialog-for-create-update (save)="onSave()" />

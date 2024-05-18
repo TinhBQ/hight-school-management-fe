@@ -1,0 +1,103 @@
+.layout-dashboard {
+
+    .list-effect {
+        height: 80px;
+        width: 100%;
+        @include background-gradient-bottom2top( $contentBgColor, transparent);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    .map {
+        padding:0;
+
+        .map-image {
+            position: relative;
+
+            img {
+                width: 100%;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+        }
+
+        .map-info {
+            padding: 12px;
+
+            .map-info-header {
+                @include flex();
+                justify-content: center;
+
+                h6 {
+                    color: $textColor;
+                    font-size: 14px;
+                    margin: 0;
+                }
+
+                .location-change {
+                    text-align: right;
+                    cursor: pointer;
+                    span,i{
+                        color: $textSecondaryColor;
+                        font-size: 12px;
+                    }
+
+                    &:hover{
+                        span,i{
+                            color: $textColor;
+                            @include transition(color $transitionDuration );
+                        }
+                    }
+                }
+            }
+
+            .map-info-bar {
+                @include flex();
+                justify-content: center;
+
+                .info {
+                    @include flex();
+                    margin-top: 1em;
+                    cursor: pointer;
+
+                    &:hover{
+                        span{
+                            color: $textSecondaryColor;
+                            @include transition(color $transitionDuration );
+                        }
+                    }
+
+                    &:last-child {
+                        border-right: none;
+                    }
+
+                    .location-point {
+                        height: 18px;
+                        width: 18px;
+                        @include border-radius(50%);
+                        cursor: pointer;
+                        margin-right: 5px;
+
+                        &.point-1 {
+                            background-color: #bf616a;
+                        }
+
+                        &.point-2 {
+                            background-color: #b48ead;
+                        }
+
+                        &.point-3 {
+                            background-color: #d08770;
+                        }
+                    }
+
+                    a {
+                        text-decoration: underline;
+                        color: #5e81ac;
+                    }
+                }
+            }
+        }
+    }
+};

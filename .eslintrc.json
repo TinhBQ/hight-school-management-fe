@@ -1,0 +1,134 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*"],
+  "plugins": ["import", "perfectionist", "unused-imports"],
+  "rules": {
+    // unused-imports
+    // https://www.npmjs.com/package/eslint-plugin-unused-imports
+    "unused-imports/no-unused-imports": 1,
+    "unused-imports/no-unused-vars": [
+      0,
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    // perfectionist
+    // https://eslint-plugin-perfectionist.azat.io/
+    "perfectionist/sort-named-imports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    "perfectionist/sort-named-exports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    "perfectionist/sort-exports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    "perfectionist/sort-imports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length",
+        "newlines-between": "always",
+        "groups": [
+          ["builtin", "external"],
+          "custom-angular",
+          "custom-primeng",
+          "internal",
+          "ustom-environments",
+          "custom-core",
+          "custom-shared",
+          "custom-sections",
+          "custom-pages",
+          ["parent", "sibling", "index"],
+          "object",
+          "unknown"
+        ],
+        "custom-groups": {
+          "value": {
+            "custom-angular": "@angular/**",
+            "custom-primeng": "primeng/**",
+            "custom-environments": "@environment/**",
+            "custom-core": "@core/**",
+            "custom-shared": "@shared/**",
+            "custom-sections": "@sections/**",
+            "custom-pages": "@pages/**"
+          }
+        },
+        "internal-pattern": ["src/**"]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": "./tsconfig.json" // Path to your tsconfig.json file
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "airbnb-typescript/base",
+        "plugin:import/typescript",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
+      ],
+      "rules": {
+        // "@angular-eslint/template/no-negated-async": "warn",
+        // "@angular-eslint/template/eqeqeq": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.spec.ts", "src/**/*.d.ts"],
+      "parserOptions": {
+        "project": "./src/tsconfig.spec.json"
+      },
+      "extends": ["plugin:jasmine/recommended"],
+      "plugins": ["jasmine"],
+      "env": { "jasmine": true },
+      "rules": {
+        // "@typescript-eslint/no-unused-vars": "off"
+      }
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<form
+  class="class-form"
+  [formGroup]="classForm"
+>
+  <div class="grid p-fluid mt-3">
+    <!-- * Khối -->
+    <div class="field col-12 md:col-6">
+      <span class="p-float-label">
+        <p-dropdown
+          inputId="dropdown"
+          [autoDisplayFirst]="false"
+          [options]="grades"
+          formControlName="grade"
+        ></p-dropdown>
+        <label for="dropdown">Khối</label>
+      </span>
+      <small
+        *ngIf="
+          classForm.controls['grade'].invalid &&
+          (classForm.controls['grade'].dirty ||
+            classForm.controls['grade'].touched)
+        "
+        class="block p-error mt-2"
+      >
+        <div *ngIf="classForm.controls['grade'].errors?.['required']">
+          Khối là bắt buộc.
+        </div>
+      </small>
+    </div>
+
+    <!-- * Lớp -->
+    <div class="field col-12 md:col-6">
+      <span class="p-float-label">
+        <input
+          type="text"
+          id="inputtext"
+          pInputText
+          formControlName="name"
+          [disabled]="true"
+        />
+        <label for="inputtext">Lớp</label>
+      </span>
+      <small
+        *ngIf="
+          (classForm.controls['name'].invalid &&
+            (classForm.controls['name'].dirty ||
+              classForm.controls['name'].touched)) ||
+          classForm.hasError('checkClassName')
+        "
+        class="block p-error mt-2"
+      >
+        <div *ngIf="classForm.controls['name'].errors?.['required']">
+          Lớp là bắt buộc.
+        </div>
+
+        <div
+          *ngIf="
+            !classForm.controls['name'].errors?.['required'] &&
+            classForm.hasError('checkClassName')
+          "
+        >
+          Hai ký tự đầu tiên của tên lớp là khối.
+        </div>
+      </small>
+    </div>
+    <!-- * Buổi -->
+    <div class="field col-12 md:col-6">
+      <span class="p-float-label">
+        <p-dropdown
+          inputId="dropdown"
+          [autoDisplayFirst]="false"
+          [options]="schoolShifts"
+          optionLabel="name"
+          formControlName="schoolShift"
+        ></p-dropdown>
+        <label for="inputtext">Buổi</label>
+      </span>
+      <small
+        *ngIf="
+          classForm.controls['schoolShift'].invalid &&
+          (classForm.controls['schoolShift'].dirty ||
+            classForm.controls['schoolShift'].touched)
+        "
+        class="block p-error mt-2"
+      >
+        <div *ngIf="classForm.controls['schoolShift'].errors?.['required']">
+          Buổi là bắt buộc.
+        </div>
+      </small>
+    </div>
+    <!-- * Năm học -->
+    <div class="field col-12 md:col-6">
+      <span class="p-float-label p-input-icon-right">
+        <p-inputMask
+          mask="9999-9999"
+          placeholder="2024-2025"
+          formControlName="year"
+        />
+        <label for="righticon">Năm học</label>
+      </span>
+      <small
+        *ngIf="
+          (classForm.controls['year'].invalid &&
+            (classForm.controls['year'].dirty ||
+              classForm.controls['year'].touched)) ||
+          classForm.hasError('checkClassYear')
+        "
+        class="block p-error mt-2"
+      >
+        <div *ngIf="classForm.controls['year'].errors?.['required']">
+          Năm học là bắt buộc.
+        </div>
+
+        <div
+          *ngIf="
+            !classForm.controls['year'].errors?.['required'] &&
+            classForm.hasError('checkClassYear')
+          "
+        >
+          Năm học không hợp lệ.
+        </div>
+      </small>
+    </div>
+  </div>
+
+  <div class="action flex justify-content-end gap-2">
+    <button
+      pButton
+      pRipple
+      label="Hủy"
+      icon="pi pi-times"
+      class="p-button-outlined p-button-secondary"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Lưu"
+      icon="pi pi-check"
+      [disabled]="classForm.invalid"
+      (click)="onSaveClass()"
+    ></button>
+  </div>
+</form>

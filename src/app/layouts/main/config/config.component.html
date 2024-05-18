@@ -1,0 +1,44 @@
+<!-- eslint-disable @angular-eslint/template/attributes-order -->
+<!-- Open Layout Config -->
+<a
+  href="#"
+  class="layout-config-button"
+  (click)="onConfigButtonClick($event)"
+>
+  <i class="pi pi-cog"></i>
+</a>
+
+<p-sidebar
+  #sidebarRef
+  [(visible)]="appMain.configActive"
+  position="right"
+  class="layout-config"
+>
+  <ng-template pTemplate="headless">
+    <div class="layout-config-header">
+      <span class="config-header-title">Cài đặt</span>
+      <p-button
+        type="button"
+        (click)="closeCallback($event)"
+        icon="pi pi-times"
+        [rounded]="true"
+        [outlined]="true"
+        styleClass="h-2rem w-2rem"
+      />
+      <p-button
+        type="button"
+        (click)="closeCallback($event)"
+        icon="pi pi-times"
+        [rounded]="true"
+        [outlined]="true"
+        styleClass="h-2rem w-2rem"
+      />
+    </div>
+    <hr />
+    <div class="layout-config-content">
+      <div>
+        <span class="config-content-title">Chế độ</span>
+      </div>
+    </div>
+  </ng-template>
+</p-sidebar>

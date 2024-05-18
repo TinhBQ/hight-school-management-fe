@@ -1,0 +1,262 @@
+.layout-config-button {
+    display: block;
+    position: fixed;
+    width: 52px;
+    height: 52px;
+    line-height: 52px;
+    background-color: #fafafa;
+    text-align: center;
+    top: 230px;
+    right: 0;
+    z-index: 1000000;
+    cursor: pointer;
+    @include border-radius-left($borderRadius);
+    @include transition(background-color $transitionDuration);
+    @include multi-shadow(0 7px 8px -4px rgba(0, 0, 0, 0.2), 0 5px 22px 4px rgba(0, 0, 0, 0.12), 0 12px 17px 2px rgba(0, 0, 0, 0.14));
+
+    i {
+        font-size: 40px;
+        font-weight: bold;
+        color: darken($primaryColor, 10%);
+        line-height: inherit;
+        cursor: pointer;
+    }
+
+    &:hover {
+        i {
+            color: darken($primaryColor, 5%);
+        }
+    }
+}
+
+.layout-config {
+    z-index: 1000002;
+    position: fixed;
+    padding: 0;
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 52vw;
+    height: 70%;
+
+    .layout-config-content {
+        position: relative;
+        height: 100%;
+
+        > form {
+            height: 100%;
+        }
+    }
+
+    .layout-config-close {
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        right: -18px;
+        top: -18px;
+        z-index: 1;
+        background-color: #E91E63;
+        @include border-radius(50%);
+        @include transition(background-color $transitionDuration);
+
+        i {
+            color: #ffffff;
+            line-height: inherit;
+            font-size: 24px;
+        }
+
+        &:hover {
+            background-color: #D81B60;
+        }
+    }
+
+    &.layout-config-enter {
+        display: block;
+        opacity: 0;
+        transform: translateX(-50%) translateY(-50%) scale(0.7);
+    }
+
+    &.layout-config-enter-active {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1);
+        transition: all 150ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    &.layout-config-enter-done {
+        display: block;
+    }
+
+    &.layout-config-exit {
+        opacity: 1;
+        display: block;
+    }
+
+    &.layout-config-exit-active {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-50%);
+        transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    &.layout-config-exit-done {
+        display: none;
+    }
+
+    .layout-config-option {
+        overflow: hidden;
+        text-align: center;
+        display: inline-block;
+        position: relative;
+        border-radius: 4px;
+        border: solid 1px #d8dee9;
+        background-color: transparent;
+        @include transition(transform $transitionDuration);
+
+        i {
+            line-height: inherit;
+            font-size: 28px;
+            font-weight: bold;
+            color: #a3be8c;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -23px;
+            margin-top: -40px;
+            padding: .35em;
+            box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+            background-color: #ffffff;
+            border-radius: 50%;
+            width: 47px;
+            height: 47px;
+        }
+
+        &:hover {
+            @include scale(1.1);
+        }
+
+        .layout-config-option-text {
+            display: block;
+            padding: .5em;
+            text-align: center;
+            color: var(--text-color);
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        &.layout-config-option-theme {
+            border: 0 none;
+            height: 84px;
+            width: 84px;
+
+            i {
+                line-height: inherit;
+                font-size: 28px;
+                color: #a3be8c;
+                font-weight: bold;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-left: -23px;
+                margin-top: -23px;
+                box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+                background-color: #ffffff;
+                border-radius: 50%;
+                width: 47px;
+                height: 47px;
+            }
+        }
+
+        img {
+            border: 0 none;
+            width: 100%;
+        }
+    }
+
+    .col {
+        text-align: center;
+    }
+
+    .p-tabview {
+        border: 0 none;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        height: 100%;
+
+        .p-tabview-nav {
+            background: var(--surface-a);
+
+            li {
+                vertical-align: bottom;
+                top: auto;
+                margin: 0 0.125em 0px 0;
+                border: 0 none;
+                @include transition(border-color $transitionDuration);
+                border-radius: 0;
+            }
+        }
+
+        .p-tabview-panels {
+            height: 100%;
+            overflow: auto;
+
+            .p-tabview-panel {
+                padding: 15px 20px 15px 20px;
+                height: 100%;
+            }
+        }
+    }
+
+    .layout-config-subtitle {
+        font-size: 18px;
+        letter-spacing: 0.2px;
+        margin: .75em 0;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    p {
+        line-height: 1.5;
+        margin-top: 0;
+        text-align: center;
+        margin-bottom: 2em;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 42px;
+        font-weight: 100;
+        margin: .3em;
+    }
+}
+
+.layout-config-mask {
+    background-color: #20252e;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000001;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    animation-name: fadeInMask;
+    animation-duration: $transitionDuration;
+}
+
+.blocked-scroll-config {
+    overflow: hidden;
+}
+
+@media (max-width: $mobileBreakpoint) {
+    .layout-config {
+        width: calc(100% - 40px)
+    }
+}
