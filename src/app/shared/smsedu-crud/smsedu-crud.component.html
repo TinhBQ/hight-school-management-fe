@@ -1,7 +1,7 @@
 <!-- eslint-disable @angular-eslint/template/elements-content -->
 <div class="grid">
   <div class="col-12">
-    <div class="card px-6 py-6">
+    <div class="card px-4 py-4">
       <!-- * Tooolbar -->
       <p-toolbar styleClass="mb-4">
         <!-- ! Action Buttons: Create, Delete -->
@@ -24,7 +24,7 @@
               icon="pi pi-trash"
               class="p-button-danger mr-2"
               (click)="onDeleteCollection($event, selected)"
-              [disabled]="selected.length === 0"
+              [disabled]="selected.length <= 1"
             ></button>
           </div>
         </ng-template>
@@ -63,7 +63,6 @@
         [(selection)]="selected"
         (onLazyLoad)="onLazyLoad($event)"
         styleClass="p-datatable-gridlines"
-        [tableStyle]="{ 'min-width': '50rem' }"
         responsiveLayout="scroll"
         [paginator]="true"
         [rows]="10"
@@ -187,6 +186,20 @@
                   class="p-button-rounded p-button-success"
                   (click)="onEdit(rowData)"
                 ></button>
+
+                <!-- @ More Actions -->
+                @if (customActions.length > 0) {
+                  @for (action of customActions; track $index) {
+                    <button
+                      pButton
+                      pRipple
+                      [icon]="action.icon"
+                      class="p-button-rounded p-button-{{ action.color }}"
+                      (click)="action.onClick($event, rowData)"
+                    ></button>
+                  }
+                }
+
                 <!-- @ Delete -->
                 <button
                   pButton

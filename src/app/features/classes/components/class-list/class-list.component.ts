@@ -5,6 +5,7 @@ import { ClassService } from '@features/classes/services/class.service';
 import { IClass, IClassDto } from '@features/classes/interfaces/i-class';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
+import { SubjectsForClassComponent } from '@features/subject-class/components/subjects-for-class/subjects-for-class.component';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -25,6 +26,8 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
@@ -32,6 +35,7 @@ import {
   IColumn,
   IPagination,
   IResponseBase,
+  ICustomAction,
   IRequestParameters,
 } from '@core/interfaces';
 
@@ -55,12 +59,14 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
     InputMaskModule,
     FormsModule,
     SmseduCrudComponent,
+    DynamicDialogModule,
   ],
   templateUrl: './class-list.component.html',
   providers: [
     ClassService,
     MessageNotificationService,
     ConfirmationDialogService,
+    DialogService,
   ],
 })
 export class ClassListComponent implements OnInit {
@@ -98,6 +104,10 @@ export class ClassListComponent implements OnInit {
 
   excelData: any[] = [];
 
+  customActions: ICustomAction[] = [];
+
+  ref: DynamicDialogRef | undefined;
+
   // * Form Generator: Class
   classForm: FormGroup = this.fb.group(
     {
@@ -120,7 +130,8 @@ export class ClassListComponent implements OnInit {
     private fb: FormBuilder,
     private classService: ClassService,
     private messageNotificationService: MessageNotificationService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    public dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -136,6 +147,25 @@ export class ClassListComponent implements OnInit {
       { field: 'grade', header: 'Khối', isSort: true },
       { field: 'schoolShift', header: 'Buổi', isSort: true },
       { field: 'year', header: 'Năm học', isSort: false },
+    ];
+
+    this.customActions = [
+      {
+        label: 'Xem',
+        icon: 'pi pi-search',
+        color: 'blue',
+        onClick: (evnet: Event, data: any) => {
+          this.ref = this.dialogService.open(SubjectsForClassComponent, {
+            header: `Danh sách môn học phân công lớp ${data.name}`,
+            width: '85%',
+            maximizable: true,
+            data: {
+              classId: data.id,
+            },
+            contentStyle: { overflow: 'auto' },
+          });
+        },
+      },
     ];
 
     this.getClasses();

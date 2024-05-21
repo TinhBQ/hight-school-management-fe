@@ -17,20 +17,20 @@ export class SubjectService extends BaseService<ISubject, ISubjectDto> {
   }
 
   getUnassignedSubjectsByClassId(
-    id: string
+    classId: string
   ): Observable<IResponseBase<ISubject[]>> {
     return this.http.get<IResponseBase<ISubject[]>>(
       `${this.endpoint}/unassigned-by-class`,
-      { params: { classId: id } }
+      { params: { classId } }
     );
   }
 
   getAssignedSubjectsByClassId(
-    id: string
+    classId: string
   ): Observable<IResponseBase<ISubject[]>> {
     return this.http.get<IResponseBase<ISubject[]>>(
       `${this.endpoint}/assigned-by-class`,
-      { params: { classId: id } }
+      { params: { classId } }
     );
   }
 }

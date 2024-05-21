@@ -1,0 +1,15 @@
+<smsedu-crud
+  [columns]="columns"
+  [data]="result?.data ?? []"
+  [pagination]="pagination"
+  [loading]="loading"
+  [searchString]="searchClass"
+  [searchText$]="searchText$"
+  [onCreate]="onCreate.bind(this)"
+  [onEdit]="onShowDialogForEdit.bind(this)"
+  [onDelete]="onDelete.bind(this)"
+  [onDeleteCollection]="onDeleteCollection.bind(this)"
+  (lazyLoad)="onLoadSubjectsForClass($event)"
+/>
+
+<smsedu-subjects-for-class-update-period-count (save)="onSave()" />

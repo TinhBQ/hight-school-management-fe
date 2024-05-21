@@ -1,0 +1,89 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<!-- * Dialog: Add Subject, Edit Subject -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [style]="{ width: '450px' }"
+  header="Chi tiết môn học"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form
+      class="class-form"
+      [formGroup]="subjectsForClassForm"
+    >
+      <div class="grid p-fluid mt-3">
+        <!-- * Tên môn -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <input
+              type="text"
+              id="inputtext"
+              pInputText
+              [disabled]="true"
+            />
+            <label for="inputtext">
+              {{ subjectsForClassForm.controls['subject'].value.name }}
+            </label>
+          </span>
+        </div>
+        <!-- * Số tiết/tuần -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-inputNumber
+              formControlName="periodCount"
+              inputId="minmax"
+              mode="decimal"
+              [min]="0"
+              [max]="15"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              decrementButtonClass="p-button-danger"
+              incrementButtonClass="p-button-success"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+            />
+            <label for="inputtext">Số tiết/Tuần</label>
+          </span>
+          <small
+            *ngIf="
+              subjectsForClassForm.controls['periodCount'].invalid &&
+              (subjectsForClassForm.controls['periodCount'].dirty ||
+                subjectsForClassForm.controls['periodCount'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div
+              *ngIf="
+                subjectsForClassForm.controls['periodCount'].errors?.[
+                  'required'
+                ]
+              "
+            >
+              Ký hiệu là bắt buộc.
+            </div>
+          </small>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Hủy"
+      icon="pi pi-times"
+      class="p-button-outlined p-button-secondary"
+      (click)="onHideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Lưu"
+      icon="pi pi-check"
+      [disabled]="subjectsForClassForm.invalid || isDisabled()"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

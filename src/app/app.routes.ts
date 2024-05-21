@@ -7,6 +7,10 @@ export const routes: Routes = [
     path: '',
     redirectTo: '/smsedu/classes',
     pathMatch: 'full',
+    // loadComponent: () =>
+    //   import(
+    //     '@features/subject-class/components/subjects-for-class/subjects-for-class.component'
+    //   ).then((m) => m.SubjectsForClassComponent),
   },
   {
     path: 'smsedu',

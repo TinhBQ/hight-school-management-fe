@@ -1,0 +1,98 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <p-table
+        [value]="subjectsForClass"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+      >
+        <ng-template pTemplate="caption">
+          <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+          >
+            <!-- <div>
+              <h5 class="m-0">Chưa phân công</h5>
+            </div> -->
+            <div>
+              <p-chip
+                [label]="
+                  subjectsForClass.length - isDisabled() + ' môn học chưa xử lý'
+                "
+                styleClass="bg-primary"
+              />
+            </div>
+
+            @if (isDisabled() > 1) {
+              <div class="flex gap-2">
+                <button
+                  pButton
+                  pRipple
+                  label="{{ 'Thêm ' + isDisabled() + ' phân công' }}"
+                  icon="pi pi-plus"
+                  class="p-button-success"
+                  (click)="onCreateCollection($event)"
+                ></button>
+              </div>
+            }
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="text-center">Môn học</th>
+            <th class="text-center">Số tiết/Tuần</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template
+          pTemplate="body"
+          let-data
+        >
+          <tr [ngClass]="{ 'p-highlight': data.periodCount > 0 }">
+            <td class="text-center">{{ data.subject.name }}</td>
+            <td
+              [pEditableColumn]="data.periodCount"
+              pEditableColumnField="code"
+              class="text-center"
+            >
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-inputNumber
+                    [(ngModel)]="data.periodCount"
+                    inputId="minmax"
+                    mode="decimal"
+                    [min]="0"
+                    [max]="15"
+                    [showButtons]="true"
+                    buttonLayout="horizontal"
+                    decrementButtonClass="p-button-danger"
+                    incrementButtonClass="p-button-success"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                  />
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ data.periodCount }}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+            <td class="text-justify">
+              <div class="flex align-items-center justify-content-center gap-2">
+                <!-- @ Add -->
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-plus-circle"
+                  class="p-button-rounded p-button-success"
+                  [disabled]="data.periodCount <= 0 || data.periodCount > 15"
+                  (click)="onCreate($event, data)"
+                ></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

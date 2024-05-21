@@ -16,13 +16,15 @@ import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 
-import { IColumn, IPagination } from '@core/interfaces';
+import { CoreModule } from '@core/core.module';
+import { IColumn, IPagination, ICustomAction } from '@core/interfaces';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'smsedu-crud',
   standalone: true,
   imports: [
+    CoreModule,
     ToolbarModule,
     ButtonModule,
     FileUploadModule,
@@ -36,6 +38,8 @@ export class SmseduCrudComponent implements OnInit {
 
   selected: any[] = [];
 
+  @Input() customActions: ICustomAction[] = [];
+
   @Input() columns: IColumn[] = [];
 
   @Input() data: any[];
@@ -44,7 +48,7 @@ export class SmseduCrudComponent implements OnInit {
 
   @Input() loading: boolean = false;
 
-  @Input() title: string = 'Danh sách';
+  @Input() title: string = '';
 
   @Input() searchString: string = '';
 
