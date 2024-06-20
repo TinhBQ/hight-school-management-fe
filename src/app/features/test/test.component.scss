@@ -1,0 +1,20 @@
+.tableContainer {
+  border-radius: 1px 1px;
+}
+
+.vjTable {
+  width: 100%;
+  padding: 1px;
+  border: 2px solid rgb(89, 198, 241);
+}
+
+.vjTable thead {
+  background: rgb(89, 198, 241);
+}
+
+.vjTable tbody {
+  tr th {
+    border: 1px solid rgb(89, 198, 241);
+    cursor: pointer;
+  }
+}

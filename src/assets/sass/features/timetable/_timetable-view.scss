@@ -1,0 +1,55 @@
+.timetable-view-container {
+  font-size: 13px;
+
+  .timetable-view-morning {
+    width: 100%;
+    padding: 1px;
+    border: 2px solid $primaryColor;
+
+    thead {
+      background: $primaryColor;
+      color: $primaryTextColor;
+    }
+    tbody {
+      .cell-weekday {
+        background: $primaryColor;
+        color: $primaryTextColor;
+      }
+
+      .cell-startAt {
+        border: 1px solid $primaryColor;
+      }
+
+      .cell-dnd {
+        border: 1px solid $primaryColor;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .timetable-view-afternoon {
+    width: 100%;
+    padding: 1px;
+    border: 2px solid var(--orange-300);
+
+    thead {
+      background: var(--orange-300);
+      color: $primaryTextColor;
+    }
+    tbody {
+      .cell-weekday {
+        background: var(--orange-300);
+        color: $primaryTextColor;
+      }
+
+      .cell-startAt {
+        border: 1px solid var(--orange-300);
+      }
+
+      .cell-dnd {
+        border: 1px solid var(--orange-300);
+        cursor: pointer;
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+.timetable-container {
+  margin: -1rem;
+  font-size: 12px;
+
+  .timetable-edit {
+    width: 100%;
+    padding: 1px;
+    border: 2px solid $primaryColor;
+
+    thead {
+      background: $primaryColor;
+      color: $primaryTextColor;
+    }
+    tbody {
+      .cell-weekday {
+        background: $primaryColor;
+        color: $primaryTextColor;
+      }
+
+      .cell-startAt {
+        border: 1px solid var(--bluegray-400);
+      }
+
+      .cell-dnd-morning {
+        border: 1px solid var(--blue-400);
+        cursor: pointer;
+      }
+
+      .cell-dnd-afternoon {
+        border: 1px solid var(--orange-400);
+        cursor: pointer;
+      }
+    }
+  }
+}

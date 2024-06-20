@@ -1,8 +1,9 @@
+import { BreadcrumbService } from '@layouts/main/breadcrumb.service';
 import { LayoutMainComponent } from '@layouts/main/layout-main.component';
 
-import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { OnInit, Component } from '@angular/core';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 import { PrimeNGConfig } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -10,21 +11,28 @@ import { MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
+import { CoreModule } from '@core/core.module';
+
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule,
+    CoreModule,
     RouterOutlet,
     LayoutMainComponent,
     ToastModule,
     ConfirmDialogModule,
   ],
   templateUrl: './app.component.html',
-  providers: [MessageService, ConfirmationService],
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    MessageService,
+    ConfirmationService,
+    BreadcrumbService,
+  ],
 })
 export class AppComponent implements OnInit {
-  title: string = 'hight-school-management-fe';
+  title: string = 'SMSEdu App';
 
   horizontalMenu: boolean;
 

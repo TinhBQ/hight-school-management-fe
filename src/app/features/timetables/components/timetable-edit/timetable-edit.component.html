@@ -1,0 +1,59 @@
+<div class="timetable-container">
+  <table class="timetable-edit">
+    <thead>
+      <tr>
+        <th>Thứ</th>
+        <th>Tiết</th>
+        @for (className of classNames; track $index) {
+          <th>{{ className }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (startAt of startAts; track $index) {
+        <tr>
+          @if (startAt % 10 === 1) {
+            <th
+              rowspan="10"
+              class="cell-weekday"
+            >
+              <div>
+                <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+              </div>
+            </th>
+          }
+          <th class="cell-startAt">
+            {{ onHandelStartAt(startAt) }}
+          </th>
+          @for (className of classNames; track $index) {
+            <th
+              pDraggable
+              (onDragStart)="
+                onDragStart(
+                  timetableUnits[className][startAt],
+                  className,
+                  startAt
+                )
+              "
+              (onDragEnd)="onDragEnd()"
+              pDroppable
+              (onDrop)="
+                onDrop(timetableUnits[className][startAt], className, startAt)
+              "
+              class="cell-dnd"
+              [ngClass]="
+                onHandelStartAt(startAt) > 5
+                  ? 'cell-dnd-afternoon'
+                  : 'cell-dnd-morning'
+              "
+            >
+              <div>
+                <div>{{ timetableUnits[className][startAt]?.subjectName }}</div>
+              </div>
+            </th>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

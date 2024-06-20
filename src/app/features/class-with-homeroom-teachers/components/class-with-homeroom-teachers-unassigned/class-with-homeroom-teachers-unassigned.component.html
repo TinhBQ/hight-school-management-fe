@@ -1,0 +1,25 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<smsedu-crud
+  [(selected)]="selected"
+  [columns]="columns"
+  [data]="data"
+  [pagination]="pagination"
+  [loading]="loading"
+  title="Chưa phân công"
+  [searchString]="searchString"
+  [searchText$]="searchText$"
+  [cusAutoCompleteColumn]="onCusAutoCompleteColumn()"
+  (lazyLoad)="onLoadClassWithHomeroomTeachers($event)"
+>
+  <div class="action-caption">
+    @if (selected.length > 0) {
+      <button
+        pButton
+        class="p-button-outlined p-button-success"
+        icon="pi pi-plus"
+        [label]="'Thêm ' + selected.length + ' phân công'"
+        (click)="onSaveAssignedHomeroom()"
+      ></button>
+    }
+  </div>
+</smsedu-crud>

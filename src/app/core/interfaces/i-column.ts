@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PipeTransform } from '@angular/core';
 
 export interface IColumn {
@@ -7,4 +8,13 @@ export interface IColumn {
   class?: string;
   pipe?: PipeTransform;
   isSort?: boolean;
+  typeEidt?: string;
+}
+
+export interface ICusAutoCompleteColumn {
+  suggestions: any[];
+  loadData: (event: any) => void;
+  onSearch: (event: any) => void;
+  onSelect: (event: any, data: any) => void;
+  onDropdownClick: (event: any) => void;
 }

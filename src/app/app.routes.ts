@@ -1,55 +1,22 @@
-import { LayoutMainComponent } from '@layouts/main/layout-main.component';
-
 import { Routes } from '@angular/router';
+
+import { paths } from './routes/paths';
+import { authRoutes } from './routes/sections/auth.routes';
+import { errorRoutes } from './routes/sections/error.routes';
+import { smseduRoutes } from './routes/sections/smsedu/smsedu.routes';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/smsedu/classes',
+    redirectTo: paths.auth.login,
     pathMatch: 'full',
-    // loadComponent: () =>
-    //   import(
-    //     '@features/subject-class/components/subjects-for-class/subjects-for-class.component'
-    //   ).then((m) => m.SubjectsForClassComponent),
   },
+  ...smseduRoutes,
+  ...authRoutes,
+  ...errorRoutes,
   {
-    path: 'smsedu',
-    component: LayoutMainComponent,
-    children: [
-      {
-        path: 'classes',
-        children: [
-          {
-            path: '',
-            redirectTo: '/smsedu/classes/list',
-            pathMatch: 'full',
-          },
-          {
-            path: 'list',
-            loadComponent: () =>
-              import(
-                '@features/classes/components/class-list/class-list.component'
-              ).then((m) => m.ClassListComponent),
-          },
-        ],
-      },
-      {
-        path: 'subjects',
-        children: [
-          {
-            path: '',
-            redirectTo: '/smsedu/subjects/list',
-            pathMatch: 'full',
-          },
-          {
-            path: 'list',
-            loadComponent: () =>
-              import(
-                '@features/subjects/components/subject-list/subject-list.component'
-              ).then((m) => m.SubjectListComponent),
-          },
-        ],
-      },
-    ],
+    path: 'test',
+    loadComponent: () =>
+      import('@features/test/test.component').then((m) => m.TestComponent),
   },
 ];

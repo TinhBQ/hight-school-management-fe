@@ -27,9 +27,14 @@ import {
 } from 'primeng/dynamicdialog';
 
 import { CoreModule } from '@core/core.module';
-import { IColumn, IPagination, IResponseBase } from '@core/interfaces';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
+import {
+  IColumn,
+  IPagination,
+  ICustomAction,
+  IResponseBase,
+} from '@core/interfaces';
 
 import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 
@@ -60,8 +65,6 @@ import { SubjectsForClassUpdatePeriodCountComponent } from '../subjects-for-clas
 export class SubjectsForClassComponent implements OnInit {
   @Input() classId: string = '';
 
-  widthTb: number;
-
   columns: IColumn[] = [];
 
   result: IResponseBase<ISubjectClass[]>;
@@ -80,8 +83,13 @@ export class SubjectsForClassComponent implements OnInit {
 
   ref: DynamicDialogRef | undefined;
 
+  customActions: ICustomAction[] = [];
+
   @ViewChild(SmseduCrudComponent)
   smseduCrudComponent: SmseduCrudComponent;
+
+  @ViewChild(SubjectsForClassUnassignedComponent)
+  subjectsForClassUnassignedComponent: SubjectsForClassUnassignedComponent;
 
   @ViewChild(SubjectsForClassUpdatePeriodCountComponent)
   subjectsForClassUpdatePeriodCountComponent: SubjectsForClassUpdatePeriodCountComponent;
@@ -113,6 +121,25 @@ export class SubjectsForClassComponent implements OnInit {
     this.columns = [
       { field: 'subject.name', header: 'Môn học', isSort: false },
       { field: 'periodCount', header: 'Số tiết/Tuần', isSort: true },
+    ];
+
+    this.customActions = [
+      {
+        label: 'Chỉnh sửa',
+        icon: 'pi pi-pencil',
+        color: 'success',
+        onClick: (evnet: Event, data: any) => {
+          this.onShowDialogForEdit(data);
+        },
+      },
+      {
+        label: 'Xóa',
+        icon: 'pi pi-trash',
+        color: 'warning',
+        onClick: (evnet: Event, data: any) => {
+          this.onDelete(evnet, data);
+        },
+      },
     ];
   }
 
@@ -208,6 +235,7 @@ export class SubjectsForClassComponent implements OnInit {
       this.sbjectClassService.delete(subjecClass.id).subscribe(
         () => {
           this.smseduCrudComponent.onclear();
+          this.subjectsForClassUnassignedComponent.onCLear();
           this.messageNotificationService.showSuccess(
             `Xóa môn học  ${subjecClass.subject.name} thành công!`
           );
@@ -233,6 +261,7 @@ export class SubjectsForClassComponent implements OnInit {
                 `Xóa ${subjecClasses.length} môn học: ${subjecClasses.map((x) => x.subject.name).join(', ')} thành công!`
               );
               this.smseduCrudComponent.onclear();
+              this.subjectsForClassUnassignedComponent.onCLear();
             },
             (error) => {
               console.log(error.toString());
@@ -243,15 +272,6 @@ export class SubjectsForClassComponent implements OnInit {
           );
       });
     }
-  }
-
-  onCreate(): void {
-    this.ref = this.dialogService.open(SubjectsForClassUnassignedComponent, {
-      header: 'Danh sách môn học chưa phân công',
-      data: {
-        classId: this.classId,
-      },
-    });
   }
 
   onClose(): void {

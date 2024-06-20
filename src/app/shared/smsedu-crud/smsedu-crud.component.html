@@ -3,56 +3,62 @@
   <div class="col-12">
     <div class="card px-4 py-4">
       <!-- * Tooolbar -->
-      <p-toolbar styleClass="mb-4">
-        <!-- ! Action Buttons: Create, Delete -->
-        <ng-template pTemplate="left">
-          <div class="my-2">
-            <!-- @ Create -->
-            <button
-              pButton
-              pRipple
-              label="Thêm"
-              icon="pi pi-plus"
-              class="p-button-success mr-2"
-              (click)="onCreate()"
-            ></button>
-            <!-- @ Delete Colection-->
-            <button
-              pButton
-              pRipple
-              label="Xóa"
-              icon="pi pi-trash"
-              class="p-button-danger mr-2"
-              (click)="onDeleteCollection($event, selected)"
-              [disabled]="selected.length <= 1"
-            ></button>
-          </div>
-        </ng-template>
+      @if (isToolBar) {
+        <p-toolbar styleClass="mb-4">
+          <!-- ! Action Buttons: Create, Delete -->
+          <ng-template pTemplate="left">
+            <div class="my-2">
+              <!-- @ Create -->
+              @if (isCreate) {
+                <button
+                  pButton
+                  pRipple
+                  label="Thêm"
+                  icon="pi pi-plus"
+                  class="p-button-success mr-2"
+                  (click)="onCreate()"
+                ></button>
+              }
+              <!-- @ Delete Colection-->
+              <button
+                pButton
+                pRipple
+                label="Xóa"
+                icon="pi pi-trash"
+                class="p-button-danger mr-2"
+                (click)="onDeleteCollection($event, selected)"
+                [disabled]="selected.length <= 1"
+              ></button>
+            </div>
+          </ng-template>
 
-        <!-- ! Action Buttons: Upload, Export -->
-        <ng-template pTemplate="right">
-          <!-- @ Upload File -->
-          <p-fileUpload
-            mode="basic"
-            accept=".xlsx"
-            [maxFileSize]="1000000"
-            chooseLabel="Chọn file"
-            uploadLabel="Xử lý dữ liệu"
-            class="mr-2 inline-block"
-            url="https://www.primefaces.org/cdn/api/upload.php"
-            (onSelect)="onSelectFile($event)"
-            (onUpload)="onUploadFile($event)"
-          ></p-fileUpload>
-          <!-- @ Export File -->
-          <button
-            pButton
-            pRipple
-            label="Export"
-            icon="pi pi-upload"
-            class="p-button-help"
-          ></button>
-        </ng-template>
-      </p-toolbar>
+          <!-- ! Action Buttons: Upload, Export -->
+          <ng-template pTemplate="right">
+            <!-- @ Upload File -->
+            @if (isUploadFile) {
+              <p-fileUpload
+                mode="basic"
+                accept=".xlsx"
+                [maxFileSize]="1000000"
+                chooseLabel="Chọn file"
+                uploadLabel="Xử lý dữ liệu"
+                class="mr-2 inline-block"
+                url="https://www.primefaces.org/cdn/api/upload.php"
+                (onSelect)="onSelectFile($event)"
+                (onUpload)="onUploadFile($event)"
+              ></p-fileUpload>
+            }
+            <!-- @ Export File -->
+            <button
+              pButton
+              pRipple
+              label="Export"
+              icon="pi pi-upload"
+              class="p-button-help"
+            ></button>
+          </ng-template>
+        </p-toolbar>
+      }
 
       <!-- * Table data -->
       <p-table
@@ -86,6 +92,7 @@
 
             <!-- @ Search, Action Clear -->
             <div class="flex gap-2">
+              <ng-content select=".action-caption"></ng-content>
               <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
                 <input
@@ -114,12 +121,14 @@
           let-columns
         >
           <tr class="text-center">
-            <th
-              style="width: 3rem"
-              class="text-center"
-            >
-              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
+            @if (isSelected) {
+              <th
+                style="width: 3rem"
+                class="text-center"
+              >
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+            }
             @for (col of columns; track $index) {
               <th
                 [pSortableColumn]="col.field"
@@ -130,9 +139,17 @@
                 @if (col.isSort) {
                   <p-sortIcon [field]="col.field"></p-sortIcon>
                 }
+                @if (col?.typeEidt) {
+                  <i
+                    class="pi pi-file-edit ml-1"
+                    style="font-size: 1.1rem"
+                  ></i>
+                }
               </th>
             }
-            <th></th>
+            @if (customActions.length > 0) {
+              <th></th>
+            }
           </tr>
         </ng-template>
 
@@ -142,74 +159,79 @@
           let-rowData
           let-columns="columns"
         >
-          <tr>
-            <td class="text-center">
-              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-            </td>
-            @for (col of columns; track $index) {
-              <td
-                [pSortableColumn]="col.field"
-                [class]="'text-center ' + col.class"
-                [style]="styleWitdth + col.style"
-                [pSortableColumnDisabled]="col.isSort"
-              >
-                <span class="p-column-title">{{ col.header }}</span>
-                @if (!col.field.includes('.')) {
-                  @if (col.pipe) {
-                    {{
-                      col.pipe.transform(rowData[col.field]) || 'Chưa xác định'
-                    }}
-                  } @else {
-                    {{ rowData[col.field] || 'Chưa xác định' }}
-                  }
-                } @else {
-                  @if (col.pipe) {
-                    {{
-                      col.pipe.transform(getNestedValue(rowData, col.field)) ||
-                        'Chưa xác định'
-                    }}
-                  } @else {
-                    {{ getNestedValue(rowData, col.field) }}
-                  }
-                }
+          <tr [ngClass]="{ 'p-highlight': selected.includes(rowData) }">
+            @if (isSelected) {
+              <td class="text-center">
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
               </td>
             }
-
+            @for (col of columns; track $index) {
+              <!-- ! Edit Cell -->
+              @if (col?.typeEidt) {
+                <td
+                  [class]="'text-center ' + col.class"
+                  [style]="styleWitdth + col.style"
+                  [pEditableColumn]="rowData[col.field]"
+                  [pEditableColumnField]="col.field"
+                >
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      @if (col?.typeEidt === 'autocomplete') {
+                        <smsedu-auto-complete
+                          [(selectedItem)]="rowData[col.field]"
+                          [currentItem]="rowData"
+                          [suggestions]="cusAutoCompleteColumn.suggestions"
+                          [loadData]="cusAutoCompleteColumn.loadData"
+                          [onSearch]="cusAutoCompleteColumn.onSearch"
+                          [onDropdownClick]="
+                            cusAutoCompleteColumn.onDropdownClick
+                          "
+                          [onSelect]="cusAutoCompleteColumn.onSelect"
+                        />
+                      } @else {
+                        <input
+                          pInputText
+                          type="text"
+                          [(ngModel)]="rowData[col.field]"
+                        />
+                      }
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{ getDataCell(rowData, col) }}
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+              } @else {
+                <td
+                  [class]="'text-center ' + col.class"
+                  [style]="styleWitdth + col.style"
+                >
+                  <span class="p-column-title">{{ col.header }}</span>
+                  {{ getDataCell(rowData, col) }}
+                </td>
+              }
+            }
             <!-- ! Action Buttons: Edit, Delete -->
-            <td class="text-justify">
-              <div class="flex align-items-center justify-content-center gap-2">
-                <!-- @ Edit -->
-                <button
-                  pButton
-                  pRipple
-                  icon="pi pi-pencil"
-                  class="p-button-rounded p-button-success"
-                  (click)="onEdit(rowData)"
-                ></button>
-
-                <!-- @ More Actions -->
-                @if (customActions.length > 0) {
-                  @for (action of customActions; track $index) {
-                    <button
-                      pButton
-                      pRipple
-                      [icon]="action.icon"
-                      class="p-button-rounded p-button-{{ action.color }}"
-                      (click)="action.onClick($event, rowData)"
-                    ></button>
+            @if (customActions.length > 0) {
+              <td class="text-justify">
+                <div
+                  class="flex align-items-center justify-content-center gap-2"
+                >
+                  <!-- @ More Actions -->
+                  @if (customActions.length > 0) {
+                    @for (action of customActions; track $index) {
+                      <button
+                        pButton
+                        pRipple
+                        [icon]="action.icon"
+                        class="p-button-rounded p-button-{{ action.color }}"
+                        (click)="action.onClick($event, rowData)"
+                      ></button>
+                    }
                   }
-                }
-
-                <!-- @ Delete -->
-                <button
-                  pButton
-                  pRipple
-                  icon="pi pi-trash"
-                  class="p-button-rounded p-button-warning"
-                  (click)="onDelete($event, rowData)"
-                ></button>
-              </div>
-            </td>
+                </div>
+              </td>
+            }
           </tr>
         </ng-template>
       </p-table>

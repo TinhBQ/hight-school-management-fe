@@ -21,7 +21,8 @@ import { MessageNotificationService } from '@core/services/message-notification.
 import { SubjectsForClassComponent } from '../subjects-for-class/subjects-for-class.component';
 
 @Component({
-  selector: 'app-subjects-for-class-unassigned',
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'smsedu-subjects-for-class-unassigned',
   standalone: true,
   imports: [
     CoreModule,
@@ -43,7 +44,7 @@ import { SubjectsForClassComponent } from '../subjects-for-class/subjects-for-cl
   ],
 })
 export class SubjectsForClassUnassignedComponent implements OnInit {
-  @Input() classId: string = 'eaeea2ab-abc7-4aba-b48e-c97aa4c8559d';
+  @Input() classId: string = '';
 
   subjectsForClass: ISubjectClassDto[] = [];
 
@@ -57,9 +58,9 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Bùi Quốc Tĩnh');
     if (this.config.data && this.config.data.classId) {
       this.classId = this.config.data.classId; // Lấy classId từ config.data
+      console.log('classId', this.classId);
     }
 
     this.getUnassignedSubjectsForClass();
@@ -97,6 +98,7 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
             'Thêm phân công thành công!'
           );
           this.subjectsForClassComponent.smseduCrudComponent.onclear();
+          this.onCLear();
           this.subjectsForClassComponent.onClose();
         },
         (error) => {
@@ -132,5 +134,10 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
           }
         );
     });
+  }
+
+  onCLear(): void {
+    this.subjectsForClass = [];
+    this.getUnassignedSubjectsForClass();
   }
 }

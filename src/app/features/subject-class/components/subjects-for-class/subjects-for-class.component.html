@@ -1,15 +1,28 @@
-<smsedu-crud
-  [columns]="columns"
-  [data]="result?.data ?? []"
-  [pagination]="pagination"
-  [loading]="loading"
-  [searchString]="searchClass"
-  [searchText$]="searchText$"
-  [onCreate]="onCreate.bind(this)"
-  [onEdit]="onShowDialogForEdit.bind(this)"
-  [onDelete]="onDelete.bind(this)"
-  [onDeleteCollection]="onDeleteCollection.bind(this)"
-  (lazyLoad)="onLoadSubjectsForClass($event)"
-/>
+<p-splitter [panelSizes]="[50, 50]">
+  <ng-template pTemplate>
+    <div class="col-12">
+      <smsedu-crud
+        [columns]="columns"
+        [data]="result?.data ?? []"
+        [pagination]="pagination"
+        [loading]="loading"
+        [searchString]="searchClass"
+        [searchText$]="searchText$"
+        [customActions]="customActions"
+        [isToolBar]="true"
+        [isSelected]="true"
+        title="Đã phân công"
+        [onDeleteCollection]="onDeleteCollection.bind(this)"
+        (lazyLoad)="onLoadSubjectsForClass($event)"
+      />
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate>
+    <div class="col-12">
+      <smsedu-subjects-for-class-unassigned />
+    </div>
+  </ng-template>
+</p-splitter>
 
 <smsedu-subjects-for-class-update-period-count (save)="onSave()" />

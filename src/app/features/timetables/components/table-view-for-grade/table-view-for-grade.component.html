@@ -1,0 +1,79 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-4 py-4">
+      <p-toolbar styleClass="mb-4">
+        <!-- ! Action Buttons: Create, Delete -->
+        <ng-template pTemplate="left">
+          <p-dropdown
+            [options]="grades"
+            [(ngModel)]="selectedGrade"
+            placeholder="Select a City"
+            (onChange)="onGradeChange($event)"
+          />
+        </ng-template>
+
+        <!-- ! Action Buttons: Upload, Export -->
+        <ng-template pTemplate="right">
+          <!-- @ Export File -->
+          <button
+            pButton
+            pRipple
+            label="Export"
+            icon="pi pi-upload"
+            class="p-button-help"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <div class="timetable-container">
+        <table class="timetable-edit">
+          <thead>
+            <tr>
+              <th>Thứ</th>
+              <th>Tiết</th>
+              @for (className of classNames; track $index) {
+                <th>{{ className }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (startAt of startAts; track $index) {
+              <tr>
+                @if (startAt % 10 === 1) {
+                  <th
+                    rowspan="10"
+                    class="cell-weekday"
+                  >
+                    <div>
+                      <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                    </div>
+                  </th>
+                }
+                <th class="cell-startAt">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                @for (className of classNames; track $index) {
+                  <th
+                    class="cell-dnd"
+                    [ngClass]="
+                      onHandelStartAt(startAt) > 5
+                        ? 'cell-dnd-afternoon'
+                        : 'cell-dnd-morning'
+                    "
+                  >
+                    <div>
+                      <div>
+                        {{ timetableUnits[className][startAt]?.subjectName }}
+                      </div>
+                    </div>
+                  </th>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<p-table
+  [value]="listAssignedHomeroom"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  responsiveLayout="scroll"
+  styleClass="p-datatable-gridlines"
+>
+  <ng-template pTemplate="caption">
+    <div
+      class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+    >
+      <div>
+        <h5 class="m-0">Danh sách phân công chủ nhiệm cho lớp học</h5>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="text-center">Lớp học</th>
+      <th class="text-center">Giáo viên chủ nhiệm</th>
+    </tr>
+  </ng-template>
+  <ng-template
+    pTemplate="body"
+    let-data
+  >
+    <tr [ngClass]="{ 'p-highlight': data.periodCount > 0 }">
+      <td class="text-center">{{ data.name }}</td>
+      <td
+        [pEditableColumn]="data.homeroomTeacher"
+        pEditableColumnField="code"
+        class="text-center"
+      >
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <p-autoComplete
+              [lazy]="true"
+              [(ngModel)]="data.homeroomTeacher"
+              [dropdown]="true"
+              [suggestions]="teachesUnAssignedHomeroom"
+              [forceSelection]="true"
+              [minLength]="2"
+              [virtualScroll]="true"
+              [virtualScrollOptions]="options"
+              [autoHighlight]="true"
+              [showEmptyMessage]="true"
+              field="fullName"
+              emptyMessage="Không tìm thấy giáo viên."
+              (completeMethod)="search($event)"
+              (onSelect)="onSelectTeacher($event, data)"
+            ></p-autoComplete>
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{ data.homeroomTeacher.fullName }}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

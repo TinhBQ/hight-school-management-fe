@@ -1,11 +1,14 @@
+import { ITeacher } from '@features/teachers/interfaces';
+
 export interface IClass extends IClassDto {
-  id?: string;
+  id: string;
 }
 
 export interface IClassDto {
-  grade: 10 | 11 | 12;
-  schoolShift: 0 | 1;
+  grade?: 10 | 11 | 12;
+  schoolShift?: 0 | 1;
   name: string;
-  startYear: number;
-  endYear: number;
+  homeroomTeacher?: ITeacher;
+  startYear?: number;
+  endYear?: number;
 }

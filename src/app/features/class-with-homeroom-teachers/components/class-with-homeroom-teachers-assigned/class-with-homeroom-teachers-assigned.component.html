@@ -1,0 +1,11 @@
+<smsedu-crud
+  [columns]="columns"
+  [data]="data"
+  [pagination]="pagination"
+  [loading]="loading"
+  title="Đã phân công"
+  [searchString]="searchString"
+  [searchText$]="searchText$"
+  [cusAutoCompleteColumn]="onCusAutoCompleteColumn()"
+  (lazyLoad)="onLoadClassWithHomeroomTeachers($event)"
+/>

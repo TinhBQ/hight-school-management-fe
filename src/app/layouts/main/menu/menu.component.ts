@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { OnInit, Component } from '@angular/core';
 
+import { paths } from 'src/app/routes/paths';
+
 import { LogoMainComponent } from '@shared/smsedu-logo/logo-main/logo-main.component';
 
 import { LayoutMainComponent } from '../layout-main.component';
@@ -26,44 +28,85 @@ export class MenuComponent implements OnInit {
       {
         label: 'Lớp học',
         icon: 'pi pi-fw pi-star-fill',
-        routerLink: ['/smsedu/classes'],
+        routerLink: paths.smsedu.class.root,
         items: [
           {
-            label: 'Danh sác lớp học',
+            label: 'Danh sách lớp học',
             icon: 'pi pi-fw pi-id-card',
-            routerLink: ['/smsedu/classes/list'],
+            routerLink: paths.smsedu.class.list,
           },
         ],
       },
       {
         label: 'Môn học',
         icon: 'pi pi-fw pi-star-fill',
-        routerLink: ['/smsedu/subjects'],
+        routerLink: paths.smsedu.subject.root,
         items: [
           {
-            label: 'Danh sác lớp học',
+            label: 'Danh sách môn học',
             icon: 'pi pi-fw pi-id-card',
-            routerLink: ['/smsedu/subjects/list'],
+            routerLink: paths.smsedu.subject.list,
+          },
+        ],
+      },
+      {
+        label: 'Giáo viên',
+        icon: 'pi pi-fw pi-star-fill',
+        routerLink: paths.smsedu.teacher.root,
+        items: [
+          {
+            label: 'Danh sách Giáo viên',
+            icon: 'pi pi-fw pi-id-card',
+            routerLink: paths.smsedu.teacher.list,
           },
         ],
       },
       {
         label: 'Phân công',
         icon: 'pi pi-fw pi-star-fill',
-        routerLink: ['/assignment'],
+        routerLink: paths.smsedu.assignment.root,
         items: [
           {
-            label: 'Phân công chủ nhiêm',
+            label: 'Phân công chủ nhiệm',
             icon: 'pi pi-fw pi-id-card',
-            routerLink: ['/assignment/teacher-leader'],
-          },
-          {
-            label: 'Phân công giảng dạy',
-            icon: 'pi pi-fw pi-id-card',
-            routerLink: ['/assignment/teaching'],
+            routerLink: paths.smsedu.assignment.teacherLeader,
           },
         ],
       },
+      {
+        label: 'Thời khóa biểu',
+        icon: 'pi pi-fw pi-star-fill',
+        routerLink: paths.smsedu.timetable.root,
+        items: [
+          {
+            label: 'Chỉnh sửa',
+            icon: 'pi pi-fw pi-id-card',
+            routerLink: paths.smsedu.timetable.edit,
+          },
+          {
+            label: 'Xem',
+            icon: 'pi pi-fw pi-id-card',
+            routerLink: paths.smsedu.timetable.view,
+          },
+        ],
+      },
+      // {
+      //   label: 'Phân công',
+      //   icon: 'pi pi-fw pi-star-fill',
+      //   routerLink: ['/assignment'],
+      //   items: [
+      //     {
+      //       label: 'Phân công chủ nhiêm',
+      //       icon: 'pi pi-fw pi-id-card',
+      //       routerLink: ['/assignment/teacher-leader'],
+      //     },
+      //     {
+      //       label: 'Phân công giảng dạy',
+      //       icon: 'pi pi-fw pi-id-card',
+      //       routerLink: ['/assignment/teaching'],
+      //     },
+      //   ],
+      // },
     ];
   }
 

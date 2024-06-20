@@ -3,5 +3,5 @@ export interface ICustomAction {
   label: string;
   icon: string;
   color: string;
-  onClick?: (event: Event, data: any) => void;
+  onClick?: (event?: any, data?: any) => void;
 }

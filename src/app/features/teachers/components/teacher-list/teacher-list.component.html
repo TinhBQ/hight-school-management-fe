@@ -1,1 +1,20 @@
-<p>teacher-list works!</p>
+<smsedu-crud
+  [columns]="columns"
+  [data]="result?.data ?? []"
+  [pagination]="pagination"
+  [loading]="loading"
+  [isToolBar]="true"
+  [isCreate]="true"
+  [isUploadFile]="true"
+  [isSelected]="true"
+  [loading]="loading"
+  title="Danh sách giáo viên"
+  [searchString]="searchClass"
+  [searchText$]="searchText$"
+  (lazyLoad)="onLoadTeachers($event)"
+  [onCreate]="onShowDialogForCreate.bind(this)"
+  [onDeleteCollection]="onDeleteColection.bind(this)"
+  [customActions]="customActions"
+/>
+
+<smsedu-teacher-dialog-for-create-update (save)="onSave()" />

@@ -1,0 +1,12 @@
+<p-tabMenu
+  [model]="items"
+  [activeItem]="activeItem"
+  (activeItemChange)="onActiveItemChange($event)"
+/>
+@if (activeItem.label === 'Buổi') {
+  <smsedu-timetable-view-for-class />
+}
+
+@if (activeItem.label === 'Khối') {
+  <smsedu-table-view-for-grade />
+}

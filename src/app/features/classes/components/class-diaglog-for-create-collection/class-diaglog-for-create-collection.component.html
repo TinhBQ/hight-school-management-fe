@@ -1,0 +1,169 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<p-dialog
+  [(visible)]="dialog"
+  [style]="{ minWidth: '450px' }"
+  header="Danh sách lớp học"
+  [modal]="true"
+  class="p-fluid"
+>
+  <p-table
+    #dtAddClasses
+    [value]="excelData"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-gridlines"
+  >
+    <ng-template pTemplate="caption">
+      <div
+        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+      >
+        <div>
+          <h5 class="m-0">Tổng: {{ excelData.length }} lớp</h5>
+
+          <ul class="p-error">
+            @if (!isCheckClassNameAndGradeColection()) {
+              <li>Hai ký tự đầu tiên của tên lớp là khối.</li>
+            }
+            @if (!isCheckClassYearColection()) {
+              <li>Năm học không hợp lệ.</li>
+            }
+            @if (!isCheckClassNotNull()) {
+              <li>Các trường là bắt buộc.</li>
+            }
+          </ul>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            pButton
+            pRipple
+            label="Thêm danh sách"
+            icon="pi pi-plus"
+            class="p-button-success"
+            [disabled]="
+              !isCheckClassNameAndGradeColection() ||
+              !isCheckClassYearColection() ||
+              !isCheckClassNotNull()
+            "
+            (click)="onSaveClasses($event)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="text-center">Lớp</th>
+        <th class="text-center">Buổi</th>
+        <th class="text-center">Khối</th>
+        <th class="text-center">Năm học</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-data
+      let-editing="editing"
+    >
+      <tr>
+        <td
+          [pEditableColumn]="data.grade"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="data.grade === null && { 'background-color': 'red' }"
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <p-dropdown
+                inputId="dropdown"
+                [autoDisplayFirst]="false"
+                [options]="grades"
+                [(ngModel)]="data.grade"
+              ></p-dropdown>
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ data.grade }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td
+          [pEditableColumn]="data.name"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="
+            !isCheckClassNameAndGrade(data.name, data.grade) && {
+              'background-color': 'red'
+            }
+          "
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="data.name"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              <span class="text-center">
+                {{ data.name }}
+              </span>
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td
+          [pEditableColumn]="data.schoolShift"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="data.schoolShift === null && { 'background-color': 'red' }"
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <p-dropdown
+                inputId="dropdown"
+                [autoDisplayFirst]="false"
+                [options]="schoolShifts"
+                optionLabel="name"
+                [(ngModel)]="data.schoolShift"
+              ></p-dropdown>
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ data.schoolShift.name }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td
+          [pEditableColumn]="data.year"
+          pEditableColumnField="code"
+          class="text-center"
+          [ngStyle]="
+            !isCheckClassYear(data.year) && { 'background-color': 'red' }
+          "
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="data.year"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ data.year }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td class="text-center">
+          <!-- @ Delete -->
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="onRemoveRowData($event, data)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

@@ -12,10 +12,8 @@
           <div
             class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
           >
-            <!-- <div>
+            <div class="flex gap-2 flex-column">
               <h5 class="m-0">Chưa phân công</h5>
-            </div> -->
-            <div>
               <p-chip
                 [label]="
                   subjectsForClass.length - isDisabled() + ' môn học chưa xử lý'
@@ -24,18 +22,27 @@
               />
             </div>
 
-            @if (isDisabled() > 1) {
-              <div class="flex gap-2">
-                <button
-                  pButton
-                  pRipple
-                  label="{{ 'Thêm ' + isDisabled() + ' phân công' }}"
-                  icon="pi pi-plus"
-                  class="p-button-success"
-                  (click)="onCreateCollection($event)"
-                ></button>
-              </div>
-            }
+            <div class="flex gap-2">
+              @if (isDisabled() > 1) {
+                <div class="flex gap-2">
+                  <button
+                    pButton
+                    pRipple
+                    label="{{ 'Thêm ' + isDisabled() + ' phân công' }}"
+                    icon="pi pi-plus"
+                    class="p-button-success"
+                    (click)="onCreateCollection($event)"
+                  ></button>
+                </div>
+              }
+              <button
+                pButton
+                label="Clear"
+                class="p-button-outlined"
+                icon="pi pi-filter-slash"
+                (click)="onCLear()"
+              ></button>
+            </div>
           </div>
         </ng-template>
         <ng-template pTemplate="header">

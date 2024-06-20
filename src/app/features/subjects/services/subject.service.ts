@@ -3,15 +3,19 @@ import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { IResponseBase } from '@core/interfaces';
 import { BaseService } from '@core/services/base.service';
+import { IResponseBase, IRequestParameters } from '@core/interfaces';
 
 import { ISubject, ISubjectDto } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SubjectService extends BaseService<ISubject, ISubjectDto> {
+export class SubjectService extends BaseService<
+  ISubject,
+  ISubjectDto,
+  IRequestParameters
+> {
   constructor(protected override http: HttpClient) {
     super(http, '/subjects');
   }

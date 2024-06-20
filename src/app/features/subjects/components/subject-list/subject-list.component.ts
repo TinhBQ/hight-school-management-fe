@@ -18,6 +18,7 @@ import {
   IColumn,
   IPagination,
   IResponseBase,
+  ICustomAction,
   IRequestParameters,
 } from '@core/interfaces';
 
@@ -26,7 +27,8 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 import { SubjectDialogForCreateUpdateComponent } from '../subject-dialog-for-create-update/subject-dialog-for-create-update.component';
 
 @Component({
-  selector: 'app-subject-list',
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'smsedu-subject-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -60,6 +62,8 @@ export class SubjectListComponent implements OnInit {
 
   searchText$ = new Subject<string>();
 
+  customActions: ICustomAction[] = [];
+
   @ViewChild(SubjectDialogForCreateUpdateComponent)
   subjectDialogForCreateUpdateComponent: SubjectDialogForCreateUpdateComponent;
 
@@ -87,11 +91,24 @@ export class SubjectListComponent implements OnInit {
       { field: 'shortName', header: 'Ký hiệu', isSort: true },
     ];
 
-    this.subjectService
-      .getAssignedSubjectsByClassId('499be294-43cb-4c41-8c83-e2737065ee76')
-      .subscribe((response) => {
-        console.log(response);
-      });
+    this.customActions = [
+      {
+        label: 'Chỉnh sửa',
+        icon: 'pi pi-pencil',
+        color: 'success',
+        onClick: (evnet: Event, data: any) => {
+          this.onShowDialogForEdit(data);
+        },
+      },
+      {
+        label: 'Xóa',
+        icon: 'pi pi-trash',
+        color: 'warning',
+        onClick: (evnet: Event, data: any) => {
+          this.onDeleteClass(evnet, data);
+        },
+      },
+    ];
   }
 
   @ViewChild('dt', {}) tableEL: Table;

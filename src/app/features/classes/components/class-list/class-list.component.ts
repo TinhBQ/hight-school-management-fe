@@ -3,32 +3,16 @@ import { read, utils, WorkBook, WorkSheet } from 'xlsx';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ClassService } from '@features/classes/services/class.service';
 import { IClass, IClassDto } from '@features/classes/interfaces/i-class';
-import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
+import { GetFullAndShortNameForTeacherPipe } from '@features/teachers/pipes/get-full-and-short-name-for-teacher.pipe';
 import { SubjectsForClassComponent } from '@features/subject-class/components/subjects-for-class/subjects-for-class.component';
 
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { OnInit, Component, ViewChild } from '@angular/core';
-import {
-  FormGroup,
-  Validators,
-  FormBuilder,
-  ReactiveFormsModule,
-} from '@angular/forms';
 
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { ToolbarModule } from 'primeng/toolbar';
-import { DropdownModule } from 'primeng/dropdown';
-import { InputMaskModule } from 'primeng/inputmask';
-import { InputTextModule } from 'primeng/inputtext';
-import { FileUploadModule } from 'primeng/fileupload';
-import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
+import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
 import {
@@ -41,25 +25,20 @@ import {
 
 import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 
+import { ClassDialogForCreateUpdateComponent } from '../class-dialog-for-create-update/class-dialog-for-create-update.component';
+import { ClassDiaglogForCreateCollectionComponent } from '../class-diaglog-for-create-collection/class-diaglog-for-create-collection.component';
+
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'smsedu-class-list',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    AutoCompleteModule,
-    ToolbarModule,
-    TableModule,
-    ButtonModule,
-    InputTextModule,
-    FileUploadModule,
-    DialogModule,
-    DropdownModule,
-    InputMaskModule,
-    FormsModule,
+    CoreModule,
     SmseduCrudComponent,
     DynamicDialogModule,
+    GetFullAndShortNameForTeacherPipe,
+    ClassDialogForCreateUpdateComponent,
+    ClassDiaglogForCreateCollectionComponent,
   ],
   templateUrl: './class-list.component.html',
   providers: [
@@ -70,19 +49,24 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
   ],
 })
 export class ClassListComponent implements OnInit {
-  result: IResponseBase<IClass[]>;
-
-  pagination: IPagination;
-
+  // * -----------------------------------
   columns: IColumn[] = [];
+
+  result: IResponseBase<IClass[]>;
 
   data: any[] = [];
 
+  pagination: IPagination;
+
   requestParameters: IRequestParameters;
 
-  grades: number[] = [10, 11, 12];
+  loading: boolean = false;
 
-  schoolShifts: ISchoolShift[] = schoolShiftData;
+  searchClass = '';
+
+  searchText$ = new Subject<string>();
+
+  // * -----------------------------------
 
   klass: IClassDto;
 
@@ -90,15 +74,7 @@ export class ClassListComponent implements OnInit {
 
   selectedClasses: IClass[] = [];
 
-  loading: boolean = false;
-
-  searchClass: string = '';
-
-  searchText$ = new Subject<string>();
-
   isFirstLoad: boolean = true;
-
-  classDialog: boolean = false;
 
   addClassCollectionDialog: boolean = false;
 
@@ -108,26 +84,16 @@ export class ClassListComponent implements OnInit {
 
   ref: DynamicDialogRef | undefined;
 
-  // * Form Generator: Class
-  classForm: FormGroup = this.fb.group(
-    {
-      id: [null],
-      name: [null, Validators.compose([Validators.required])],
-      grade: [null, Validators.compose([Validators.required])],
-      schoolShift: [null, Validators.compose([Validators.required])],
-      year: [null, Validators.compose([Validators.required])],
-    },
-    {
-      validators: [this.onCheckClassName, this.onCheckClassYear],
-      // Thêm validator tại đây
-    }
-  );
-
   @ViewChild(SmseduCrudComponent) smseduCrudComponent: SmseduCrudComponent;
+
+  @ViewChild(ClassDialogForCreateUpdateComponent)
+  classDialogForCreateUpdateComponent: ClassDialogForCreateUpdateComponent;
+
+  @ViewChild(ClassDiaglogForCreateCollectionComponent)
+  classDiaglogForCreateCollectionComponent: ClassDiaglogForCreateCollectionComponent;
 
   // * constructor
   constructor(
-    private fb: FormBuilder,
     private classService: ClassService,
     private messageNotificationService: MessageNotificationService,
     private confirmationDialogService: ConfirmationDialogService,
@@ -147,23 +113,45 @@ export class ClassListComponent implements OnInit {
       { field: 'grade', header: 'Khối', isSort: true },
       { field: 'schoolShift', header: 'Buổi', isSort: true },
       { field: 'year', header: 'Năm học', isSort: false },
+      {
+        field: 'homeroomTeacher',
+        header: 'Giáo viên Chủ nhiệm',
+        pipe: new GetFullAndShortNameForTeacherPipe(),
+        isSort: false,
+      },
     ];
 
     this.customActions = [
       {
-        label: 'Xem',
-        icon: 'pi pi-search',
+        label: 'Chỉnh sửa',
+        icon: 'pi pi-pencil',
+        color: 'success',
+        onClick: (evnet: Event, data: any) => {
+          this.onShowDialogForEdit(data);
+        },
+      },
+      {
+        label: 'Chỉnh sửa phân công môn học',
+        icon: 'pi pi-file-edit',
         color: 'blue',
         onClick: (evnet: Event, data: any) => {
           this.ref = this.dialogService.open(SubjectsForClassComponent, {
-            header: `Danh sách môn học phân công lớp ${data.name}`,
-            width: '85%',
+            header: `Danh sách môn học lớp ${data.name}`,
+            width: '90%',
             maximizable: true,
             data: {
               classId: data.id,
             },
             contentStyle: { overflow: 'auto' },
           });
+        },
+      },
+      {
+        label: 'Xóa',
+        icon: 'pi pi-trash',
+        color: 'warning',
+        onClick: (evnet: Event, data: any) => {
+          this.onDeleteClass(evnet, data);
         },
       },
     ];
@@ -207,6 +195,7 @@ export class ClassListComponent implements OnInit {
           grade: x.grade,
           schoolShift: x.schoolShift === 0 ? 'Sáng' : 'Chiều',
           year: x.startYear + '-' + x.endYear,
+          homeroomTeacher: x.homeroomTeacher,
         }));
       },
       (error) => {
@@ -215,65 +204,59 @@ export class ClassListComponent implements OnInit {
     );
   }
 
-  // * --------------------- Handle Search Item --------------------
-  getSearchValue(event: Event): string {
-    this.searchClass = (event.target as HTMLInputElement).value;
-    return (event.target as HTMLInputElement).value;
+  // * --------------------- Handel action --------------------
+  // @ Acition: Create and Update Class
+  onSave(): void {
+    if (this.classDialogForCreateUpdateComponent.classForm.valid) {
+      // ! Update class
+      if (this.classDialogForCreateUpdateComponent.classForm.value.id) {
+        this.classDialogForCreateUpdateComponent.onSetClassDTO();
+        this.classService
+          .update(
+            this.classDialogForCreateUpdateComponent.classForm.value.id,
+            this.classDialogForCreateUpdateComponent.classDto
+          )
+          .subscribe(
+            () => {
+              this.smseduCrudComponent.onclear();
+              this.classDialogForCreateUpdateComponent.onHideDialog();
+              this.messageNotificationService.showSuccess(
+                `Cập nhật lớp học ${this.classDialogForCreateUpdateComponent.classForm.value.name} thành công!`
+              );
+            },
+            (error) => {
+              console.log(error.toString());
+              this.messageNotificationService.showError(
+                error.message ?? 'Đã xảy ra lỗi.'
+              );
+            }
+          );
+      } else {
+        // ! Create class
+        this.classDialogForCreateUpdateComponent.onSetClassDTO();
+        this.classService
+          .create(this.classDialogForCreateUpdateComponent.classDto)
+          .subscribe(
+            () => {
+              this.smseduCrudComponent.onclear();
+              this.classDialogForCreateUpdateComponent.onHideDialog();
+              this.messageNotificationService.showSuccess(
+                `Thêm lớp học ${this.classDialogForCreateUpdateComponent.classForm.value.name} thành công!`
+              );
+            },
+            (error) => {
+              console.log(error.toString());
+              this.messageNotificationService.showError(
+                error.message ?? 'Đã xảy ra lỗi.'
+              );
+            }
+          );
+      }
+    }
   }
-
-  onSearch(packageName: string) {
-    this.searchText$.next(packageName);
-  }
-
-  // * --------------------- Clear Table --------------------
 
   onClear(): void {
     this.smseduCrudComponent.onclear();
-  }
-
-  // * --------------------- Handel action --------------------
-
-  // @ Acition: Save Class
-  onSaveClass(): void {
-    if (this.classForm.valid) {
-      // ! Update class
-      if (this.classForm.value.id) {
-        this.onSetClassDTO();
-        this.classService.update(this.classForm.value.id, this.klass).subscribe(
-          () => {
-            this.onClear();
-            this.onHideDialog();
-            this.messageNotificationService.showSuccess(
-              `Cập nhật lớp học ${this.classForm.value.name} thành công!`
-            );
-          },
-          (error) => {
-            console.log(error.toString());
-            this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
-            );
-          }
-        );
-      } else {
-        // ! Create class
-        this.onSetClassDTO();
-        this.classService.create(this.klass).subscribe(
-          () => {
-            this.onClear();
-            this.onHideDialog();
-            this.messageNotificationService.showSuccess(
-              `Thêm lớp học ${this.classForm.value.name} thành công!`
-            );
-          },
-          (error) => {
-            console.log(error.toString());
-            this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
-            );
-          }
-        );
-      }
-    }
   }
 
   // @ Acition: Save Classes
@@ -289,7 +272,6 @@ export class ClassListComponent implements OnInit {
           endYear: parseInt(item.year.slice(5, 9)),
         };
       }) as IClassDto[];
-      console.log(this.classDtos);
       this.confirmationDialogService.confirm(event, () => {
         this.classService.createCollection(this.classDtos).subscribe(
           () => {
@@ -298,7 +280,7 @@ export class ClassListComponent implements OnInit {
             );
             this.addClassCollectionDialog = false;
             this.excelData = [];
-            this.onClear();
+            this.smseduCrudComponent.onclear();
           },
           (error) => {
             console.log(error.toString());
@@ -316,7 +298,7 @@ export class ClassListComponent implements OnInit {
     this.confirmationDialogService.confirm(event, () => {
       this.classService.delete(klass.id).subscribe(
         () => {
-          this.onClear();
+          this.smseduCrudComponent.onclear();
           this.messageNotificationService.showSuccess(
             `Xóa lớp  ${klass.name} thành công!`
           );
@@ -343,7 +325,7 @@ export class ClassListComponent implements OnInit {
               this.messageNotificationService.showSuccess(
                 `Xóa ${selectedClasses.length} lớp: ${selectedClasses.map((x) => x.name).join(', ')} thành công!`
               );
-              this.onClear();
+              this.smseduCrudComponent.onclear();
             },
             (error) => {
               console.log(error.toString());
@@ -356,26 +338,21 @@ export class ClassListComponent implements OnInit {
     }
   }
 
-  // @ Acition: Hide dialog
-  onHideDialog(): void {
-    this.classDialog = false;
-  }
-
   // @ Acition: Show dialog for create
   onShowDialogForCreate(): void {
-    this.classForm.setValue({
+    this.classDialogForCreateUpdateComponent.classForm.setValue({
       id: null,
       name: null,
       grade: null,
       schoolShift: null,
       year: null,
     });
-    this.classDialog = true;
+    this.classDialogForCreateUpdateComponent.dialog = true;
   }
 
   // @ Acition: Show dialog for eidt class
   onShowDialogForEdit(klass: any): void {
-    this.classForm.setValue({
+    this.classDialogForCreateUpdateComponent.classForm.setValue({
       id: klass.id,
       name: klass.name,
       grade: klass.grade,
@@ -385,7 +362,7 @@ export class ClassListComponent implements OnInit {
           : schoolShiftData[1],
       year: klass.year,
     });
-    this.classDialog = true;
+    this.classDialogForCreateUpdateComponent.dialog = true;
   }
 
   // @ Acition: Upload file excel for add to classes
@@ -416,10 +393,13 @@ export class ClassListComponent implements OnInit {
           )
           .map((row: any) => ({
             grade: row['Khối'],
-            schoolShift: this.schoolShifts.find((x) => {
-              console.log(x.name.toString(), row['Buổi'].toString());
-              return x.name.toString() === row['Buổi'].toString();
-            }),
+            schoolShift:
+              this.classDialogForCreateUpdateComponent.schoolShifts.find(
+                (x) => {
+                  console.log(x.name.toString(), row['Buổi'].toString());
+                  return x.name.toString() === row['Buổi'].toString();
+                }
+              ),
             name: row['Lớp'],
             year: row['Năm học'],
           }));
@@ -433,100 +413,7 @@ export class ClassListComponent implements OnInit {
 
   onUpload(event: any): void {
     console.log(event);
+    this.classDiaglogForCreateCollectionComponent.dialog = true;
     this.addClassCollectionDialog = true;
-  }
-
-  // @ Acition: delete row data in table
-  onRemoveRowData(event: Event, rowData: any): void {
-    if (this.excelData.length > 0) {
-      this.confirmationDialogService.confirm(event, () => {
-        this.excelData = this.excelData.filter((x) => x !== rowData);
-      });
-    } else {
-      this.addClassCollectionDialog = false;
-    }
-  }
-
-  // * ---------------------  Custom validation function --------------------
-
-  isCheckClassNameAndGrade(name?: string, grade?: string): boolean {
-    return name == null ||
-      grade == null ||
-      name.slice(0, 2).toString() !== grade.toString()
-      ? false
-      : true;
-  }
-
-  isCheckClassNameAndGradeColection(): boolean {
-    return this.excelData.every((x) =>
-      this.isCheckClassNameAndGrade(x.name, x.grade)
-    );
-  }
-
-  isCheckClassNotNull(): boolean {
-    return this.excelData.every(
-      (x) =>
-        x.name != null &&
-        x.grade != null &&
-        x.schoolShift != null &&
-        x.year != null &&
-        x.name != '' &&
-        x.grade != '' &&
-        x.schoolShift != '' &&
-        x.year != ''
-    );
-  }
-
-  isCheckClassYear(year: string): boolean {
-    return year == null ||
-      !/^\d+$/.test(year.slice(0, 4)) ||
-      !/^\d+$/.test(year.slice(5, 9)) ||
-      parseInt(year.slice(0, 4)) + 1 != parseInt(year.slice(5, 9))
-      ? false
-      : true;
-  }
-
-  isCheckClassYearColection(): boolean {
-    return this.excelData.every((x) => this.isCheckClassYear(x.year));
-  }
-
-  onCheckClassName(g: FormGroup) {
-    if (g.get('name').value == null || g.get('grade').value == null) {
-      return null;
-    }
-
-    return g.get('name').value.slice(0, 2) == g.get('grade').value
-      ? null
-      : { checkClassName: true };
-  }
-
-  onCheckClassYear(g: FormGroup) {
-    if (g.get('year').value == null) {
-      return null;
-    }
-
-    if (!/^\d+$/.test(g.get('year').value.slice(0, 4))) {
-      return { checkClassYear: true };
-    }
-
-    if (!/^\d+$/.test(g.get('year').value.slice(5, 9))) {
-      return { checkClassYear: true };
-    }
-
-    return parseInt(g.get('year').value.slice(0, 4)) + 1 ==
-      parseInt(g.get('year').value.slice(5, 9))
-      ? null
-      : { checkClassYear: true };
-  }
-
-  // * --------------------- Function Helper --------------------
-  onSetClassDTO(): void {
-    this.klass = {
-      name: this.classForm.value.name,
-      grade: this.classForm.value.grade,
-      schoolShift: this.classForm.value.schoolShift.id,
-      startYear: parseInt(this.classForm.value.year.slice(0, 4)),
-      endYear: parseInt(this.classForm.value.year.slice(5, 9)),
-    };
   }
 }

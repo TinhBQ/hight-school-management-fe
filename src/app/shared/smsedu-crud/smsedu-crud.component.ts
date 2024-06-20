@@ -17,7 +17,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 
 import { CoreModule } from '@core/core.module';
+import { ICusAutoCompleteColumn } from '@core/interfaces/i-column';
 import { IColumn, IPagination, ICustomAction } from '@core/interfaces';
+import { SmseduConvertHtmlDirective } from '@core/directives/smsedu-convert-html.directive';
+
+import { SmseduAutoCompleteComponent } from '@shared/smsedu-auto-complete/smsedu-auto-complete.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -30,13 +34,17 @@ import { IColumn, IPagination, ICustomAction } from '@core/interfaces';
     FileUploadModule,
     TableModule,
     InputTextModule,
+    SmseduAutoCompleteComponent,
+    SmseduConvertHtmlDirective,
   ],
   templateUrl: './smsedu-crud.component.html',
 })
 export class SmseduCrudComponent implements OnInit {
   styleWitdth: string = '';
 
-  selected: any[] = [];
+  @Input() selected: any[] = [];
+
+  @Output() selectedChange: EventEmitter<any[]> = new EventEmitter<any[]>();
 
   @Input() customActions: ICustomAction[] = [];
 
@@ -54,11 +62,17 @@ export class SmseduCrudComponent implements OnInit {
 
   @Input() searchText$ = new Subject<string>();
 
-  @Input() onEdit: (dataRow: any) => void;
+  @Input() isToolBar: boolean = false;
+
+  @Input() isSelected: boolean = false;
+
+  @Input() isUploadFile: boolean = false;
+
+  @Input() isCreate: boolean = false;
+
+  @Input() cusAutoCompleteColumn: ICusAutoCompleteColumn;
 
   @Input() onCreate: () => void;
-
-  @Input() onDelete: (event: Event, dataRow: any) => void;
 
   @Input() onDeleteCollection: (event: Event, selected: any[]) => void;
 
@@ -70,6 +84,8 @@ export class SmseduCrudComponent implements OnInit {
 
   // * --------------------- View child --------------------
   @ViewChild('dt', {}) tableEL: Table;
+
+  // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
 
   ngOnInit(): void {
     this.styleWitdth = `width: ${98 / (this.columns.length + 1) || 12.5}%; min-width: 10rem;`;
@@ -102,10 +118,22 @@ export class SmseduCrudComponent implements OnInit {
     this.selected = [];
     this.tableEL.clear();
     this.searchString = '';
+    this.selectedChange.emit(this.selected);
   }
 
   getNestedValue(obj: any, field: string): any {
     const keys = field.split('.');
     return keys.reduce((acc, key) => acc?.[key], obj);
+  }
+
+  getDataCell(rowData: any, col: IColumn): string {
+    return !col.field.includes('.')
+      ? col.pipe
+        ? col.pipe.transform(rowData[col.field]) || 'Chưa xác định'
+        : rowData[col.field] || 'Chưa xác định'
+      : col.pipe
+        ? col.pipe.transform(this.getNestedValue(rowData, col.field)) ||
+          'Chưa xác định'
+        : this.getNestedValue(rowData, col.field) || 'Chưa xác định';
   }
 }

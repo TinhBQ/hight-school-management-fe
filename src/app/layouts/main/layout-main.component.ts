@@ -6,14 +6,23 @@ import { AppComponent } from 'src/app/app.component';
 import { CoreModule } from '@core/core.module';
 
 import { MenuComponent } from './menu/menu.component';
+import { BreadcrumbService } from './breadcrumb.service';
 import { ConfigComponent } from './config/config.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-layout-main',
   standalone: true,
-  imports: [CoreModule, MenuComponent, TopBarComponent, ConfigComponent],
+  imports: [
+    CoreModule,
+    MenuComponent,
+    TopBarComponent,
+    ConfigComponent,
+    BreadcrumbComponent,
+  ],
   templateUrl: 'layout-main.component.html',
+  providers: [BreadcrumbService],
 })
 export class LayoutMainComponent {
   sidebarActive: boolean;

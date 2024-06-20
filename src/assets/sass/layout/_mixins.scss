@@ -206,7 +206,7 @@
 @mixin clearfix() {
   &:before,
   &:after {
-    content: "";
+    content: '';
     display: table;
   }
   &:after {
@@ -284,4 +284,11 @@
 
 @mixin translateXForIE($val1, $val2) {
   -ms-transform: translateX($val1) translateX($val2);
+}
+
+@mixin image($width, $height) {
+  width: $width;
+  height: $height;
+  object-fit: cover;
+  image-rendering: pixelated;
 }

@@ -1,0 +1,107 @@
+<div class="login-body">
+  <!-- <p-blockUI [blocked]="blockedUI"></p-blockUI> -->
+  <!-- (ngSubmit)="onSubmit()" -->
+  <form
+    class="login-form"
+    [formGroup]="loginForm"
+    autocomplete="off"
+  >
+    <div class="login-form-container">
+      <div class="login-form-container-banner">
+        <img
+          src="assets/smsedu/images/login/banner.svg"
+          alt="banner"
+        />
+      </div>
+      <div class="login-form-container-card">
+        <p-card
+          header="Hệ thống quản lý nhà trường"
+          subheader="Đăng nhập"
+        >
+          <ng-template pTemplate="header">
+            <div
+              class="logo w-full flex align-items-center justify-content-center"
+            >
+              <smsedu-logo-main class="my-2 h-3rem"></smsedu-logo-main>
+            </div>
+          </ng-template>
+          <div>
+            <div class="field">
+              <label for="username">Tên đăng nhập</label>
+              <span class="p-input-icon-right w-full">
+                <i class="pi pi-user"></i>
+                <input
+                  type="text"
+                  pInputText
+                  id="username"
+                  formControlName="username"
+                  class="w-full"
+                  placeholder="..."
+                />
+              </span>
+              <small
+                *ngIf="username.invalid && (username.dirty || username.touched)"
+                class="block p-error"
+              >
+                <div *ngIf="username.errors?.['required']">
+                  Tên đăng nhập là bắt buộc.
+                </div>
+                <div *ngIf="username.errors?.['pattern']">
+                  Tên đăng nhập có ít nhất 8 ký tự gồm chữ và số.
+                </div>
+              </small>
+            </div>
+            <div class="field">
+              <label for="password">Mật khẩu</label>
+              <span class="p-input-icon-right w-full">
+                <i class="pi pi-lock"></i>
+                <input
+                  type="text"
+                  pInputText
+                  id="password"
+                  formControlName="password"
+                  class="w-full"
+                  placeholder="..."
+                  [type]="isForgotPassword.value ? 'text' : 'password'"
+                />
+              </span>
+              <small
+                *ngIf="password.invalid && (password.dirty || password.touched)"
+                class="block p-error"
+              >
+                <div *ngIf="password.errors?.['required']">
+                  Mật khẩu là bắt buộc.
+                </div>
+                <div *ngIf="password.errors?.['pattern']">
+                  `Mật khẩu có ít nhất 8 ký tự. Chỉ gồm chữ và số. Và 1 ký tự
+                  đặt biệt "#,$,%,&".`
+                </div>
+              </small>
+            </div>
+            <div class="p-card-footer-custom">
+              <div class="forgotPassword">
+                <p-checkbox
+                  [binary]="true"
+                  formControlName="isForgotPassword"
+                  inputId="forgot-password"
+                ></p-checkbox>
+                <label for="forgot-password">Hiển thị mật khẩu</label>
+              </div>
+              <div class="separation">|</div>
+              <div>
+                <a>Quên mật khẩu</a>
+              </div>
+            </div>
+            <div class="btn-login">
+              <p-button
+                label="Đăng nhập"
+                [disabled]="loginForm.invalid"
+                type="submit"
+              ></p-button>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </form>
+</div>

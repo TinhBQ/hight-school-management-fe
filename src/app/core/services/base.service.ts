@@ -2,15 +2,12 @@
 import { map, Observable } from 'rxjs';
 import { environment } from '@environment/environment';
 
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
-import {
-  IPagination,
-  IResponseBase,
-  IRequestParameters,
-} from '@core/interfaces';
+import { IPagination, IResponseBase } from '@core/interfaces';
+import { convertToParams } from '@core/utils/convert-to-params';
 
-export class BaseService<T, DtoT> {
+export class BaseService<T, DtoT, RequestParameterT> {
   protected endpoint: string;
 
   constructor(
@@ -21,9 +18,9 @@ export class BaseService<T, DtoT> {
   }
 
   find(
-    params?: IRequestParameters
+    params?: RequestParameterT
   ): Observable<{ result: IResponseBase<T[]>; pagination: any }> {
-    const queryParams = this.convertToParams(params);
+    const queryParams = convertToParams(params);
     return this.http
       .get<
         IResponseBase<T[]>
@@ -59,6 +56,10 @@ export class BaseService<T, DtoT> {
     return this.http.put<T>(`${this.endpoint}/${id}`, body);
   }
 
+  updateCollection(body: DtoT[] | Partial<T[]>): Observable<T> {
+    return this.http.put<T>(`${this.endpoint}/collection`, body);
+  }
+
   delete(id: string): Observable<T> {
     return this.http.delete<T>(`${this.endpoint}/${id}`);
   }
@@ -67,30 +68,5 @@ export class BaseService<T, DtoT> {
     return this.http.delete<T[]>(
       `${this.endpoint}/collection/(${ids.join(',')})`
     );
-  }
-
-  private convertToParams(params: IRequestParameters): HttpParams {
-    let queryParams = new HttpParams();
-    if (params) {
-      if (params.searchTerm) {
-        queryParams = queryParams.set('searchTerm', params.searchTerm);
-      }
-      if (params.pageNumber) {
-        queryParams = queryParams.set(
-          'pageNumber',
-          params.pageNumber.toString()
-        );
-      }
-      if (params.pageSize) {
-        queryParams = queryParams.set('pageSize', params.pageSize.toString());
-      }
-      if (params.fields) {
-        queryParams = queryParams.set('fields', params.fields);
-      }
-      if (params.orderBy) {
-        queryParams = queryParams.set('orderBy', params.orderBy);
-      }
-    }
-    return queryParams;
   }
 }
