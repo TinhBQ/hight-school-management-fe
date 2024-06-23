@@ -71,6 +71,11 @@ export class MenuComponent implements OnInit {
             icon: 'pi pi-fw pi-id-card',
             routerLink: paths.smsedu.assignment.teacherLeader,
           },
+          {
+            label: 'Phân công Môn học',
+            icon: 'pi pi-fw pi-id-card',
+            routerLink: paths.smsedu.assignment.subject,
+          },
         ],
       },
       {
@@ -90,23 +95,6 @@ export class MenuComponent implements OnInit {
           },
         ],
       },
-      // {
-      //   label: 'Phân công',
-      //   icon: 'pi pi-fw pi-star-fill',
-      //   routerLink: ['/assignment'],
-      //   items: [
-      //     {
-      //       label: 'Phân công chủ nhiêm',
-      //       icon: 'pi pi-fw pi-id-card',
-      //       routerLink: ['/assignment/teacher-leader'],
-      //     },
-      //     {
-      //       label: 'Phân công giảng dạy',
-      //       icon: 'pi pi-fw pi-id-card',
-      //       routerLink: ['/assignment/teaching'],
-      //     },
-      //   ],
-      // },
     ];
   }
 

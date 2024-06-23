@@ -37,4 +37,22 @@ export class SubjectService extends BaseService<
       { params: { classId } }
     );
   }
+
+  getUnassignedSubjectsByTeacherId(
+    teacherId: string
+  ): Observable<IResponseBase<ISubject[]>> {
+    return this.http.get<IResponseBase<ISubject[]>>(
+      `${this.endpoint}/unassigned-by-teacher`,
+      { params: { teacherId } }
+    );
+  }
+
+  getAssignedSubjectsByTeacherId(
+    teacherId: string
+  ): Observable<IResponseBase<ISubject[]>> {
+    return this.http.get<IResponseBase<ISubject[]>>(
+      `${this.endpoint}/assigned-by-teacher`,
+      { params: { teacherId } }
+    );
+  }
 }

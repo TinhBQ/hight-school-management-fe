@@ -1,6 +1,6 @@
 import { IRequestParameters } from '@core/interfaces';
 
-export interface IHomeroomAssignmentRequestParameters
+export interface ISubjectsForTeacherRequestParameters
   extends IRequestParameters {
-  isAssignedHomeroom?: boolean;
+  teacherId: string;
 }

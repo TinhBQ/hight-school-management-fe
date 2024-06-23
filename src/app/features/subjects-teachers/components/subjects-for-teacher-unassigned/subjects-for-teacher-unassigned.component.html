@@ -1,0 +1,91 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <p-table
+        [value]="subjectsForTeacher"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-gridlines"
+      >
+        <ng-template pTemplate="caption">
+          <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+          >
+            <div class="flex gap-2 flex-column">
+              <h5 class="m-0">Chưa phân công</h5>
+              <p-chip
+                [label]="' môn học chưa xử lý'"
+                styleClass="bg-primary"
+              />
+            </div>
+
+            <div class="flex gap-2">
+              <!-- @if (isDisabled() > 1) {
+                <div class="flex gap-2">
+                  <button
+                    pButton
+                    pRipple
+                    label="{{ 'Thêm ' + isDisabled() + ' phân công' }}"
+                    icon="pi pi-plus"
+                    class="p-button-success"
+                    (click)="onCreateCollection($event)"
+                  ></button>
+                </div>
+              } -->
+              <button
+                pButton
+                label="Clear"
+                class="p-button-outlined"
+                icon="pi pi-filter-slash"
+              ></button>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="text-center">Môn học</th>
+            <th class="text-center">Số tiết/Tuần</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template
+          pTemplate="body"
+          let-data
+        >
+          <tr [ngClass]="{ 'p-highlight': data.isMain !== null }">
+            <td class="text-center">{{ data.subject.name }}</td>
+            <td class="text-center">
+              <p-checkbox
+                [(ngModel)]="data.isMain"
+                [binary]="true"
+                inputId="binary"
+              />
+            </td>
+            <td class="text-justify">
+              <div class="flex align-items-center justify-content-center gap-2">
+                <!-- @ Add -->
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-plus-circle"
+                  class="p-button-rounded p-button-success"
+                  [disabled]="data.isMain === null"
+                  (click)="onCreate($event, data)"
+                ></button>
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-warning"
+                  [disabled]="data.isMain === null"
+                  (click)="data.isMain = null"
+                ></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

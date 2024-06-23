@@ -14,9 +14,4 @@ export const routes: Routes = [
   ...smseduRoutes,
   ...authRoutes,
   ...errorRoutes,
-  {
-    path: 'test',
-    loadComponent: () =>
-      import('@features/test/test.component').then((m) => m.TestComponent),
-  },
 ];

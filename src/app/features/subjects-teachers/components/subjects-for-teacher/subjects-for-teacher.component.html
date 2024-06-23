@@ -1,0 +1,25 @@
+<p-splitter [panelSizes]="[50, 50]">
+  <ng-template pTemplate>
+    <div class="col-12">
+      <smsedu-crud
+        [columns]="columns"
+        [data]="result?.data ?? []"
+        [pagination]="pagination"
+        [loading]="loading"
+        [searchString]="searchString"
+        [searchText$]="searchText$"
+        [customActions]="customActions"
+        [isToolBar]="true"
+        [isSelected]="true"
+        title="Đã phân công"
+        (lazyLoad)="onLoadSubjectsForTeacher($event)"
+      />
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate>
+    <div class="col-12">
+      <smsedu-subjects-for-teacher-unassigned />
+    </div>
+  </ng-template>
+</p-splitter>

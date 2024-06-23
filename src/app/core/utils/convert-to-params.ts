@@ -22,6 +22,9 @@ export function convertToParams(params: any): HttpParams {
     if (params.orderBy) {
       queryParams = queryParams.set('orderBy', params.orderBy);
     }
+    if (params.teacherId) {
+      queryParams = queryParams.set('teacherId', params.teacherId);
+    }
     if (
       params.isAssignedHomeroom === false ||
       params.isAssignedHomeroom === true

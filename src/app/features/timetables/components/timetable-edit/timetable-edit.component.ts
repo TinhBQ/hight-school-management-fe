@@ -1,5 +1,5 @@
 import { data } from '@features/timetables/helpers/data';
-import { ITimetableUnit } from '@features/test/employee-list';
+import { ITimetableUnit } from '@features/timetables/interfaces';
 
 import { Input, OnInit, Component } from '@angular/core';
 

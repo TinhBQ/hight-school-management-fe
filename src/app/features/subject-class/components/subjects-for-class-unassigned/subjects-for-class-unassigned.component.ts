@@ -59,8 +59,7 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.config.data && this.config.data.classId) {
-      this.classId = this.config.data.classId; // Lấy classId từ config.data
-      console.log('classId', this.classId);
+      this.classId = this.config.data.classId;
     }
 
     this.getUnassignedSubjectsForClass();

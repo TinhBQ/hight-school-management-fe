@@ -3,8 +3,15 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ITeacher } from '@features/teachers/interfaces/i-teacher';
 import { TeacherService } from '@features/teachers/services/teacher.service';
 import { GetSubjectNamesForTeachersPipe } from '@features/subjects-teachers/pipes/get-subject-names-for-teachers.pipe';
+import { SubjectsForTeacherComponent } from '@features/subjects-teachers/components/subjects-for-teacher/subjects-for-teacher.component';
 
 import { OnInit, Component, ViewChild } from '@angular/core';
+
+import {
+  DialogService,
+  DynamicDialogRef,
+  DynamicDialogModule,
+} from 'primeng/dynamicdialog';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -28,14 +35,17 @@ import { TeacherDialogForCreateUpdateComponent } from '../teacher-dialog-for-cre
   imports: [
     CoreModule,
     SmseduCrudComponent,
+    DynamicDialogModule,
     GetSubjectNamesForTeachersPipe,
     TeacherDialogForCreateUpdateComponent,
+    SubjectsForTeacherComponent,
   ],
   templateUrl: './teacher-list.component.html',
   providers: [
     MessageNotificationService,
     ConfirmationDialogService,
     TeacherService,
+    DialogService,
   ],
 })
 export class TeacherListComponent implements OnInit {
@@ -55,6 +65,8 @@ export class TeacherListComponent implements OnInit {
 
   customActions: ICustomAction[] = [];
 
+  ref: DynamicDialogRef | undefined;
+
   @ViewChild(SmseduCrudComponent)
   smseduCrudComponent: SmseduCrudComponent;
 
@@ -64,7 +76,8 @@ export class TeacherListComponent implements OnInit {
   constructor(
     private teacherService: TeacherService,
     private messageNotificationService: MessageNotificationService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    public dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -94,6 +107,22 @@ export class TeacherListComponent implements OnInit {
         color: 'success',
         onClick: (evnet: Event, data: any) => {
           this.onShowDialogForEdit(data);
+        },
+      },
+      {
+        label: 'Chỉnh sửa phân công môn học',
+        icon: 'pi pi-file-edit',
+        color: 'blue',
+        onClick: (evnet: Event, data: any) => {
+          this.ref = this.dialogService.open(SubjectsForTeacherComponent, {
+            header: `Danh sách phân công môn học của Giao viên ${data.fullName}`,
+            width: '90%',
+            maximizable: true,
+            data: {
+              teacherId: data.id,
+            },
+            contentStyle: { overflow: 'auto' },
+          });
         },
       },
       {

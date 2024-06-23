@@ -7,6 +7,8 @@ export interface ISubjectsTeachers extends ISubjectsTeachersDto {
 
 export interface ISubjectsTeachersDto {
   isMain?: boolean;
+  subjectId?: string;
   subject?: ISubject;
+  teacherId?: string;
   teacher?: ITeacher;
 }
