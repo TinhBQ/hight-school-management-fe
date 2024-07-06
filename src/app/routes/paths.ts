@@ -29,6 +29,7 @@ export const paths = {
     },
     timetable: {
       root: `${ROOTS.SMSEDU}/timetable`,
+      create: `${ROOTS.SMSEDU}/timetable/create`,
       edit: `${ROOTS.SMSEDU}/timetable/edit`,
       view: `${ROOTS.SMSEDU}/timetable/view`,
     },

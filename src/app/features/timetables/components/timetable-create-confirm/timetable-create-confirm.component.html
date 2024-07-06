@@ -1,0 +1,53 @@
+<div
+  class="col-12 card flex flex-column justify-content-center align-items-center"
+>
+  <div class="p-toolbar-group-center">
+    <p-button
+      label="Tạo thời khóa biểu"
+      (onClick)="onCreateTimeTable()"
+    />
+  </div>
+
+  <div class="col-12 flex gap-2">
+    <div class="col-6">
+      <p-toolbar styleClass="mb-3">
+        <div>
+          <h5>Danh sách môn học phân công tiết đôi</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (subject of subjectDoublePeriod; track $index) {
+              <p-tag
+                severity="info"
+                [value]="subject.name"
+              />
+            }
+          </div>
+        </div>
+      </p-toolbar>
+    </div>
+
+    <div class="col-6">
+      <p-toolbar styleClass="mb-3">
+        <div>
+          <h5>Danh sách môn học phân công có phòng thực hành</h5>
+          <div class="flex flex-wrap gap-2">
+            @for (subject of subjectPracticeRoom; track $index) {
+              <p-tag
+                severity="info"
+                [value]="subject.name + ' - ' + subject.roomCount"
+              />
+            }
+          </div>
+        </div>
+      </p-toolbar>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <smsedu-timetable-view-full
+      [startAts]="startAts"
+      [classes]="classes"
+      [timeTableUnits2Dimensional]="timeTableUnits2Dimensional"
+      [viewEdit]="false"
+    />
+  </div>
+</div>

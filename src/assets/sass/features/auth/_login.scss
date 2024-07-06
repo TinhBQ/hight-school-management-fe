@@ -54,6 +54,27 @@
           background-color: transparent;
           @include no-shadow();
 
+          .p-card-header {
+            .logo-container {
+              @include flex();
+              @include flex-direction-column();
+              @include flex-justify-center();
+              @include flex-align-center();
+              margin-top: 14px;
+
+              .app-name {
+                font-size: 22.5px;
+                color: #ec4899;
+                font-weight: 700;
+              }
+
+              img {
+                height: 58px;
+                width: 58px;
+              }
+            }
+          }
+
           .p-card-body {
             padding-top: 0px;
 

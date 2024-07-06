@@ -1,5 +1,5 @@
 import { BreadcrumbService } from '@layouts/main/breadcrumb.service';
-import { SubjectsForTeacherComponent } from '@features/subjects-teachers/components/subjects-for-teacher/subjects-for-teacher.component';
+import { SubjectAssignmentComponent } from '@features/subjects/components/subject-assignment/subject-assignment.component';
 
 import { Component } from '@angular/core';
 
@@ -10,7 +10,7 @@ import { CoreModule } from '@core/core.module';
 @Component({
   selector: 'app-assign-subject-page',
   standalone: true,
-  imports: [CoreModule, SubjectsForTeacherComponent],
+  imports: [CoreModule, SubjectAssignmentComponent],
   templateUrl: './assign-subject-page.component.html',
 })
 export class AssignSubjectPageComponent {
@@ -18,7 +18,7 @@ export class AssignSubjectPageComponent {
     this.breadcrumbService.setItems([
       { label: 'SMSEdu' },
       { label: 'Phân công', routerLink: paths.smsedu.assignment.root },
-      { label: 'Môn học', routerLink: paths.smsedu.assignment.teacherLeader },
+      { label: 'Môn học', routerLink: paths.smsedu.assignment.subject },
     ]);
   }
 }

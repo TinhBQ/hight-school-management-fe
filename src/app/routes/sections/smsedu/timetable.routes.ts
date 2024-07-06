@@ -25,6 +25,13 @@ export const timetableRoutes: Routes = [
             '@pages/smsedu/timetables/timetable-view-page/timetable-view-page.component'
           ).then((m) => m.TimetableViewPageComponent),
       },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import(
+            '@pages/smsedu/timetables/timetable-create-page/timetable-create-page.component'
+          ).then((m) => m.TimetableCreatePageComponent),
+      },
     ],
   },
 ];

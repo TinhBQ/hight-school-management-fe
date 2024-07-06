@@ -1,0 +1,32 @@
+<div class="card">
+  <p-toolbar styleClass="mb-3">
+    <div class="p-toolbar-group-start">
+      <p-dropdown
+        [options]="classes"
+        [(ngModel)]="selectedClass"
+        optionLabel="name"
+        placeholder="Select a City"
+        (onChange)="onChange($event)"
+      />
+    </div>
+    <div class="p-toolbar-group-center">
+      <p-button
+        label="Luu"
+        icon="pi pi-arrow-left"
+        (onClick)="onSave()"
+      />
+    </div>
+  </p-toolbar>
+
+  <smsedu-timetable-for-class
+    [klass]="selectedClass"
+    [timeTableUnits2Dimensional]="timeTableUnits2Dimensional"
+  />
+
+  <smsedu-crud
+    [columns]="columns"
+    [data]="selectAssignments"
+    [isPaginator]="false"
+    title="Danh sách môn học"
+  />
+</div>

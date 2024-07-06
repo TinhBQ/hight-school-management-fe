@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// #region -- Imports --
 import { read, utils, WorkBook, WorkSheet } from 'xlsx';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ClassService } from '@features/classes/services/class.service';
@@ -6,13 +7,22 @@ import { IClass, IClassDto } from '@features/classes/interfaces/i-class';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
 import { GetFullAndShortNameForTeacherPipe } from '@features/teachers/pipes/get-full-and-short-name-for-teacher.pipe';
 import { SubjectsForClassComponent } from '@features/subject-class/components/subjects-for-class/subjects-for-class.component';
+import { ClassWithHomeroomTeachersUpdateDialogComponent } from '@features/class-with-homeroom-teachers/components/class-with-homeroom-teachers-update-dialog/class-with-homeroom-teachers-update-dialog.component';
 
-import { OnInit, Component, ViewChild } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { CoreModule } from '@core/core.module';
+import { TableExportService } from '@core/services/table-export.service';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
 import {
@@ -28,6 +38,8 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 import { ClassDialogForCreateUpdateComponent } from '../class-dialog-for-create-update/class-dialog-for-create-update.component';
 import { ClassDiaglogForCreateCollectionComponent } from '../class-diaglog-for-create-collection/class-diaglog-for-create-collection.component';
 
+// #endregion
+
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'smsedu-class-list',
@@ -39,17 +51,20 @@ import { ClassDiaglogForCreateCollectionComponent } from '../class-diaglog-for-c
     GetFullAndShortNameForTeacherPipe,
     ClassDialogForCreateUpdateComponent,
     ClassDiaglogForCreateCollectionComponent,
+    ClassWithHomeroomTeachersUpdateDialogComponent,
   ],
   templateUrl: './class-list.component.html',
   providers: [
     ClassService,
-    MessageNotificationService,
-    ConfirmationDialogService,
     DialogService,
+    TableExportService,
+    ConfirmationDialogService,
+    MessageNotificationService,
   ],
 })
-export class ClassListComponent implements OnInit {
-  // * -----------------------------------
+export class ClassListComponent implements OnInit, AfterViewInit {
+  // * --------------------- Variables ---------------------
+  // #region -- Variables --
   columns: IColumn[] = [];
 
   result: IResponseBase<IClass[]>;
@@ -58,15 +73,15 @@ export class ClassListComponent implements OnInit {
 
   pagination: IPagination;
 
-  requestParameters: IRequestParameters;
+  requestParameters: IRequestParameters = {};
+
+  requestParametersForExport: IRequestParameters;
 
   loading: boolean = false;
 
-  searchClass = '';
+  searchString = '';
 
   searchText$ = new Subject<string>();
-
-  // * -----------------------------------
 
   klass: IClassDto;
 
@@ -82,8 +97,13 @@ export class ClassListComponent implements OnInit {
 
   customActions: ICustomAction[] = [];
 
+  exportItem: MenuItem[] = [];
+
+  // #endregion
+
   ref: DynamicDialogRef | undefined;
 
+  // #region -- ViewChild --
   @ViewChild(SmseduCrudComponent) smseduCrudComponent: SmseduCrudComponent;
 
   @ViewChild(ClassDialogForCreateUpdateComponent)
@@ -92,18 +112,25 @@ export class ClassListComponent implements OnInit {
   @ViewChild(ClassDiaglogForCreateCollectionComponent)
   classDiaglogForCreateCollectionComponent: ClassDiaglogForCreateCollectionComponent;
 
-  // * constructor
+  @ViewChild(ClassWithHomeroomTeachersUpdateDialogComponent)
+  classWithHomeroomTeachersUpdateDialogComponent: ClassWithHomeroomTeachersUpdateDialogComponent;
+  // #endregion
+
   constructor(
     private classService: ClassService,
     private messageNotificationService: MessageNotificationService,
     private confirmationDialogService: ConfirmationDialogService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private tableExportService: TableExportService,
+    private cdr: ChangeDetectorRef
   ) {}
 
+  // * --------------------- OnInit ---------------------
   ngOnInit(): void {
     this.searchText$
       .pipe(debounceTime(1000), distinctUntilChanged())
       .subscribe((packageName) => {
+        console.log(packageName);
         this.requestParameters.searchTerm = packageName;
         return this.getClasses(this.requestParameters);
       });
@@ -118,6 +145,15 @@ export class ClassListComponent implements OnInit {
         header: 'Giáo viên Chủ nhiệm',
         pipe: new GetFullAndShortNameForTeacherPipe(),
         isSort: false,
+        isAction: true,
+        onAction: (evnet: Event, data: any) => {
+          console.log('data', data);
+          this.classWithHomeroomTeachersUpdateDialogComponent._form.setValue({
+            classId: data.id,
+            homeroomTeacher: data.homeroomTeacher,
+          });
+          this.classWithHomeroomTeachersUpdateDialogComponent.dialog = true;
+        },
       },
     ];
 
@@ -156,10 +192,32 @@ export class ClassListComponent implements OnInit {
       },
     ];
 
+    this.exportItem = [
+      {
+        label: 'XLS',
+        icon: 'pi pi-fw pi-file-excel',
+        command: () => {
+          this.onExportExcel();
+        },
+      },
+      {
+        label: 'PDF',
+        icon: 'pi pi-fw pi-file-pdf',
+        command: () => {
+          this.onExportPDF();
+        },
+      },
+    ];
+
     this.getClasses();
   }
 
-  // * --------------------- Load Data Classes for Table --------------------
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
+
+  // * --------------------- Handel Function ---------------------
+  // #region -- Load Classes --
   onLoadClasses(event: any): void {
     if (this.isFirstLoad) {
       this.isFirstLoad = false;
@@ -181,7 +239,6 @@ export class ClassListComponent implements OnInit {
     this.getClasses(this.requestParameters);
   }
 
-  // * --------------------- Get List Classes for Services --------------------
   getClasses(params?: IRequestParameters): void {
     this.loading = true;
     this.classService.find(params).subscribe(
@@ -199,12 +256,15 @@ export class ClassListComponent implements OnInit {
         }));
       },
       (error) => {
+        this.loading = false;
         console.log(error.toString());
       }
     );
   }
 
-  // * --------------------- Handel action --------------------
+  // #endregion
+
+  // #region -- Handel Action
   // @ Acition: Create and Update Class
   onSave(): void {
     if (this.classDialogForCreateUpdateComponent.classForm.valid) {
@@ -365,7 +425,7 @@ export class ClassListComponent implements OnInit {
     this.classDialogForCreateUpdateComponent.dialog = true;
   }
 
-  // @ Acition: Upload file excel for add to classes
+  // @ Acition: Select file excel for add to classes
   onSelect(event: any): void {
     this.excelData = [];
 
@@ -411,9 +471,93 @@ export class ClassListComponent implements OnInit {
     event = null;
   }
 
+  // @ Acition: Upload file excel for add to classes
   onUpload(event: any): void {
     console.log(event);
     this.classDiaglogForCreateCollectionComponent.dialog = true;
     this.addClassCollectionDialog = true;
   }
+
+  // #endregion
+
+  // #region -- Handel Export Data --
+  // @ Acition: Export Excel
+  onExportExcel(): void {
+    this.requestParametersForExport = {
+      ...this.requestParameters,
+      pageNumber: 1,
+      pageSize: this.pagination.totalCount,
+    };
+
+    this.classService.find(this.requestParametersForExport).subscribe(
+      (response) => {
+        const dataExport = response.result.data.map((x) => ({
+          id: x.id,
+          name: x.name,
+          grade: x.grade,
+          schoolShift: x.schoolShift === 0 ? 'Sáng' : 'Chiều',
+          year: x.startYear + '-' + x.endYear,
+          homeroomTeacher: x.homeroomTeacher,
+        }));
+
+        this.tableExportService.exportExcel(
+          dataExport.map((item: any) => {
+            return {
+              Lớp: item.name,
+              Khối: item.grade,
+              Buổi: item.schoolShift,
+              'Năm học': item.year,
+              'Giáo viên Chủ nhiệm':
+                item.homeroomTeacher?.fullName ?? 'Chưa phân công',
+            };
+          }),
+          'classes'
+        );
+      },
+      (error) => {
+        console.log(error.toString());
+      }
+    );
+  }
+
+  // @ Acition: Export PDf
+  onExportPDF(): void {
+    this.requestParametersForExport = {
+      ...this.requestParameters,
+      pageNumber: 1,
+      pageSize: this.pagination.totalCount,
+    };
+
+    this.classService.find(this.requestParametersForExport).subscribe(
+      (response) => {
+        const headers = this.columns.map((col) => col.header);
+
+        const rows = response.result.data
+          .map((x) => ({
+            id: x.id,
+            name: x.name,
+            grade: x.grade,
+            schoolShift: x.schoolShift === 0 ? 'Sáng' : 'Chiều',
+            year: x.startYear + '-' + x.endYear,
+            fullName: x.homeroomTeacher.fullName ?? 'Chưa phân công',
+          }))
+          .map((row) =>
+            this.columns.map((col) =>
+              col.field === 'homeroomTeacher' ? row.fullName : row[col.field]
+            )
+          );
+
+        this.tableExportService.exportPdf(
+          headers,
+          rows,
+          'classes',
+          'Danh sách lớp học'
+        );
+      },
+      (error) => {
+        console.log(error.toString());
+      }
+    );
+  }
+  // #endregion
 }

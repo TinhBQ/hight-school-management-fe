@@ -21,23 +21,24 @@
             </div>
 
             <div class="flex gap-2">
-              <!-- @if (isDisabled() > 1) {
+              @if (lengthItemAdd() > 1) {
                 <div class="flex gap-2">
                   <button
                     pButton
                     pRipple
-                    label="{{ 'Thêm ' + isDisabled() + ' phân công' }}"
+                    label="{{ 'Thêm ' + lengthItemAdd() + ' phân công' }}"
                     icon="pi pi-plus"
                     class="p-button-success"
                     (click)="onCreateCollection($event)"
                   ></button>
                 </div>
-              } -->
+              }
               <button
                 pButton
                 label="Clear"
                 class="p-button-outlined"
                 icon="pi pi-filter-slash"
+                (click)="onCLear()"
               ></button>
             </div>
           </div>

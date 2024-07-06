@@ -9,6 +9,9 @@ export interface IColumn {
   pipe?: PipeTransform;
   isSort?: boolean;
   typeEidt?: string;
+  isAction?: boolean;
+  onAction?: (event: Event, data: any) => void;
+  options?: any;
 }
 
 export interface ICusAutoCompleteColumn {

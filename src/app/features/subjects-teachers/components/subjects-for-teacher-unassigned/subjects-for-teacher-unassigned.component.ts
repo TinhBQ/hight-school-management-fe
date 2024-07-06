@@ -15,11 +15,20 @@ import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
 
+import { SubjectsForTeacherComponent } from '../subjects-for-teacher/subjects-for-teacher.component';
+
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'smsedu-subjects-for-teacher-unassigned',
   standalone: true,
-  imports: [CoreModule, TableModule, CheckboxModule, ButtonModule, ChipModule],
+  imports: [
+    CoreModule,
+    TableModule,
+    CheckboxModule,
+    ButtonModule,
+    ChipModule,
+    SubjectsForTeacherComponent,
+  ],
   templateUrl: './subjects-for-teacher-unassigned.component.html',
   providers: [
     SubjectService,
@@ -39,7 +48,8 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private confirmationDialogService: ConfirmationDialogService,
     private subjectsTeachersService: SubjectsTeachersService,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+    private subjectsForTeacherComponent: SubjectsForTeacherComponent
   ) {}
 
   ngOnInit(): void {
@@ -78,7 +88,9 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
           this.messageNotificationService.showSuccess(
             'Thêm phân công thành công!'
           );
+
           this.onCLear();
+          this.subjectsForTeacherComponent.onClear();
         },
         (error) => {
           console.log(error.toString());
@@ -88,6 +100,35 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
         }
       );
     });
+  }
+
+  onCreateCollection(event: Event): void {
+    this.confirmationDialogService.confirm(event, () => {
+      this.subjectsTeachersService
+        .createCollection(
+          this.subjectsForTeacher.filter((item) => item.isMain !== null)
+        )
+        .subscribe(
+          () => {
+            this.messageNotificationService.showSuccess(
+              'Thêm danh sách phân công thành công!'
+            );
+            this.subjectsForTeacherComponent.onClear();
+            this.onCLear();
+          },
+          (error) => {
+            console.log(error.toString());
+            this.messageNotificationService.showError(
+              error.message ?? 'Đã xảy ra lỗi.'
+            );
+          }
+        );
+    });
+  }
+
+  lengthItemAdd(): number {
+    return this.subjectsForTeacher.filter((item) => item.isMain !== null)
+      .length;
   }
 
   onCLear(): void {

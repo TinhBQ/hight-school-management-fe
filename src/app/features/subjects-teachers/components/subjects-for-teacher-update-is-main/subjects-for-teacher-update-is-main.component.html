@@ -1,0 +1,75 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<!-- * Dialog: Add Subject, Edit Subject -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [style]="{ width: '450px' }"
+  header="Chi tiết môn học"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form
+      class="class-form"
+      [formGroup]="_form"
+    >
+      <div class="grid p-fluid mt-3">
+        <!-- * Tên môn -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <input
+              type="text"
+              id="inputtext"
+              pInputText
+              [disabled]="true"
+            />
+            <label for="inputtext">
+              {{ _form.controls['subject'].value?.name }}
+            </label>
+          </span>
+        </div>
+        <!-- * Số tiết/tuần -->
+        <div class="field col-12">
+          <span class="flex gap-1">
+            <p-checkbox
+              formControlName="isMain"
+              [binary]="true"
+              inputId="binary"
+            />
+            <label for="inputtext">Môn chính</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['isMain'].invalid &&
+              (_form.controls['isMain'].dirty ||
+                _form.controls['isMain'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['isMain'].errors?.['required']">
+              Ký hiệu là bắt buộc.isMain
+            </div>
+          </small>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Hủy"
+      icon="pi pi-times"
+      class="p-button-outlined p-button-secondary"
+      (click)="onHideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Lưu"
+      icon="pi pi-check"
+      [disabled]="_form.invalid || isDisabled()"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

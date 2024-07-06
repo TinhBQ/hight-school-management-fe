@@ -75,9 +75,9 @@ export class SubjectsForClassComponent implements OnInit {
     classId: this.classId,
   };
 
-  loading = false;
+  loading: boolean = false;
 
-  searchClass = '';
+  searchClass: string = '';
 
   searchText$ = new Subject<string>();
 

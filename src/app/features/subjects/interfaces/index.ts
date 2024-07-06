@@ -1,1 +1,6 @@
-export { ISubject, ISubjectDto } from './i-subject';
+export {
+  ISubject,
+  ISubjectDto,
+  ISubjectForCreateTimeTableWithDoublePeriod,
+  ISubjectForCreateTimeTableWithPracticeRoom,
+} from './i-subject';

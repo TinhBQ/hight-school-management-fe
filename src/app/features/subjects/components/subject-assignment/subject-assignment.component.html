@@ -1,0 +1,12 @@
+<p-tabMenu
+  [model]="items"
+  [activeItem]="activeItem"
+  (activeItemChange)="onActiveItemChange($event)"
+/>
+@if (activeItem.label === 'Giáo viên') {
+  <smsedu-subjects-teachers-list />
+}
+
+@if (activeItem.label === 'Lớp học') {
+  <smsedu-subject-class-list />
+}

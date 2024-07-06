@@ -38,7 +38,6 @@ import { TeacherDialogForCreateUpdateComponent } from '../teacher-dialog-for-cre
     DynamicDialogModule,
     GetSubjectNamesForTeachersPipe,
     TeacherDialogForCreateUpdateComponent,
-    SubjectsForTeacherComponent,
   ],
   templateUrl: './teacher-list.component.html',
   providers: [

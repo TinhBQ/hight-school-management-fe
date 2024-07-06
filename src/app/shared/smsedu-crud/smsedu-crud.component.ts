@@ -10,11 +10,17 @@ import {
   EventEmitter,
 } from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
 import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { CoreModule } from '@core/core.module';
 import { ICusAutoCompleteColumn } from '@core/interfaces/i-column';
@@ -29,11 +35,16 @@ import { SmseduAutoCompleteComponent } from '@shared/smsedu-auto-complete/smsedu
   standalone: true,
   imports: [
     CoreModule,
-    ToolbarModule,
-    ButtonModule,
-    FileUploadModule,
     TableModule,
+    ButtonModule,
+    ToolbarModule,
+    DropdownModule,
+    CheckboxModule,
     InputTextModule,
+    FileUploadModule,
+    SplitButtonModule,
+    MultiSelectModule,
+    InputNumberModule,
     SmseduAutoCompleteComponent,
     SmseduConvertHtmlDirective,
   ],
@@ -44,11 +55,15 @@ export class SmseduCrudComponent implements OnInit {
 
   @Input() selected: any[] = [];
 
+  @Input() isPaginator: boolean = true;
+
   @Output() selectedChange: EventEmitter<any[]> = new EventEmitter<any[]>();
 
   @Input() customActions: ICustomAction[] = [];
 
   @Input() columns: IColumn[] = [];
+
+  @Input() exportItem: MenuItem[];
 
   @Input() data: any[];
 
@@ -69,6 +84,8 @@ export class SmseduCrudComponent implements OnInit {
   @Input() isUploadFile: boolean = false;
 
   @Input() isCreate: boolean = false;
+
+  @Input() isBgFloat: boolean = false;
 
   @Input() cusAutoCompleteColumn: ICusAutoCompleteColumn;
 

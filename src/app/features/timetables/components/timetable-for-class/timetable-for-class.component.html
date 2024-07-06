@@ -1,0 +1,92 @@
+<div class="timetable-container">
+  <div class="col-12">
+    <div class="card">
+      <table class="timetable-edit">
+        <thead>
+          <tr>
+            <th>Tiết</th>
+            <th>Thời gian</th>
+            @for (num of numWeekdays; track $index) {
+              <th>{{ 'Thứ ' + num }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (startAt of startAtsInDay; track $index) {
+            @if (klass.schoolShift === 0 && onHandelStartAt(startAt) <= 5) {
+              <tr>
+                <th class="cell-weekday">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                <th class="cell-startAt">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                @for (num of numWeekdays; track $index) {
+                  <th
+                    class="cell-dnd"
+                    [ngClass]="
+                      onHandelStartAt(startAt) > 5
+                        ? 'cell-dnd-afternoon'
+                        : 'cell-dnd-morning'
+                    "
+                    [class.selected]="
+                      timeTableUnits2Dimensional[num][startAt]
+                        ?.isNoAssignTimetableUnits
+                    "
+                    [class.hover]="
+                      timeTableUnits2Dimensional[num][startAt]?.isHover
+                    "
+                  >
+                    <div>
+                      <div>
+                        {{
+                          timeTableUnits2Dimensional[num][startAt]?.subjectName
+                        }}
+                      </div>
+                    </div>
+                  </th>
+                }
+              </tr>
+            }
+
+            @if (klass.schoolShift === 1 && onHandelStartAt(startAt) > 5) {
+              <tr>
+                <th class="cell-weekday">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                <th class="cell-startAt">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                @for (num of numWeekdays; track $index) {
+                  <th
+                    class="cell-dnd"
+                    [ngClass]="
+                      onHandelStartAt(startAt) > 5
+                        ? 'cell-dnd-afternoon'
+                        : 'cell-dnd-morning'
+                    "
+                    [class.selected]="
+                      timeTableUnits2Dimensional[num][startAt]
+                        ?.isNoAssignTimetableUnits
+                    "
+                    [class.hover]="
+                      timeTableUnits2Dimensional[num][startAt]?.isHover
+                    "
+                  >
+                    <div>
+                      <div>
+                        {{
+                          timeTableUnits2Dimensional[num][startAt]?.subjectName
+                        }}
+                      </div>
+                    </div>
+                  </th>
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

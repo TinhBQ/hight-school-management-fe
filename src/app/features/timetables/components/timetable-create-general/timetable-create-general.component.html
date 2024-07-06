@@ -1,0 +1,290 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="timetable-create-general-container">
+  <div class="card mb-2">
+    <form
+      class="class-form"
+      [formGroup]="_form"
+    >
+      <div class="grid p-fluid mt-3">
+        <!-- * Năm học -->
+        <div class="field col-12 md:col-3">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="schoolYears"
+              formControlName="schoolYear"
+              optionLabel="name"
+              placeholder="Select a City"
+            />
+            <label for="inputtext">Năm học</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['schoolYear'].invalid &&
+              (_form.controls['schoolYear'].dirty ||
+                _form.controls['schoolYear'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['schoolYear'].errors?.['required']">
+              Năm học là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Học kỳ -->
+        <div class="field col-12 md:col-3">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="semesterData"
+              formControlName="semester"
+              optionLabel="name"
+              placeholder="Select a City"
+            />
+            <label for="inputtext">Học kỳ</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['semester'].invalid &&
+              (_form.controls['semester'].dirty ||
+                _form.controls['semester'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['semester'].errors?.['required']">
+              Học kỳ là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Tiết học tối thiểu -->
+        <div class="field col-12 md:col-3">
+          <span class="p-float-label">
+            <p-inputNumber
+              formControlName="minPeriodPerDay"
+              inputId="minmax"
+              mode="decimal"
+              [min]="0"
+              [max]="15"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              decrementButtonClass="p-button-danger"
+              incrementButtonClass="p-button-success"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+            />
+            <label for="inputtext">Tiết học tối thiểu</label>
+          </span>
+          <small
+            *ngIf="
+              (_form.controls['minPeriodPerDay'].invalid &&
+                (_form.controls['minPeriodPerDay'].dirty ||
+                  _form.controls['minPeriodPerDay'].touched)) ||
+              _form.hasError('periodPerDay')
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['minPeriodPerDay'].errors?.['required']">
+              Tiết học tối thiểu là bắt buộc.
+            </div>
+
+            <div
+              *ngIf="
+                !_form.controls['minPeriodPerDay'].errors?.['required'] &&
+                _form.hasError('periodPerDay')
+              "
+            >
+              Tiết học tối thiểu phải nhỏ hơn hoặc bằng tiết học tối đa
+            </div>
+          </small>
+        </div>
+
+        <div class="field col-12 md:col-3">
+          <span class="p-float-label">
+            <p-inputNumber
+              formControlName="maxPeriodPerDay"
+              inputId="minmax"
+              mode="decimal"
+              [min]="0"
+              [max]="15"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              decrementButtonClass="p-button-danger"
+              incrementButtonClass="p-button-success"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+            />
+            <label for="inputtext">Tiết học tối đa</label>
+          </span>
+          <small
+            *ngIf="
+              (_form.controls['maxPeriodPerDay'].invalid &&
+                (_form.controls['maxPeriodPerDay'].dirty ||
+                  _form.controls['maxPeriodPerDay'].touched)) ||
+              _form.hasError('periodPerDay')
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['maxPeriodPerDay'].errors?.['required']">
+              Tiết học tối đa là bắt buộc.
+            </div>
+
+            <div
+              *ngIf="
+                !_form.controls['maxPeriodPerDay'].errors?.['required'] &&
+                _form.hasError('periodPerDay')
+              "
+            >
+              Tiết học tối đa phải lớn hơn hoặc bằng tiết học tối thiểu
+            </div>
+          </small>
+        </div>
+      </div>
+      <div class="flex justify-content-center mb-1">
+        <button
+          pButton
+          pRipple
+          label="Khởi tạo ràng buộc"
+          class="p-button-success"
+          (click)="onInitiEmptyConstraints()"
+        ></button>
+      </div>
+    </form>
+  </div>
+
+  @if (classes.length > 0 && subjects.length > 0 && schoolYears.length > 0) {
+    <p-tabMenu
+      [model]="items"
+      [activeItem]="activeItem"
+      (activeItemChange)="onActiveItemChange($event)"
+    />
+
+    <div class="card content mb-2">
+      @if (activeItem.label === 'Tiết trống') {
+        @if (classes.length > 0) {
+          <p-toolbar>
+            <div class="p-toolbar-group-start mb-1">
+              <div>
+                <h5 class="p-m-0">
+                  Hãy kéo chọn các ô trên bảng nếu bạn muốn tiết trống
+                </h5>
+
+                <p-dropdown
+                  [options]="schoolShifts"
+                  [(ngModel)]="selectedSchoolShift"
+                  optionLabel="name"
+                  placeholder="Select a City"
+                />
+
+                <ul>
+                  @for (klass of classes; track $index) {
+                    @if (numNoAssignTimetableUnits(klass) < 0) {
+                      <li class="p-error">
+                        {{
+                          'Lớp ' +
+                            klass.name +
+                            ': Tiết trống không hợp lệ - ' +
+                            -numNoAssignTimetableUnits(klass)
+                        }}
+                      </li>
+                    }
+                  }
+
+                  @if (
+                    onCheckTimeTableUnits2Dimensional(
+                      timeTableUnits2Dimensional
+                    ).length > 0
+                  ) {
+                    @for (
+                      item of onCheckTimeTableUnits2Dimensional(
+                        timeTableUnits2Dimensional
+                      );
+                      track $index
+                    ) {
+                      <li class="p-error">{{ item }}</li>
+                    }
+                  }
+                </ul>
+              </div>
+            </div>
+          </p-toolbar>
+
+          <smsedu-timetable-view-full
+            [startAts]="startAts"
+            [classes]="classes"
+            [timeTableUnits2Dimensional]="timeTableUnits2Dimensional"
+            [numSchoolShifts]="selectedSchoolShift.id"
+          />
+        }
+      }
+
+      @if (activeItem.label === 'Tiết đôi') {
+        <smsedu-timetable-create-general-from-subjects-with-double-period
+          [subjectForCreateTimeTableWithDoublePeriod]="
+            subjectForCreateTimeTableWithDoublePeriod
+          "
+        />
+      }
+
+      @if (activeItem.label === 'Phòng thực hành') {
+        <smsedu-timetable-create-general-from-subjects-with-practice-room
+          [subjectForCreateTimeTableWithPracticeRoom]="
+            subjectForCreateTimeTableWithPracticeRoom
+          "
+        />
+      }
+
+      @if (activeItem.label === 'Môn học chung') {
+        <div class="card">
+          <p-toolbar>
+            <div class="p-toolbar-group-start">
+              <div>
+                <h5 class="p-m-0">! Hãy chọn môn học chung tiết</h5>
+
+                <ul>
+                  @for (
+                    subject of subjectForCreateTimeTableWithGeneral;
+                    track $index
+                  ) {
+                    @if (
+                      onCheckSubjectForCreateTimeTableWithGeneral(subject) === 0
+                    ) {
+                      <li class="p-error">
+                        {{
+                          'Môn ' +
+                            subject.subject.name +
+                            ': Chỉ phân công buổi sáng và buổi chiều tối đa - ' +
+                            subject.periodCount
+                        }}
+                      </li>
+                    }
+                  }
+
+                  @if (
+                    onCheckTimeTableWithGeneral(
+                      subjectForCreateTimeTableWithGeneral
+                    ).length > 0
+                  ) {
+                    @for (
+                      item of onCheckTimeTableWithGeneral(
+                        subjectForCreateTimeTableWithGeneral
+                      );
+                      track $index
+                    ) {
+                      <li class="p-error">{{ item }}</li>
+                    }
+                  }
+                </ul>
+              </div>
+            </div>
+          </p-toolbar>
+
+          <smsedu-timetable-create-general-from-subjects
+            [subjectForCreateTimeTableWithGeneral]="
+              subjectForCreateTimeTableWithGeneral
+            "
+          />
+        </div>
+      }
+    </div>
+  }
+</div>

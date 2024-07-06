@@ -1,0 +1,15 @@
+<smsedu-crud
+  [columns]="columns"
+  [data]="result?.data ?? []"
+  [pagination]="pagination"
+  [loading]="loading"
+  [isToolBar]="true"
+  [isCreate]="true"
+  [isUploadFile]="true"
+  [isSelected]="true"
+  title="Danh sách môn học"
+  [searchString]="searchString"
+  [searchText$]="searchText$"
+  [customActions]="customActions"
+  (lazyLoad)="onLoadData($event)"
+/>

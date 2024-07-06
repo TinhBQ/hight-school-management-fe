@@ -11,4 +11,6 @@ export interface IClassDto {
   homeroomTeacher?: ITeacher;
   startYear?: number;
   endYear?: number;
+  periodCount?: number;
+  noAssignTimetableUnits?: number;
 }

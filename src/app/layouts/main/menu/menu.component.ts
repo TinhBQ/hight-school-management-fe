@@ -84,6 +84,11 @@ export class MenuComponent implements OnInit {
         routerLink: paths.smsedu.timetable.root,
         items: [
           {
+            label: 'Tạo',
+            icon: 'pi pi-fw pi-id-card',
+            routerLink: paths.smsedu.timetable.create,
+          },
+          {
             label: 'Chỉnh sửa',
             icon: 'pi pi-fw pi-id-card',
             routerLink: paths.smsedu.timetable.edit,

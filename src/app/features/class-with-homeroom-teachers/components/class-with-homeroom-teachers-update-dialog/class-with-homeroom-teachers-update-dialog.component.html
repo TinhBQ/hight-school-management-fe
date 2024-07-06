@@ -1,0 +1,65 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<!-- * Dialog: Cập nhật giáo viên chủa nhiệm -->
+<p-dialog
+  [(visible)]="dialog"
+  [style]="{ 'min-width': '450px' }"
+  header="Giáo viên chủ nhiệm"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form
+      class="class-form"
+      [formGroup]="_form"
+    >
+      <div class="grid p-fluid mt-3">
+        <!-- * Gaios viên chủ nhiệm -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <span>Giáo viên chủ nhiệm</span>
+            <smsedu-auto-complete
+              [selectedItem]="_form.controls['homeroomTeacher'].value"
+              [suggestions]="teachesUnAssignedHomeroom"
+              [onSearch]="onSearch.bind(this)"
+              [loadData]="loadDataOnLazyLoad.bind(this)"
+              [onDropdownClick]="onDropdownClick.bind(this)"
+              [onSelect]="onSelectTeacher.bind(this)"
+            />
+          </span>
+          <small
+            *ngIf="
+              _form.controls['homeroomTeacher'].invalid &&
+              (_form.controls['homeroomTeacher'].dirty ||
+                _form.controls['homeroomTeacher'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['homeroomTeacher'].errors?.['required']">
+              Giáo viên chủ nhiệm là bắt buộc.
+            </div>
+          </small>
+        </div>
+      </div>
+    </form>
+    `
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Hủy"
+      icon="pi pi-times"
+      class="p-button-outlined p-button-secondary"
+      (click)="onHideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Lưu"
+      icon="pi pi-check"
+      [disabled]="_form.invalid"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

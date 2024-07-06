@@ -12,6 +12,7 @@
         [isToolBar]="true"
         [isSelected]="true"
         title="Đã phân công"
+        [onDeleteCollection]="onDeleteCollection.bind(this)"
         (lazyLoad)="onLoadSubjectsForTeacher($event)"
       />
     </div>
@@ -23,3 +24,5 @@
     </div>
   </ng-template>
 </p-splitter>
+
+<smsedu-subjects-for-teacher-update-is-main (save)="onSave()" />

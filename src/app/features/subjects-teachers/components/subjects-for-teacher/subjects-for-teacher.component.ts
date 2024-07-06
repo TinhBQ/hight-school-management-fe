@@ -15,9 +15,16 @@ import {
 } from '@angular/core';
 
 import { SplitterModule } from 'primeng/splitter';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import {
+  DialogService,
+  DynamicDialogRef,
+  DynamicDialogConfig,
+  DynamicDialogModule,
+} from 'primeng/dynamicdialog';
 
 import { CoreModule } from '@core/core.module';
+import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
+import { MessageNotificationService } from '@core/services/message-notification.service';
 import {
   IColumn,
   IPagination,
@@ -28,6 +35,7 @@ import {
 import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 
 import { SubjectsForTeacherUnassignedComponent } from '../subjects-for-teacher-unassigned/subjects-for-teacher-unassigned.component';
+import { SubjectsForTeacherUpdateIsMainComponent } from '../subjects-for-teacher-update-is-main/subjects-for-teacher-update-is-main.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -38,12 +46,19 @@ import { SubjectsForTeacherUnassignedComponent } from '../subjects-for-teacher-u
     SplitterModule,
     SmseduCrudComponent,
     SubjectsForTeacherUnassignedComponent,
+    SubjectsForTeacherUpdateIsMainComponent,
+    DynamicDialogModule,
   ],
   templateUrl: './subjects-for-teacher.component.html',
-  providers: [SubjectsTeachersService, DynamicDialogConfig],
+  providers: [
+    SubjectsTeachersService,
+    DialogService,
+    ConfirmationDialogService,
+    MessageNotificationService,
+  ],
 })
 export class SubjectsForTeacherComponent implements OnInit {
-  @Input() teacherId: string = '67174939-7dbf-44b7-a94d-42f3cc73457a';
+  @Input() teacherId: string = '';
 
   columns: IColumn[] = [];
 
@@ -61,19 +76,31 @@ export class SubjectsForTeacherComponent implements OnInit {
 
   requestParameters: ISubjectsForTeacherRequestParameters;
 
+  ref: DynamicDialogRef | undefined;
+
   @ViewChild(SmseduCrudComponent)
   smseduCrudComponent: SmseduCrudComponent;
+
+  @ViewChild(SubjectsForTeacherUnassignedComponent)
+  subjectsForTeacherUnassignedComponent: SubjectsForTeacherUnassignedComponent;
+
+  @ViewChild(SubjectsForTeacherUpdateIsMainComponent)
+  subjectsForTeacherUpdateIsMainComponent: SubjectsForTeacherUpdateIsMainComponent;
 
   constructor(
     private subjectsTeachersService: SubjectsTeachersService,
     private config: DynamicDialogConfig,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private confirmationDialogService: ConfirmationDialogService,
+    private messageNotificationService: MessageNotificationService
   ) {}
 
   ngOnInit(): void {
     if (this.config.data && this.config.data.teacherId) {
-      this.teacherId = this.config.data.teacherId; // Lấy classId từ config.data
-      this.requestParameters.teacherId = this.config.data.teacherId;
+      this.teacherId = this.config.data.teacherId;
+      this.requestParameters = {
+        teacherId: this.config.data.teacherId,
+      };
       this.cdr.detectChanges();
     }
 
@@ -83,6 +110,30 @@ export class SubjectsForTeacherComponent implements OnInit {
         this.requestParameters.searchTerm = packageName;
         return this.getSubjectsForTeacher(this.requestParameters);
       });
+
+    this.columns = [
+      { field: 'subject.name', header: 'Môn học', isSort: false },
+      { field: 'isMain', header: 'Môn chính', isSort: false },
+    ];
+
+    this.customActions = [
+      {
+        label: 'Chỉnh sửa',
+        icon: 'pi pi-pencil',
+        color: 'success',
+        onClick: (evnet: Event, data: any) => {
+          this.onShowDialogForEdit(data);
+        },
+      },
+      {
+        label: 'Xóa',
+        icon: 'pi pi-trash',
+        color: 'warning',
+        onClick: (evnet: Event, data: any) => {
+          this.onDelete(evnet, data);
+        },
+      },
+    ];
   }
 
   onLoadSubjectsForTeacher(event: any): void {
@@ -99,12 +150,6 @@ export class SubjectsForTeacherComponent implements OnInit {
         : null,
     };
 
-    this.columns = [
-      { field: 'subject.name', header: 'Giáo viên', isSort: false },
-      { field: 'subject.name', header: 'Môn học', isSort: false },
-      { field: 'isMain', header: 'Môn chính', isSort: false },
-    ];
-
     this.getSubjectsForTeacher(this.requestParameters);
   }
 
@@ -112,6 +157,7 @@ export class SubjectsForTeacherComponent implements OnInit {
     params: ISubjectsForTeacherRequestParameters
   ): void {
     this.loading = true;
+
     this.subjectsTeachersService.find(params).subscribe(
       (response) => {
         this.result = response.result;
@@ -121,7 +167,100 @@ export class SubjectsForTeacherComponent implements OnInit {
       },
       (error) => {
         console.log(error.toString());
+        this.loading = false;
       }
     );
+  }
+
+  onShowDialogForEdit(subjecTeacher: ISubjectsTeachers): void {
+    console.log(subjecTeacher);
+    this.subjectsForTeacherUpdateIsMainComponent._form.setValue({
+      id: subjecTeacher.id,
+      teacher: subjecTeacher.teacher,
+      subject: subjecTeacher.subject,
+      isMain: subjecTeacher.isMain,
+    });
+
+    this.subjectsForTeacherUpdateIsMainComponent.prevIsMain =
+      subjecTeacher.isMain;
+
+    this.subjectsForTeacherUpdateIsMainComponent.dialogVisible = true;
+    this.cdr.detectChanges(); // Mark for change detection
+  }
+
+  onSave(): void {
+    if (this.subjectsForTeacherUpdateIsMainComponent._form.valid) {
+      if (this.subjectsForTeacherUpdateIsMainComponent._form.value.id) {
+        this.subjectsForTeacherUpdateIsMainComponent.onSetDto();
+        this.subjectsTeachersService
+          .update(
+            this.subjectsForTeacherUpdateIsMainComponent._form.value.id,
+            this.subjectsForTeacherUpdateIsMainComponent.subjectTeacherDto
+          )
+          .subscribe(
+            () => {
+              this.smseduCrudComponent.onclear();
+              this.subjectsForTeacherUpdateIsMainComponent.onHideDialog();
+              this.messageNotificationService.showSuccess(
+                `Cập nhật thành công!`
+              );
+            },
+            (error) => {
+              console.log(error.toString());
+              this.messageNotificationService.showError(
+                error.message ?? 'Đã xảy ra lỗi.'
+              );
+            }
+          );
+      }
+    }
+  }
+
+  onDelete(event: Event, subjecTeacher: ISubjectsTeachers): void {
+    this.confirmationDialogService.confirm(event, () => {
+      this.subjectsTeachersService.delete(subjecTeacher.id).subscribe(
+        () => {
+          this.smseduCrudComponent.onclear();
+          this.subjectsForTeacherUnassignedComponent.onCLear();
+          this.messageNotificationService.showSuccess(
+            `Xóa môn học  ${subjecTeacher.subject.name} thành công!`
+          );
+        },
+        (error) => {
+          console.log(error.toString());
+          this.messageNotificationService.showError(
+            error.message ?? 'Đã xảy ra lỗi.'
+          );
+        }
+      );
+    });
+  }
+
+  onClear(): void {
+    this.smseduCrudComponent.onclear();
+  }
+
+  onDeleteCollection(event: Event, subjecTeachers: ISubjectsTeachers[]): void {
+    if (subjecTeachers.length > 0) {
+      this.confirmationDialogService.confirm(event, () => {
+        this.subjectsTeachersService
+          .deleteByIds(subjecTeachers.map((x) => x.id))
+          .subscribe(
+            () => {
+              this.messageNotificationService.showSuccess(
+                `Xóa ${subjecTeachers.length} môn học: ${subjecTeachers.map((x) => x.subject.name).join(', ')} thành công!`
+              );
+              this.smseduCrudComponent.onclear();
+              this.subjectsForTeacherUnassignedComponent.onCLear();
+            },
+            (error) => {
+              console.log(error.toString());
+              this.messageNotificationService.showError(
+                error.message ?? 'Đã xảy ra lỗi.'
+              );
+            }
+          );
+      });
+    }
   }
 }

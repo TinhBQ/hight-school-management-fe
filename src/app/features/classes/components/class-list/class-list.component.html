@@ -9,7 +9,7 @@
   [isUploadFile]="true"
   [isSelected]="true"
   title="Danh sách lớp học"
-  [searchString]="searchClass"
+  [searchString]="searchString"
   [searchText$]="searchText$"
   [onCreate]="onShowDialogForCreate.bind(this)"
   [onDeleteCollection]="onDeleteClasses.bind(this)"
@@ -17,9 +17,12 @@
   (lazyLoad)="onLoadClasses($event)"
   (selectFile)="onSelect($event)"
   (uploadFile)="onUpload($event)"
+  [exportItem]="exportItem"
 />
 
 <smsedu-class-dialog-for-create-update (save)="onSave()" />
+
+<smsedu-class-with-homeroom-teachers-update-dialog (save)="onClear()" />
 
 <!-- * Dialog: Add Class Collection -->
 <smsedu-class-diaglog-for-create-collection

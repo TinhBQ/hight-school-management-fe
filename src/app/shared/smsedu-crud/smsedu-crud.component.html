@@ -1,7 +1,16 @@
 <!-- eslint-disable @angular-eslint/template/elements-content -->
-<div class="grid">
+<div
+  class="t-wrapper"
+  [ngClass]="{
+    'crud-wrapper-toolbar': isToolBar,
+    'crud-wrapper-no-toolbar': !isToolBar
+  }"
+>
   <div class="col-12">
-    <div class="card px-4 py-4">
+    <div
+      class="card"
+      [class.bg-float]="isBgFloat"
+    >
       <!-- * Tooolbar -->
       @if (isToolBar) {
         <p-toolbar styleClass="mb-4">
@@ -48,14 +57,18 @@
                 (onUpload)="onUploadFile($event)"
               ></p-fileUpload>
             }
+
             <!-- @ Export File -->
-            <button
-              pButton
-              pRipple
-              label="Export"
-              icon="pi pi-upload"
-              class="p-button-help"
-            ></button>
+            @if (exportItem?.length > 0) {
+              <div class="export-wrapper">
+                <p-splitButton
+                  label="Xuất file"
+                  icon="pi pi-upload"
+                  (onClick)="exportItem[0].command.call(this)"
+                  [model]="exportItem"
+                />
+              </div>
+            }
           </ng-template>
         </p-toolbar>
       }
@@ -70,7 +83,7 @@
         (onLazyLoad)="onLazyLoad($event)"
         styleClass="p-datatable-gridlines"
         responsiveLayout="scroll"
-        [paginator]="true"
+        [paginator]="isPaginator"
         [rows]="10"
         [totalRecords]="pagination?.totalCount ?? 0"
         [showCurrentPageReport]="true"
@@ -82,6 +95,7 @@
         [rowHover]="true"
         dataKey="id"
       >
+        >
         <!-- ! Caption -->
         <ng-template pTemplate="caption">
           <div
@@ -168,46 +182,103 @@
             @for (col of columns; track $index) {
               <!-- ! Edit Cell -->
               @if (col?.typeEidt) {
-                <td
-                  [class]="'text-center ' + col.class"
-                  [style]="styleWitdth + col.style"
-                  [pEditableColumn]="rowData[col.field]"
-                  [pEditableColumnField]="col.field"
-                >
-                  <p-cellEditor>
-                    <ng-template pTemplate="input">
-                      @if (col?.typeEidt === 'autocomplete') {
-                        <smsedu-auto-complete
-                          [(selectedItem)]="rowData[col.field]"
-                          [currentItem]="rowData"
-                          [suggestions]="cusAutoCompleteColumn.suggestions"
-                          [loadData]="cusAutoCompleteColumn.loadData"
-                          [onSearch]="cusAutoCompleteColumn.onSearch"
-                          [onDropdownClick]="
-                            cusAutoCompleteColumn.onDropdownClick
-                          "
-                          [onSelect]="cusAutoCompleteColumn.onSelect"
-                        />
-                      } @else {
-                        <input
-                          pInputText
-                          type="text"
-                          [(ngModel)]="rowData[col.field]"
-                        />
-                      }
-                    </ng-template>
-                    <ng-template pTemplate="output">
-                      {{ getDataCell(rowData, col) }}
-                    </ng-template>
-                  </p-cellEditor>
-                </td>
+                @if (col?.typeEidt !== 'checkbox') {
+                  <td
+                    [class]="'text-center ' + col.class"
+                    [style]="styleWitdth + col.style"
+                    [pEditableColumn]="rowData[col.field]"
+                    [pEditableColumnField]="col.field"
+                  >
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        @if (col?.typeEidt === 'autocomplete') {
+                          <smsedu-auto-complete
+                            [(selectedItem)]="rowData[col.field]"
+                            [currentItem]="rowData"
+                            [suggestions]="cusAutoCompleteColumn.suggestions"
+                            [loadData]="cusAutoCompleteColumn.loadData"
+                            [onSearch]="cusAutoCompleteColumn.onSearch"
+                            [onDropdownClick]="
+                              cusAutoCompleteColumn.onDropdownClick
+                            "
+                            [onSelect]="cusAutoCompleteColumn.onSelect"
+                          />
+                        } @else if (col?.typeEidt === 'multiSelect') {
+                          <p-multiSelect
+                            [options]="col?.options?.data"
+                            (onChange)="col?.options?.onChange($event, rowData)"
+                            (onFocus)="col?.options?.onFocus($event, rowData)"
+                            [(ngModel)]="rowData[col.field]"
+                            optionLabel="name"
+                            placeholder="Select Cities"
+                            appendTo="body"
+                            scrollHeight="250px"
+                          />
+                        } @else if (col?.typeEidt === 'inputNumber') {
+                          <p-inputNumber
+                            [(ngModel)]="rowData[col.field]"
+                            inputId="minmax"
+                            mode="decimal"
+                            [min]="0"
+                            [max]="15"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            decrementButtonClass="p-button-danger"
+                            incrementButtonClass="p-button-success"
+                            incrementButtonIcon="pi pi-plus"
+                            decrementButtonIcon="pi pi-minus"
+                          />
+                        } @else {
+                          <input
+                            pInputText
+                            type="text"
+                            [(ngModel)]="rowData[col.field]"
+                          />
+                        }
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ getDataCell(rowData, col) }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                } @else {
+                  <td
+                    [class]="'text-center ' + col.class"
+                    [style]="styleWitdth + col.style"
+                  >
+                    <p-checkbox
+                      [(ngModel)]="rowData[col.field]"
+                      [binary]="true"
+                      inputId="binary"
+                    />
+                  </td>
+                }
               } @else {
                 <td
                   [class]="'text-center ' + col.class"
                   [style]="styleWitdth + col.style"
                 >
                   <span class="p-column-title">{{ col.header }}</span>
-                  {{ getDataCell(rowData, col) }}
+                  <div
+                    class="flex align-items-center gap-2"
+                    [ngClass]="{
+                      'justify-content-between': col?.isAction,
+                      'justify-content-center': !col?.isAction
+                    }"
+                  >
+                    {{ getDataCell(rowData, col) }}
+                    @if (col?.isAction) {
+                      <button
+                        pButton
+                        pRipple
+                        icon="pi pi-file-edit"
+                        class="p-button-rounded p-button-outline p-button-secondary"
+                        (click)="
+                          col?.isAction && col?.onAction($event, rowData)
+                        "
+                      ></button>
+                    }
+                  </div>
                 </td>
               }
             }

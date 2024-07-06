@@ -7,6 +7,7 @@ import { CoreModule } from '@core/core.module';
 
 import { MenuComponent } from './menu/menu.component';
 import { BreadcrumbService } from './breadcrumb.service';
+import { FooterComponent } from './footer/footer.component';
 import { ConfigComponent } from './config/config.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
@@ -17,6 +18,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
   imports: [
     CoreModule,
     MenuComponent,
+    FooterComponent,
     TopBarComponent,
     ConfigComponent,
     BreadcrumbComponent,

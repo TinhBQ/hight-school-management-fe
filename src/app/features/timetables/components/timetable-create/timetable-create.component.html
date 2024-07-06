@@ -1,0 +1,184 @@
+<div class="card">
+  <p-stepper>
+    <p-stepperPanel header="Tạo ràng buộc chung">
+      <ng-template
+        pTemplate="content"
+        let-nextCallback="nextCallback"
+        let-index="index"
+      >
+        <div class="col-12">
+          <div
+            class="p-2 border-2 border-dashed surface-border border-round surface-ground"
+          >
+            <smsedu-timetable-create-general
+              [timetableRequestParameters]="timetableRequestParameters"
+              [classes]="classes"
+              [timeTableUnits2Dimensional]="timeTableUnits2Dimensional"
+              [subjects]="subjects"
+              [schoolYears]="schoolYears"
+              [subjectForCreateTimeTableWithPracticeRoom]="
+                subjectForCreateTimeTableWithPracticeRoom
+              "
+              [subjectForCreateTimeTableWithDoublePeriod]="
+                subjectForCreateTimeTableWithDoublePeriod
+              "
+              [subjectForCreateTimeTableWithGeneral]="
+                subjectForCreateTimeTableWithGeneral
+              "
+              (initiEmptyConstraints)="onInitiEmptyConstraints()"
+            />
+          </div>
+        </div>
+        <div class="flex pt-4 justify-content-end">
+          <p-button
+            label="Next"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            (onClick)="onNext(nextCallback)"
+            [disabled]="isDisabled()"
+          />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+
+    <p-stepperPanel header="Tạo ràng buộc riêng">
+      <ng-template
+        pTemplate="content"
+        let-prevCallback="prevCallback"
+        let-nextCallback="nextCallback"
+        let-index="index"
+      >
+        <div class="col-12">
+          <div
+            class="p-2 border-2 border-dashed surface-border border-round surface-ground"
+          >
+            <smsedu-timetable-create-class-private
+              [timeTableUnits]="timeTableUnits"
+              [classes]="classes"
+              [assignments]="assignments"
+            />
+          </div>
+        </div>
+        <div class="flex pt-4 justify-content-between">
+          <p-button
+            label="Back"
+            icon="pi pi-arrow-left"
+            (onClick)="onPrev($event, prevCallback)"
+          />
+          <p-button
+            label="Next"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            (onClick)="nextCallback.emit()"
+          />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Xác nhận ràng buộc">
+      <ng-template
+        pTemplate="content"
+        let-prevCallback="prevCallback"
+        let-index="index"
+      >
+        <div class="col-12">
+          <div
+            class="p-2 border-2 border-dashed surface-border border-round surface-ground"
+          >
+            <smsedu-timetable-create-confirm
+              [timetableRequestParameters]="timetableRequestParameters"
+              [timeTableUnits]="timeTableUnits"
+              [classes]="classes"
+              [subjectDoublePeriod]="subjectForCreateTimeTableWithDoublePeriod"
+              [subjectPracticeRoom]="subjectForCreateTimeTableWithPracticeRoom"
+            />
+          </div>
+        </div>
+        <div class="flex pt-4 justify-content-start">
+          <p-button
+            label="Back"
+            icon="pi pi-arrow-left"
+            (onClick)="prevCallback.emit()"
+          />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+  </p-stepper>
+</div>
+<!--
+<div class="col-12">
+  <div class="card">
+    <smsedu-timetable-for-class />
+
+    <div class="timetable-container">
+      <table class="timetable-edit">
+        <thead>
+          <tr>
+            <th>Thứ</th>
+            <th>Tiết</th>
+            @for (klass of classes; track $index) {
+              <th>{{ klass.name }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody #tableContainer>
+          @for (startAt of startAts; track $index) {
+            <tr>
+              @if (startAt % 10 === 1) {
+                <th
+                  rowspan="10"
+                  class="cell-weekday"
+                >
+                  <div>
+                    <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                  </div>
+                </th>
+              }
+              <th class="cell-startAt">
+                {{ onHandelStartAt(startAt) }}
+              </th>
+              @for (klass of classes; track $index) {
+                <th
+                  class="cell-dnd"
+                  [ngClass]="
+                    onHandelStartAt(startAt) > 5
+                      ? 'cell-dnd-afternoon'
+                      : 'cell-dnd-morning'
+                  "
+                  [class.selected]="
+                    timeTableUnits2Dimensional[klass.name][startAt]
+                      .isNoAssignTimetableUnits
+                  "
+                  [class.hover]="
+                    timeTableUnits2Dimensional[klass.name][startAt]?.isHover
+                  "
+                  (mousedown)="
+                    !isDragging &&
+                      onMouseDown(
+                        timeTableUnits2Dimensional[klass.name][startAt]
+                      )
+                  "
+                  (mouseenter)="
+                    isDragging &&
+                      onMouseEnter(
+                        timeTableUnits2Dimensional[klass.name][startAt]
+                      )
+                  "
+                  (mouseup)="isDragging && onMouseUp()"
+                >
+                  <div>
+                    <div>
+                      {{
+                        timeTableUnits2Dimensional[klass.name][startAt]
+                          ?.subjectName
+                      }}
+                    </div>
+                  </div>
+                </th>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> -->

@@ -1,0 +1,221 @@
+@if (numSchoolShifts === -1 || numberOfClassesSessions(numSchoolShifts) > 0) {
+  <div class="col-12">
+    <div class="card">
+      @if (classes.length > 0) {
+        <div class="timetable-container">
+          <table class="timetable-edit">
+            <thead>
+              <tr>
+                <th>Thứ</th>
+                <th>Tiết</th>
+                @for (klass of getClassForShift(); track $index) {
+                  <th>
+                    {{
+                      klass.name + ' (' + numNoAssignTimetableUnits(klass) + ')'
+                    }}
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody #tableContainer>
+              <!-- Toàn bộ -->
+              @if (numSchoolShifts === -1) {
+                @for (startAt of startAts; track $index) {
+                  <tr>
+                    @if (startAt % 10 === 1) {
+                      <th
+                        rowspan="10"
+                        class="cell-weekday"
+                      >
+                        <div>
+                          <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                        </div>
+                      </th>
+                    }
+                    <th class="cell-startAt">
+                      {{ onHandelStartAt(startAt) }}
+                    </th>
+                    @for (klass of getClassForShift(); track $index) {
+                      <th
+                        class="cell-dnd"
+                        [ngClass]="
+                          onHandelStartAt(startAt) > 5
+                            ? 'cell-dnd-afternoon'
+                            : 'cell-dnd-morning'
+                        "
+                        [class.selected]="
+                          timeTableUnits2Dimensional[klass.name][startAt]
+                            .isNoAssignTimetableUnits
+                        "
+                        [class.hover]="
+                          timeTableUnits2Dimensional[klass.name][startAt]
+                            ?.isHover
+                        "
+                        (mousedown)="
+                          !isDragging &&
+                            viewEdit &&
+                            onMouseDown(
+                              timeTableUnits2Dimensional[klass.name][startAt]
+                            )
+                        "
+                        (mouseenter)="
+                          isDragging &&
+                            viewEdit &&
+                            onMouseEnter(
+                              timeTableUnits2Dimensional[klass.name][startAt]
+                            )
+                        "
+                        (mouseup)="isDragging && viewEdit && onMouseUp()"
+                      >
+                        <div>
+                          <div>
+                            {{
+                              timeTableUnits2Dimensional[klass.name][startAt]
+                                ?.subjectName
+                            }}
+                          </div>
+                        </div>
+                      </th>
+                    }
+                  </tr>
+                }
+              }
+
+              <!--Buổi sáng -->
+              @if (numSchoolShifts === 0 && numberOfClassesSessions(0) > 0) {
+                @for (startAt of startAts; track $index) {
+                  @if (onHandelStartAt(startAt) <= 5) {
+                    <tr>
+                      @if (startAt % 10 === 1) {
+                        <th
+                          rowspan="5"
+                          class="cell-weekday"
+                        >
+                          <div>
+                            <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                          </div>
+                        </th>
+                      }
+                      <th class="cell-startAt">
+                        {{ onHandelStartAt(startAt) }}
+                      </th>
+                      @for (klass of getClassForShift(); track $index) {
+                        <th
+                          class="cell-dnd"
+                          [ngClass]="
+                            onHandelStartAt(startAt) > 5
+                              ? 'cell-dnd-afternoon'
+                              : 'cell-dnd-morning'
+                          "
+                          [class.selected]="
+                            timeTableUnits2Dimensional[klass.name][startAt]
+                              .isNoAssignTimetableUnits
+                          "
+                          [class.hover]="
+                            timeTableUnits2Dimensional[klass.name][startAt]
+                              ?.isHover
+                          "
+                          (mousedown)="
+                            !isDragging &&
+                              viewEdit &&
+                              onMouseDown(
+                                timeTableUnits2Dimensional[klass.name][startAt]
+                              )
+                          "
+                          (mouseenter)="
+                            isDragging &&
+                              viewEdit &&
+                              onMouseEnter(
+                                timeTableUnits2Dimensional[klass.name][startAt]
+                              )
+                          "
+                          (mouseup)="isDragging && viewEdit && onMouseUp()"
+                        >
+                          <div>
+                            <div>
+                              {{
+                                timeTableUnits2Dimensional[klass.name][startAt]
+                                  ?.subjectName
+                              }}
+                            </div>
+                          </div>
+                        </th>
+                      }
+                    </tr>
+                  }
+                }
+              }
+
+              <!--Buổi chiều -->
+              @if (numSchoolShifts === 1 && numberOfClassesSessions(1) > 0) {
+                @for (startAt of startAts; track $index) {
+                  @if (onHandelStartAt(startAt) > 5) {
+                    <tr>
+                      @if (startAt % 10 === 6) {
+                        <th
+                          rowspan="5"
+                          class="cell-weekday"
+                        >
+                          <div>
+                            <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                          </div>
+                        </th>
+                      }
+                      <th class="cell-startAt">
+                        {{ onHandelStartAt(startAt) }}
+                      </th>
+                      @for (klass of getClassForShift(); track $index) {
+                        <th
+                          class="cell-dnd"
+                          [ngClass]="
+                            onHandelStartAt(startAt) > 5
+                              ? 'cell-dnd-afternoon'
+                              : 'cell-dnd-morning'
+                          "
+                          [class.selected]="
+                            timeTableUnits2Dimensional[klass.name][startAt]
+                              .isNoAssignTimetableUnits
+                          "
+                          [class.hover]="
+                            timeTableUnits2Dimensional[klass.name][startAt]
+                              ?.isHover
+                          "
+                          (mousedown)="
+                            !isDragging &&
+                              viewEdit &&
+                              onMouseDown(
+                                timeTableUnits2Dimensional[klass.name][startAt]
+                              )
+                          "
+                          (mouseenter)="
+                            isDragging &&
+                              viewEdit &&
+                              onMouseEnter(
+                                timeTableUnits2Dimensional[klass.name][startAt]
+                              )
+                          "
+                          (mouseup)="isDragging && viewEdit && onMouseUp()"
+                        >
+                          <div>
+                            <div>
+                              {{
+                                timeTableUnits2Dimensional[klass.name][startAt]
+                                  ?.subjectName
+                              }}
+                            </div>
+                          </div>
+                        </th>
+                      }
+                    </tr>
+                  }
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <h5>{{ 'Không có lớp buổi ' + schoolShifts[numSchoolShifts].name }}</h5>
+}
