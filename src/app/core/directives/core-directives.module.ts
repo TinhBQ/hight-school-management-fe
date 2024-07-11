@@ -1,11 +1,13 @@
+import { SplashScreenService } from '@features/splash-screen/services/splash-screen.service';
+
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-  // declarations: [HideDirective],
+  declarations: [],
   imports: [CommonModule],
-  // exports: [HideDirective],
-  providers: [],
+  exports: [],
+  providers: [SplashScreenService],
 })
 
 // eslint-disable-next-line prettier/prettier

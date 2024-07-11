@@ -1,3 +1,5 @@
+<div *appSplashScreen><smsedu-splash-screen></smsedu-splash-screen></div>
+
 <p-toast
   [breakpoints]="{ '768px': { width: '100%', right: '0', left: '0' } }"
   [showTransformOptions]="'translateY(100%)'"
@@ -5,5 +7,7 @@
   [hideTransitionOptions]="'00ms'"
   [showTransformOptions]="'translateX(100%)'"
 ></p-toast>
+
 <p-confirmDialog />
+
 <router-outlet />

@@ -4,12 +4,21 @@ import { ClassService } from '@features/classes/services/class.service';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
 
-import { Input, Output, Component, EventEmitter } from '@angular/core';
+import {
+  Input,
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -33,7 +42,7 @@ import { MessageNotificationService } from '@core/services/message-notification.
     MessageNotificationService,
   ],
 })
-export class ClassDiaglogForCreateCollectionComponent {
+export class ClassDiaglogForCreateCollectionComponent implements AfterViewInit {
   @Input() excelData: any[] = [];
 
   dialog: boolean = false;
@@ -47,8 +56,14 @@ export class ClassDiaglogForCreateCollectionComponent {
   constructor(
     private confirmationDialogService: ConfirmationDialogService,
     private classService: ClassService,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   onClear(): void {
     this.clear.emit();
@@ -56,9 +71,14 @@ export class ClassDiaglogForCreateCollectionComponent {
 
   onRemoveRowData(event: Event, rowData: any): void {
     if (this.excelData.length > 0) {
-      this.confirmationDialogService.confirm(event, () => {
-        this.excelData = this.excelData.filter((x) => x !== rowData);
-      });
+      this.confirmationDialogService.confirm(
+        event,
+        () => {
+          this.excelData = this.excelData.filter((x) => x !== rowData);
+        },
+        null,
+        'Bạn có chắc chắn muốn xóa lớp học ' + rowData.name + '?'
+      );
     } else {
       this.dialog = false;
     }
@@ -77,6 +97,8 @@ export class ClassDiaglogForCreateCollectionComponent {
           endYear: parseInt(item.year.slice(5, 9)),
         };
       }) as IClassDto[];
+
+      this.app.onShowSplashScreenService();
       this.confirmationDialogService.confirm(event, () => {
         this.classService.createCollection(classDtos).subscribe(
           () => {
@@ -86,12 +108,14 @@ export class ClassDiaglogForCreateCollectionComponent {
             this.dialog = false;
             this.excelData = [];
             this.onClear();
+            this.app.onHideSplashScreenService();
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
             this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
+              'Thêm danh sách lớp không thành công'
             );
+            this.app.onHideSplashScreenService();
           }
         );
       });

@@ -15,8 +15,12 @@ import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 
+import { AppComponent } from 'src/app/app.component';
+
+import { generateGUID } from '@core/utils';
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
+import { MessageNotificationService } from '@core/services/message-notification.service';
 
 import { TimetableViewFullComponent } from '../timetable-view-full/timetable-view-full.component';
 
@@ -32,7 +36,11 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
     TagModule,
   ],
   templateUrl: './timetable-create-confirm.component.html',
-  providers: [TimetablesService, ConfirmationDialogService],
+  providers: [
+    TimetablesService,
+    ConfirmationDialogService,
+    MessageNotificationService,
+  ],
 })
 export class TimetableCreateConfirmComponent implements OnInit {
   @Input() timetableRequestParameters: ITimetableRequestParameters;
@@ -53,7 +61,9 @@ export class TimetableCreateConfirmComponent implements OnInit {
 
   constructor(
     private confirmationDialogService: ConfirmationDialogService,
-    private timetablesService: TimetablesService
+    private timetablesService: TimetablesService,
+    public app: AppComponent,
+    private messageNotificationService: MessageNotificationService
   ) {}
 
   ngOnInit(): void {
@@ -98,32 +108,47 @@ export class TimetableCreateConfirmComponent implements OnInit {
   }
 
   onCreateTimeTable(): void {
-    this.timetableRequestParameters = {
-      ...this.timetableRequestParameters,
-      doublePeriodSubjects: this.subjectDoublePeriod,
-      subjectsWithPracticeRoom: this.subjectPracticeRoom,
-      fixedTimetableUnits: this.timeTableUnits.filter(
-        (x) => x.priority === 0 && !!x.teacherId && !!x.subjectId && !!x.startAt
-      ),
-      noAssignTimetableUnits: this.timeTableUnits.filter(
-        (x) => x.isNoAssignTimetableUnits === true
-      ),
-    };
+    this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
+      this.timetableRequestParameters = {
+        ...this.timetableRequestParameters,
 
-    this.timetablesService
-      .createTimeTable(this.timetableRequestParameters)
-      .subscribe(
-        () => {
-          console.log('Tạo thời khóa biểu thành công');
-        },
-        (error) => {
-          console.log(error.toString());
-        }
-      );
+        doublePeriodSubjects: this.subjectDoublePeriod,
+        subjectsWithPracticeRoom: this.subjectPracticeRoom,
+        fixedTimetableUnits: this.timeTableUnits
+          .filter(
+            (x) =>
+              x.priority === 0 && !!x.teacherId && !!x.subjectId && !!x.startAt
+          )
+          .map((x) => ({
+            ...x,
+            id: generateGUID(),
+          })),
+        freeTimetableUnits: this.timeTableUnits
+          .filter((x) => x.isNoAssignTimetableUnits === true)
+          .map((x) => ({
+            ...x,
+            id: generateGUID(),
+          })),
+      };
 
-    console.log(
-      'this.timetableRequestParameters',
-      this.timetableRequestParameters
-    );
+      this.timetablesService
+        .createTimeTable(this.timetableRequestParameters)
+        .subscribe(
+          () => {
+            this.messageNotificationService.showSuccess(
+              'Tạo thời khóa biểu thành công!'
+            );
+            this.app.onHideSplashScreenService();
+          },
+          (error) => {
+            console.log(error.toString());
+            this.messageNotificationService.showSuccess(
+              'Tạo thời khóa biểu không thành công!'
+            );
+            this.app.onHideSplashScreenService();
+          }
+        );
+    });
   }
 }

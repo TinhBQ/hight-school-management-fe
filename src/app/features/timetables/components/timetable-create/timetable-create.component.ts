@@ -31,6 +31,8 @@ import { StepsModule } from 'primeng/steps';
 import { ButtonModule } from 'primeng/button';
 import { StepperModule } from 'primeng/stepper';
 
+import { AppComponent } from 'src/app/app.component';
+
 import { CoreModule } from '@core/core.module';
 import { IPagination, IRequestParameters } from '@core/interfaces';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -105,6 +107,8 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
 
   loadingForSubjects: boolean = false;
 
+  loadingForSubjectsNotSameTeacher: boolean = false;
+
   requestParametersForSubjects: IClassRequestParameters = {
     pageSize: 50,
   };
@@ -122,7 +126,8 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
     private yearService: YearService,
     private assignmentsService: AssignmentsService,
     private cdr: ChangeDetectorRef,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    public app: AppComponent
   ) {}
 
   ngAfterViewInit(): void {
@@ -146,9 +151,24 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
     this.getYears(this.requestParametersForSchoolYears);
   }
 
+  onSplashScreenService(): void {
+    if (
+      this.loadingForAssignments ||
+      this.loadingForClasses ||
+      this.loadingForSubjects ||
+      this.loadingSchoolYears ||
+      this.loadingForSubjectsNotSameTeacher
+    ) {
+      this.app.onShowSplashScreenService();
+    } else {
+      this.app.onHideSplashScreenService();
+    }
+  }
+
   // * Get Data Years
   private getYears(params?: IRequestParameters): void {
     this.loadingSchoolYears = true;
+    this.onSplashScreenService();
     this.yearService.getYears(params).subscribe(
       (response) => {
         this.schoolYears = response.result.data.map((y) => ({
@@ -168,13 +188,13 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
           this.getYears(this.requestParametersForSchoolYears);
         } else {
           this.loadingSchoolYears = false;
+          this.onSplashScreenService();
         }
-
-        this.cdr.detectChanges();
       },
       (error) => {
         console.log(error.toString());
         this.loadingSchoolYears = false;
+        this.onSplashScreenService();
       }
     );
   }
@@ -182,6 +202,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
   // * Get Data Classes
   private getAllClasses(params?: IAssignmentRequestParameters): void {
     this.loadingForClasses = true;
+    this.onSplashScreenService();
     this.assignmentsService.getClasses(params).subscribe(
       (response) => {
         this.classes = response.data.sort((a, b) => {
@@ -202,11 +223,12 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
 
         this.loadingForClasses = false;
 
-        this.cdr.detectChanges();
+        this.onSplashScreenService();
       },
       (error) => {
         console.log(error.toString());
         this.loadingForClasses = false;
+        this.onSplashScreenService();
       }
     );
   }
@@ -239,6 +261,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
   // * Get Data Subjects
   private getAllSubjects(params?: IClassRequestParameters): void {
     this.loadingForSubjects = true;
+    this.onSplashScreenService();
     this.assignmentsService.getSubjects(params).subscribe(
       (response) => {
         this.subjects = response.data;
@@ -247,27 +270,32 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
           .subjects as ISubjectForCreateTimeTableWithPracticeRoom[];
         this.subjectForCreateTimeTableWithDoublePeriod = this
           .subjects as ISubjectForCreateTimeTableWithDoublePeriod[];
+
+        this.loadingForSubjects = false;
+        this.onSplashScreenService();
       },
       (error) => {
         console.log(error.toString());
-        this.loadingForSubjects = true;
+        this.loadingForSubjects = false;
+        this.onSplashScreenService();
       }
     );
   }
 
   // * Get Data Subjects
   private getSubjectsNotSameTeacher(params?: IRequestParameters): void {
-    this.loadingForSubjects = true;
+    this.loadingForSubjectsNotSameTeacher = true;
     this.assignmentsService.getSubjectsNotSameTeacher(params).subscribe(
       (response) => {
         this.subjectForCreateTimeTableWithGeneral = response.data;
 
-        this.loadingForSubjects = false;
-        this.cdr.detectChanges();
+        this.loadingForSubjectsNotSameTeacher = false;
+        this.onSplashScreenService();
       },
       (error) => {
         console.log(error.toString());
-        this.loadingForSubjects = true;
+        this.loadingForSubjectsNotSameTeacher = true;
+        this.onSplashScreenService();
       }
     );
   }
@@ -300,8 +328,6 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
     this.getAllSubjects(this.requestParametersForClasses);
 
     this.getSubjectsNotSameTeacher(this.requestParametersForClasses);
-
-    this.cdr.detectChanges();
   }
 
   isDisabled(): boolean {
@@ -313,6 +339,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
 
   onNext(actionNext: any): void {
     this.loadingForAssignments = true;
+    this.onSplashScreenService();
 
     const handelTimeTableUnits2Dimensional = this.timeTableUnits2Dimensional;
 
@@ -428,12 +455,15 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
 
           this.timeTableUnits = result;
 
-          actionNext.emit();
           this.loadingForAssignments = false;
+          this.onSplashScreenService();
+
+          actionNext.emit();
         },
         (error) => {
           console.log(error.toString());
           this.loadingForAssignments = false;
+          this.onSplashScreenService();
         }
       );
   }
@@ -441,12 +471,13 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onPrev(event: any, prevCallback: any) {
     this.confirmationDialogService.confirm(event, () => {
-      prevCallback.emit();
       this.getAllClasses(this.requestParametersForClasses);
 
       this.getAllSubjects(this.requestParametersForClasses);
 
       this.getSubjectsNotSameTeacher(this.requestParametersForClasses);
+
+      prevCallback.emit();
     });
   }
 }

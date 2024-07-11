@@ -5,8 +5,8 @@ export interface ITimetableUnit extends ITimetableUnitDto {
 
 export interface ITimetableUnitDto {
   priority?: number;
-  classId: string;
-  className: string;
+  classId?: string;
+  className?: string;
   teacherId?: string;
   teacherName?: string;
   subjectId?: string;

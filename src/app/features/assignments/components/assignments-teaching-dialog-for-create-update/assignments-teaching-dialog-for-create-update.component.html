@@ -1,0 +1,231 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<p-dialog
+  [(visible)]="isDialog"
+  [style]="{ width: '450px' }"
+  header="Phân công giảng dạy"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form
+      class="class-form"
+      [formGroup]="_form"
+    >
+      <div class="grid p-fluid mt-3">
+        <!-- * Năm học -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="schoolYears"
+              formControlName="year"
+              optionLabel="name"
+              placeholder="Select a City"
+            />
+            <label for="inputtext">Năm học</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['year'].invalid &&
+              (_form.controls['year'].dirty || _form.controls['year'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['year'].errors?.['required']">
+              Năm học là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Học kỳ -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="semesterData"
+              formControlName="semester"
+              optionLabel="name"
+              placeholder="Select a City"
+            />
+            <label for="inputtext">Học kỳ</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['semester'].invalid &&
+              (_form.controls['semester'].dirty ||
+                _form.controls['semester'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['semester'].errors?.['required']">
+              Học kỳ là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Lớp học -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="classes"
+              optionLabel="name"
+              formControlName="class"
+              placeholder="Chọn môn học"
+              appendTo="body"
+              (onChange)="onChangeClass($event)"
+            />
+            <label for="inputtext">Môn học</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['class'].invalid &&
+              (_form.controls['class'].dirty || _form.controls['class'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['class'].errors?.['required']">
+              Lớp học là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Buổi -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="schoolShifts"
+              formControlName="schoolShift"
+              optionLabel="name"
+              placeholder="Select a City"
+            />
+            <label for="inputtext">Buổi</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['schoolShift'].invalid &&
+              (_form.controls['schoolShift'].dirty ||
+                _form.controls['schoolShift'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['schoolShift'].errors?.['required']">
+              Buổi là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <!-- * Giáo viên -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="teachers"
+              optionLabel="fullName"
+              formControlName="teacher"
+              placeholder="Chọn giáo viên"
+              (onChange)="onChangeTeacher($event)"
+              appendTo="body"
+            />
+            <label for="inputtext">Giáo viên</label>
+          </span>
+          <small
+            *ngIf="
+              _form.controls['teacher'].invalid &&
+              (_form.controls['teacher'].dirty ||
+                _form.controls['teacher'].touched)
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['teacher'].errors?.['required']">
+              Giáo viên là bắt buộc.
+            </div>
+          </small>
+        </div>
+
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="subjects"
+              optionLabel="name"
+              formControlName="subject"
+              placeholder="Chọn môn học"
+              (onChange)="onChangeSubject($event)"
+              appendTo="body"
+            />
+            <label for="inputtext">Môn học</label>
+          </span>
+          <small
+            *ngIf="
+              (_form.controls['subject'].invalid &&
+                (_form.controls['subject'].dirty ||
+                  _form.controls['subject'].touched)) ||
+              isCheckSubjectsEmpty()
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['subject'].errors?.['required']">
+              Môn học là bắt buộc.
+            </div>
+
+            <div *ngIf="isCheckSubjectsEmpty()">Vui lòng chọn Giáo viên</div>
+          </small>
+        </div>
+
+        <!-- * Tiết học/Tuần -->
+        <div class="field col-12">
+          <span class="p-float-label">
+            <p-inputNumber
+              formControlName="periodCount"
+              inputId="minmax"
+              mode="decimal"
+              [min]="0"
+              [max]="10"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              decrementButtonClass="p-button-danger"
+              incrementButtonClass="p-button-success"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+            />
+            <label for="inputtext">Tiết học/Tuần</label>
+          </span>
+          <small
+            *ngIf="
+              (_form.controls['periodCount'].invalid &&
+                (_form.controls['periodCount'].dirty ||
+                  _form.controls['periodCount'].touched)) ||
+              onCheckPeriodCount(_form.controls['periodCount'].value).length > 0
+            "
+            class="block p-error mt-2"
+          >
+            <div *ngIf="_form.controls['periodCount'].errors?.['required']">
+              Tiết học/Tuần là bắt buộc.
+            </div>
+            @for (
+              item of onCheckPeriodCount(_form.controls['periodCount'].value);
+              track $index
+            ) {
+              <div>{{ item }}</div>
+            }
+          </small>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Hủy"
+      icon="pi pi-times"
+      class="p-button-outlined p-button-secondary"
+      (click)="onHideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Lưu"
+      icon="pi pi-check"
+      [disabled]="_form.invalid"
+      (click)="onSave()"
+    ></button>
+  </ng-template>
+</p-dialog>

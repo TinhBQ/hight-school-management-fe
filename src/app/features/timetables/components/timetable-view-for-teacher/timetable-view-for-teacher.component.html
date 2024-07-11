@@ -1,0 +1,73 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="">
+      <p-toolbar styleClass="mb-4 p-4">
+        <!-- ! Action Buttons: Create, Delete -->
+        <ng-template pTemplate="left">
+          <p-dropdown
+            [options]="teachers"
+            [(ngModel)]="selectTeacher"
+            optionLabel="shortName"
+            placeholder="Chọn lớp"
+            (onChange)="onTeacherChange($event)"
+          />
+        </ng-template>
+
+        <!-- ! Action Buttons: Upload, Export -->
+        <ng-template pTemplate="right">
+          <!-- @ Export File -->
+          <button
+            pButton
+            pRipple
+            label="Export"
+            icon="pi pi-upload"
+            class="p-button-help"
+          ></button>
+        </ng-template>
+      </p-toolbar>
+
+      <div class="timetable-view-container">
+        <table class="timetable-view-morning">
+          <thead>
+            <tr>
+              <th>Tiết</th>
+              <th>Thời gian</th>
+              @for (num of numWeekdays; track $index) {
+                <th>{{ 'Thứ ' + num }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (startAt of startAtsInDay; track $index) {
+              <tr>
+                <th class="cell-weekday">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                <th class="cell-startAt">
+                  {{ getTeachingTimeName(onHandelStartAt(startAt)) }}
+                </th>
+                @for (num of numWeekdays; track $index) {
+                  <th
+                    class="cell-dnd"
+                    [ngClass]="
+                      onHandelStartAt(startAt) > 5
+                        ? 'cell-dnd-afternoon'
+                        : 'cell-dnd-morning'
+                    "
+                  >
+                    <div>
+                      <div>
+                        {{ getNameAssignment(timetableUnits[num][startAt]) }}
+                      </div>
+                    </div>
+                  </th>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

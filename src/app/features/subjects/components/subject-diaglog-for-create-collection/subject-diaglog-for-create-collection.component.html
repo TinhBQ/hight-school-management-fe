@@ -1,0 +1,106 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<p-dialog
+  [(visible)]="dialog"
+  [style]="{ minWidth: '450px' }"
+  header="Danh sách thêm môn học"
+  [modal]="true"
+  class="p-fluid"
+>
+  <p-table
+    #dtAddClasses
+    [value]="excelData"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-gridlines"
+  >
+    <ng-template pTemplate="caption">
+      <div
+        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-2"
+      >
+        <div>
+          <h5 class="m-0">Tổng: {{ excelData.length }} môn học</h5>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            pButton
+            pRipple
+            label="Thêm danh sách"
+            icon="pi pi-plus"
+            class="p-button-success"
+            (click)="onSaveClasses($event)"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="text-center">Môn học</th>
+        <th class="text-center">Ký hiệu</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-data
+      let-editing="editing"
+    >
+      <tr>
+        <!-- * Môn học -->
+        <td
+          [pEditableColumn]="data.name"
+          pEditableColumnField="code"
+          class="text-center"
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="data.name"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              <span class="text-center">
+                {{ data.name }}
+              </span>
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <!-- * Ký hiệ -->
+        <td
+          [pEditableColumn]="data.shortName"
+          pEditableColumnField="code"
+          class="text-center"
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="data.shortName"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              <span class="text-center">
+                {{ data.shortName }}
+              </span>
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td class="text-center">
+          <!-- @ Delete -->
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="onRemoveRowData($event, data)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

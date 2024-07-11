@@ -26,9 +26,11 @@ export const paths = {
       root: `${ROOTS.SMSEDU}/assignment`,
       teacherLeader: `${ROOTS.SMSEDU}/assignment/teacher-leader`,
       subject: `${ROOTS.SMSEDU}/assignment/subject`,
+      teaching: `${ROOTS.SMSEDU}/assignment/teaching`,
     },
     timetable: {
       root: `${ROOTS.SMSEDU}/timetable`,
+      list: `${ROOTS.SMSEDU}/timetable/list`,
       create: `${ROOTS.SMSEDU}/timetable/create`,
       edit: `${ROOTS.SMSEDU}/timetable/edit`,
       view: `${ROOTS.SMSEDU}/timetable/view`,

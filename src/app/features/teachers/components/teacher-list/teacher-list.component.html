@@ -15,6 +15,14 @@
   [onCreate]="onShowDialogForCreate.bind(this)"
   [onDeleteCollection]="onDeleteColection.bind(this)"
   [customActions]="customActions"
+  [exportItem]="exportItem"
+  (selectFile)="onSelect($event)"
+  (uploadFile)="onUpload($event)"
 />
 
 <smsedu-teacher-dialog-for-create-update (save)="onSave()" />
+
+<smsedu-teacher-diaglog-for-create-collection
+  [excelData]="excelData"
+  (clear)="onClear()"
+/>

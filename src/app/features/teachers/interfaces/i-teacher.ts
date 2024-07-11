@@ -11,4 +11,5 @@ export interface ITeacherDto {
   middleName?: string;
   lastName?: string;
   subjectTeachers?: ISubjectsTeachers[];
+  periodCount?: number;
 }

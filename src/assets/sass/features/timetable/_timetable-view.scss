@@ -1,5 +1,7 @@
 .timetable-view-container {
-  font-size: 13px;
+  font-size: 11px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 
   .timetable-view-morning {
     width: 100%;
@@ -51,5 +53,11 @@
         cursor: pointer;
       }
     }
+  }
+}
+
+.timetable-view {
+  .card {
+    border: 1px solid #dee2e6;
   }
 }

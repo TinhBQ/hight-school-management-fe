@@ -1,28 +1,349 @@
-<div class="col-12">
-  <div class="card">
-    <form
-      class="flex flex-row gap-3 mb-1"
-      [formGroup]="formGroup"
-    >
-      <div>Chế độ xem</div>
-      <div
-        *ngFor="let item of viewMode"
-        class="field-checkbox"
-      >
-        <p-radioButton
-          [inputId]="item.key"
-          [value]="item"
-          formControlName="selectedCategory"
-        />
-        <label
-          [for]="item.key"
-          class="ml-2"
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="card flex flex-column gap-2">
+  <button
+    pButton
+    pRipple
+    label="Kiểm tra và lưu"
+    (click)="onSwap()"
+  ></button>
+  @if (isCheck) {
+    <p-messages severity="success">
+      <ng-template pTemplate>
+        <div
+          class="w-full flex flex-column gap-2 align-items-center justify-content-center"
         >
-          {{ item.name }}
-        </label>
-      </div>
-    </form>
+          <div class="ml-2">Đổi được</div>
+          <button
+            pButton
+            pRipple
+            label="Đổi"
+            class="p-button-success"
+            (click)="onSwap()"
+          ></button>
+        </div>
+      </ng-template>
+    </p-messages>
+  } @else {
+    <p-messages severity="warn">
+      <ng-template pTemplate>
+        <div
+          class="w-full flex flex-column gap-2 align-items-center justify-content-center"
+        >
+          <div class="ml-2">Không đổi được</div>
+        </div>
+      </ng-template>
+    </p-messages>
+  }
 
+  <!-- *Lớp học -->
+  <div class="flex flex-column justify-content-center gap-2">
+    <div class="flex flex-row gap-2 justify-content-center">
+      <span class="p-float-label">
+        <p-dropdown
+          [options]="classes"
+          [(ngModel)]="selectedClass"
+          optionLabel="name"
+          placeholder="Chọn lớp"
+          (onChange)="onClassChange($event)"
+        />
+        <label for="inputtext">Lớp học</label>
+      </span>
+    </div>
+
+    <div class="flex flex-row">
+      <div class="col-6">
+        <div class="timetable-view-container">
+          <table class="timetable-view-morning">
+            <thead>
+              <tr>
+                <th>Tiết</th>
+                <th>Thời gian</th>
+                @for (num of numWeekdays; track $index) {
+                  <th>{{ 'Thứ ' + num }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (startAt of startAtsInDay; track $index) {
+                <tr>
+                  <th class="cell-weekday">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  <th class="cell-startAt">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  @for (num of numWeekdays; track $index) {
+                    <th
+                      class="cell-dnd"
+                      [ngClass]="
+                        onHandelStartAt(startAt) > 5
+                          ? 'cell-dnd-afternoon'
+                          : 'cell-dnd-morning'
+                      "
+                      (click)="
+                        onCellClickClass1(
+                          $event,
+                          timetableUnitsForClass[num][startAt],
+                          num,
+                          startAt
+                        )
+                      "
+                      [class.select1]="
+                        choose1?.numWeekday === num &&
+                        choose1?.startAt === startAt
+                      "
+                      [class.select2]="
+                        choose2?.numWeekday === num &&
+                        choose2?.startAt === startAt
+                      "
+                    >
+                      <div>
+                        <div>
+                          {{
+                            getNameAssignment(
+                              timetableUnitsForClass[num][startAt]
+                            )
+                          }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <div class="timetable-view-container">
+          <table class="timetable-view-morning">
+            <thead>
+              <tr>
+                <th>Tiết</th>
+                <th>Thời gian</th>
+                @for (num of numWeekdays; track $index) {
+                  <th>{{ 'Thứ ' + num }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (startAt of startAtsInDay; track $index) {
+                <tr>
+                  <th class="cell-weekday">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  <th class="cell-startAt">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  @for (num of numWeekdays; track $index) {
+                    <th
+                      class="cell-dnd"
+                      [ngClass]="
+                        onHandelStartAt(startAt) > 5
+                          ? 'cell-dnd-afternoon'
+                          : 'cell-dnd-morning'
+                      "
+                      (click)="
+                        onCellClickClass2(
+                          $event,
+                          timetableUnitsForClass[num][startAt],
+                          num,
+                          startAt
+                        )
+                      "
+                      [class.select1]="
+                        choose1?.numWeekday === num &&
+                        choose1?.startAt === startAt
+                      "
+                      [class.select2]="
+                        choose2?.numWeekday === num &&
+                        choose2?.startAt === startAt
+                      "
+                    >
+                      <div>
+                        <div>
+                          {{
+                            getNameAssignment(
+                              timetableUnitsForClass[num][startAt]
+                            )
+                          }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--* Giáo viên -->
+  <div class="flex">
+    @if (timetableUnitsForTeacher1.length > 0) {
+      <div
+        class="col-6 flex flex-column align-items-center justify-content-center"
+      >
+        <span class="p-float-label">
+          <p-dropdown
+            [options]="teachers"
+            [(ngModel)]="selectedTeacher1"
+            optionLabel="shortName"
+            placeholder="Chọn lớp"
+            [disabled]="true"
+          />
+          <label for="inputtext">Giáo viên 1</label>
+        </span>
+
+        <div class="col-12 timetable-view-container">
+          <table class="timetable-view-morning">
+            <thead>
+              <tr>
+                <th>Tiết</th>
+                <th>Thời gian</th>
+                @for (num of numWeekdays; track $index) {
+                  <th>{{ 'Thứ ' + num }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (startAt of startAtsInDay; track $index) {
+                <tr>
+                  <th class="cell-weekday">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  <th class="cell-startAt">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  @for (num of numWeekdays; track $index) {
+                    <th
+                      class="cell-dnd"
+                      [ngClass]="
+                        onHandelStartAt(startAt) > 5
+                          ? 'cell-dnd-afternoon'
+                          : 'cell-dnd-morning'
+                      "
+                      [class.select1]="
+                        choose1?.numWeekday === num &&
+                        choose1?.startAt === startAt
+                      "
+                      [class.select2]="
+                        choose2?.numWeekday === num &&
+                        choose2?.startAt === startAt
+                      "
+                    >
+                      <div>
+                        <div>
+                          {{
+                            getNameAssignmentTeacher(
+                              timetableUnitsForTeacher1[num][startAt]
+                            )
+                          }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    } @else {
+      <div class="col-6">
+        <p-messages severity="warn">
+          <ng-template pTemplate>
+            <div class="ml-2">Vui lòng chọn giáo viên ở bảng trên.</div>
+          </ng-template>
+        </p-messages>
+      </div>
+    }
+
+    @if (timetableUnitsForTeacher2.length > 0) {
+      <div
+        class="col-6 flex flex-column align-items-center justify-content-center"
+      >
+        <span class="p-float-label">
+          <p-dropdown
+            [options]="teachers"
+            [(ngModel)]="selectedTeacher2"
+            optionLabel="shortName"
+            placeholder="Chọn Giáo viên"
+            [disabled]="true"
+          />
+          <label for="inputtext">Giáo viên 2</label>
+        </span>
+        <div class="col-12 timetable-view-container">
+          <table class="timetable-view-morning">
+            <thead>
+              <tr>
+                <th>Tiết</th>
+                <th>Thời gian</th>
+                @for (num of numWeekdays; track $index) {
+                  <th>{{ 'Thứ ' + num }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (startAt of startAtsInDay; track $index) {
+                <tr>
+                  <th class="cell-weekday">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  <th class="cell-startAt">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  @for (num of numWeekdays; track $index) {
+                    <th
+                      class="cell-dnd"
+                      [ngClass]="
+                        onHandelStartAt(startAt) > 5
+                          ? 'cell-dnd-afternoon'
+                          : 'cell-dnd-morning'
+                      "
+                      [class.select1]="
+                        choose1?.numWeekday === num &&
+                        choose1?.startAt === startAt
+                      "
+                      [class.select2]="
+                        choose2?.numWeekday === num &&
+                        choose2?.startAt === startAt
+                      "
+                    >
+                      <div>
+                        <div>
+                          {{
+                            getNameAssignmentTeacher(
+                              timetableUnitsForTeacher2[num][startAt]
+                            )
+                          }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    } @else {
+      <div class="col-6">
+        <p-messages severity="warn">
+          <ng-template pTemplate>
+            <div class="ml-2">Vui lòng chọn giáo viên ở bảng trên.</div>
+          </ng-template>
+        </p-messages>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- <div class="col-12">
+  <div class="card">
     <div class="timetable-container">
       <table class="timetable-edit">
         <thead>
@@ -30,7 +351,7 @@
             <th>Thứ</th>
             <th>Tiết</th>
             @for (klass of classes; track $index) {
-              <th>{{ klass?.className }}</th>
+              <th>{{ klass?.name }}</th>
             }
           </tr>
         </thead>
@@ -54,11 +375,11 @@
                 <th
                   pDraggable
                   (onDragStart)="
-                    onDragStart(timetableUnits[klass.className][startAt])
+                    onDragStart(timetableUnits[klass.name][startAt])
                   "
                   (onDragEnd)="onDragEnd()"
                   pDroppable
-                  (onDrop)="onDrop(timetableUnits[klass.className][startAt])"
+                  (onDrop)="onDrop(timetableUnits[klass.name][startAt])"
                   class="cell-dnd"
                   [ngClass]="
                     onHandelStartAt(startAt) > 5
@@ -68,9 +389,7 @@
                 >
                   <div>
                     <div>
-                      {{
-                        timetableUnits[klass.className][startAt]?.subjectName
-                      }}
+                      {{ timetableUnits[klass.name][startAt]?.subjectName }}
                     </div>
                   </div>
                 </th>
@@ -81,4 +400,4 @@
       </table>
     </div>
   </div>
-</div>
+</div> -->

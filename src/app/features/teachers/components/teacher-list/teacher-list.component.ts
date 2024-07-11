@@ -1,19 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { read, utils, WorkBook, WorkSheet } from 'xlsx';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ITeacher } from '@features/teachers/interfaces/i-teacher';
 import { TeacherService } from '@features/teachers/services/teacher.service';
 import { GetSubjectNamesForTeachersPipe } from '@features/subjects-teachers/pipes/get-subject-names-for-teachers.pipe';
 import { SubjectsForTeacherComponent } from '@features/subjects-teachers/components/subjects-for-teacher/subjects-for-teacher.component';
 
-import { OnInit, Component, ViewChild } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
 import {
   DialogService,
   DynamicDialogRef,
   DynamicDialogModule,
 } from 'primeng/dynamicdialog';
 
+import { AppComponent } from 'src/app/app.component';
+
 import { CoreModule } from '@core/core.module';
+import { TableExportService } from '@core/services/table-export.service';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
 import {
@@ -27,6 +38,7 @@ import {
 import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 
 import { TeacherDialogForCreateUpdateComponent } from '../teacher-dialog-for-create-update/teacher-dialog-for-create-update.component';
+import { TeacherDiaglogForCreateCollectionComponent } from '../teacher-diaglog-for-create-collection/teacher-diaglog-for-create-collection.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -38,6 +50,7 @@ import { TeacherDialogForCreateUpdateComponent } from '../teacher-dialog-for-cre
     DynamicDialogModule,
     GetSubjectNamesForTeachersPipe,
     TeacherDialogForCreateUpdateComponent,
+    TeacherDiaglogForCreateCollectionComponent,
   ],
   templateUrl: './teacher-list.component.html',
   providers: [
@@ -45,16 +58,21 @@ import { TeacherDialogForCreateUpdateComponent } from '../teacher-dialog-for-cre
     ConfirmationDialogService,
     TeacherService,
     DialogService,
+    TableExportService,
   ],
 })
-export class TeacherListComponent implements OnInit {
+export class TeacherListComponent implements OnInit, AfterViewInit {
   columns: IColumn[] = [];
+
+  excelData: any[] = [];
 
   result: IResponseBase<ITeacher[]>;
 
   pagination: IPagination;
 
   requestParameters: IRequestParameters;
+
+  requestParametersForExport: IRequestParameters;
 
   loading = false;
 
@@ -64,6 +82,8 @@ export class TeacherListComponent implements OnInit {
 
   customActions: ICustomAction[] = [];
 
+  exportItem: MenuItem[] = [];
+
   ref: DynamicDialogRef | undefined;
 
   @ViewChild(SmseduCrudComponent)
@@ -72,11 +92,17 @@ export class TeacherListComponent implements OnInit {
   @ViewChild(TeacherDialogForCreateUpdateComponent)
   teacherDialogForCreateUpdateComponent: TeacherDialogForCreateUpdateComponent;
 
+  @ViewChild(TeacherDiaglogForCreateCollectionComponent)
+  teacherDiaglogForCreateCollectionComponent: TeacherDiaglogForCreateCollectionComponent;
+
   constructor(
     private teacherService: TeacherService,
     private messageNotificationService: MessageNotificationService,
     private confirmationDialogService: ConfirmationDialogService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent,
+    private tableExportService: TableExportService
   ) {}
 
   ngOnInit(): void {
@@ -91,6 +117,7 @@ export class TeacherListComponent implements OnInit {
     this.columns = [
       { field: 'fullName', header: 'Họ và tên', isSort: true },
       { field: 'shortName', header: 'Ký hiệu', isSort: true },
+      { field: 'periodCount', header: 'Số tiết/Tuần', isSort: true },
       {
         field: 'subjectTeachers',
         header: 'Môn Giảng dạy',
@@ -114,7 +141,7 @@ export class TeacherListComponent implements OnInit {
         color: 'blue',
         onClick: (evnet: Event, data: any) => {
           this.ref = this.dialogService.open(SubjectsForTeacherComponent, {
-            header: `Danh sách phân công môn học của Giao viên ${data.fullName}`,
+            header: `Phân công môn giảng dạy - Giáo viên ${data.fullName}`,
             width: '90%',
             maximizable: true,
             data: {
@@ -133,6 +160,27 @@ export class TeacherListComponent implements OnInit {
         },
       },
     ];
+
+    this.exportItem = [
+      {
+        label: 'XLS',
+        icon: 'pi pi-fw pi-file-excel',
+        command: () => {
+          this.onExportExcel();
+        },
+      },
+      {
+        label: 'PDF',
+        icon: 'pi pi-fw pi-file-pdf',
+        command: () => {
+          this.onExportPDF();
+        },
+      },
+    ];
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   onLoadTeachers(event: any): void {
@@ -271,5 +319,138 @@ export class TeacherListComponent implements OnInit {
         );
       });
     }
+  }
+
+  // #region -- Handel Export Data --
+  // @ Acition: Export Excel
+  onExportExcel(): void {
+    this.requestParametersForExport = {
+      ...this.requestParameters,
+      pageNumber: 1,
+      pageSize: this.pagination.totalCount,
+    };
+
+    this.teacherService.find(this.requestParametersForExport).subscribe(
+      (response) => {
+        const dataExport = response.result.data.map((x) => ({
+          id: x.id,
+          fullName: x.fullName,
+          shortName: x.shortName,
+          periodCount: x.periodCount,
+          subjectTeacherNames:
+            x.subjectTeachers.length > 0
+              ? x.subjectTeachers.map((item) => item?.subject?.name).join(', ')
+              : 'Chưa phân công',
+        }));
+
+        this.tableExportService.exportExcel(
+          dataExport.map((item: any) => {
+            return {
+              'Họ và tên': item.fullName,
+              'Ký hiệu': item.shortName,
+              'Số tiết/tuần': item.periodCount,
+              'Môn giảng dạy': item.subjectTeacherNames,
+            };
+          }),
+          'classes'
+        );
+      },
+      (error) => {
+        console.log(error.toString());
+      }
+    );
+  }
+
+  // @ Acition: Export PDf
+  onExportPDF(): void {
+    this.requestParametersForExport = {
+      ...this.requestParameters,
+      pageNumber: 1,
+      pageSize: this.pagination.totalCount,
+    };
+
+    this.teacherService.find(this.requestParametersForExport).subscribe(
+      (response) => {
+        const headers = this.columns.map((col) => col.header);
+
+        const rows = response.result.data
+          .map((x) => ({
+            id: x.id,
+            fullName: x.fullName,
+            shortName: x.shortName,
+            periodCount: x.periodCount,
+            subjectTeacherNames:
+              x.subjectTeachers.length > 0
+                ? x.subjectTeachers
+                    .map((item) => item?.subject?.name)
+                    .join(', ')
+                : 'Chưa phân công',
+          }))
+          .map((row) =>
+            this.columns.map((col) =>
+              col.field === 'subjectTeachers'
+                ? row.subjectTeacherNames
+                : row[col.field]
+            )
+          );
+
+        console.log('rows', rows);
+
+        this.tableExportService.exportPdf(
+          headers,
+          rows,
+          'teacher',
+          'Danh sách giáo viên'
+        );
+      },
+      (error) => {
+        console.log(error.toString());
+      }
+    );
+  }
+  // #endregion
+
+  // @ Acition: Select file excel for add to classes
+  onSelect(event: any): void {
+    this.excelData = [];
+
+    for (const file of event.files) {
+      const reader: FileReader = new FileReader();
+
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      reader.onload = (e: any) => {
+        const binaryString = e.target.result;
+        const workbook: WorkBook = read(binaryString, {
+          type: 'binary',
+        });
+        const worksheetName: string = workbook.SheetNames[0];
+        const worksheet: WorkSheet = workbook.Sheets[worksheetName];
+        this.excelData = utils
+          .sheet_to_json(worksheet, {
+            raw: true,
+          })
+          .filter(
+            (row: any) => row['Họ và tên'] != null && row['Ký hiệu'] != null
+          )
+          .map((row: any) => ({
+            fullName: row['Họ và tên'],
+            shortName: row['Ký hiệu'],
+          }));
+      };
+
+      reader.readAsBinaryString(file);
+    }
+
+    event = null;
+  }
+
+  // @ Acition: Upload file excel for add to classes
+  onUpload(event: any): void {
+    console.log(event);
+    this.teacherDiaglogForCreateCollectionComponent.dialog = true;
+  }
+
+  onClear(): void {
+    this.smseduCrudComponent.onclear();
   }
 }

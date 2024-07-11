@@ -3,7 +3,7 @@
   class="t-wrapper"
   [ngClass]="{
     'crud-wrapper-toolbar': isToolBar,
-    'crud-wrapper-no-toolbar': !isToolBar
+    'crud-wrapper': !isToolBar
   }"
 >
   <div class="col-12">
@@ -38,6 +38,12 @@
                 (click)="onDeleteCollection($event, selected)"
                 [disabled]="selected.length <= 1"
               ></button>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="center">
+            <div class="my-2">
+              <ng-content select=".smsedu-toolbar-center"></ng-content>
             </div>
           </ng-template>
 
@@ -207,7 +213,6 @@
                           <p-multiSelect
                             [options]="col?.options?.data"
                             (onChange)="col?.options?.onChange($event, rowData)"
-                            (onFocus)="col?.options?.onFocus($event, rowData)"
                             [(ngModel)]="rowData[col.field]"
                             optionLabel="name"
                             placeholder="Select Cities"

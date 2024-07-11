@@ -8,8 +8,15 @@ export const timetableRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: paths.smsedu.timetable.edit,
+        redirectTo: paths.smsedu.timetable.list,
         pathMatch: 'full',
+      },
+      {
+        path: 'list',
+        loadComponent: () =>
+          import(
+            '@pages/smsedu/timetables/timetable-list-page/timetable-list-page.component'
+          ).then((m) => m.TimetableListPageComponent),
       },
       {
         path: 'edit',

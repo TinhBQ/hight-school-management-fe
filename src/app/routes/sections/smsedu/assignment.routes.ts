@@ -25,6 +25,13 @@ export const assignmentRoutes: Routes = [
             '@pages/smsedu/assignments/assign-subject-page/assign-subject-page.component'
           ).then((m) => m.AssignSubjectPageComponent),
       },
+      {
+        path: 'teaching',
+        loadComponent: () =>
+          import(
+            '@pages/smsedu/assignments/assign-teaching-page/assign-teaching-page.component'
+          ).then((m) => m.AssignTeachingPageComponent),
+      },
     ],
   },
 ];

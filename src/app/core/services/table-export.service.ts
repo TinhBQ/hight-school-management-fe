@@ -34,10 +34,19 @@ export class TableExportService {
     );
   }
 
-  exportPdf(exportColumns: any, data: any, fileName: string, title: string) {
+  exportPdf(
+    exportColumns: any,
+    data: any,
+    fileName: string,
+    title: string,
+    isL?: boolean
+  ) {
     import('jspdf').then((jsPDF) => {
       import('jspdf-autotable').then(() => {
-        const doc = new jsPDF.default();
+        const doc =
+          isL === true
+            ? new jsPDF.default('l', 'mm', 'a3')
+            : new jsPDF.default();
         doc.addFileToVFS('arial-normal.ttf', font);
         doc.addFont('arial-normal.ttf', 'arial', 'normal');
         doc.setFont('arial', 'normal');

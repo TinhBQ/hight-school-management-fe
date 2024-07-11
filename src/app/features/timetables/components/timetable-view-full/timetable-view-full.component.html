@@ -1,6 +1,6 @@
 @if (numSchoolShifts === -1 || numberOfClassesSessions(numSchoolShifts) > 0) {
   <div class="col-12">
-    <div class="card">
+    <div class="">
       @if (classes.length > 0) {
         <div class="timetable-container">
           <table class="timetable-edit">
@@ -28,7 +28,9 @@
                         class="cell-weekday"
                       >
                         <div>
-                          <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                          <div>
+                            {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                          </div>
                         </div>
                       </th>
                     }
@@ -92,7 +94,9 @@
                           class="cell-weekday"
                         >
                           <div>
-                            <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                            <div>
+                              {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                            </div>
                           </div>
                         </th>
                       }
@@ -157,7 +161,9 @@
                           class="cell-weekday"
                         >
                           <div>
-                            <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                            <div>
+                              {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                            </div>
                           </div>
                         </th>
                       }

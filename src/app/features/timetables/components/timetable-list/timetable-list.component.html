@@ -1,0 +1,79 @@
+<div class="card mb-2">
+  <form
+    class="class-form"
+    [formGroup]="_form"
+  >
+    <div class="grid p-fluid mt-3">
+      <!-- * Năm học -->
+      <div class="field col-12 md:col-3">
+        <span class="p-float-label">
+          <p-dropdown
+            [options]="schoolYears"
+            formControlName="schoolYear"
+            optionLabel="name"
+            placeholder="Select a City"
+          />
+          <label for="inputtext">Năm học</label>
+        </span>
+        <small
+          *ngIf="
+            _form.controls['schoolYear'].invalid &&
+            (_form.controls['schoolYear'].dirty ||
+              _form.controls['schoolYear'].touched)
+          "
+          class="block p-error mt-2"
+        >
+          <div *ngIf="_form.controls['schoolYear'].errors?.['required']">
+            Năm học là bắt buộc.
+          </div>
+        </small>
+      </div>
+
+      <!-- * Học kỳ -->
+      <div class="field col-12 md:col-3">
+        <span class="p-float-label">
+          <p-dropdown
+            [options]="semesterData"
+            formControlName="semester"
+            optionLabel="name"
+            placeholder="Select a City"
+          />
+          <label for="inputtext">Học kỳ</label>
+        </span>
+        <small
+          *ngIf="
+            _form.controls['semester'].invalid &&
+            (_form.controls['semester'].dirty ||
+              _form.controls['semester'].touched)
+          "
+          class="block p-error mt-2"
+        >
+          <div *ngIf="_form.controls['semester'].errors?.['required']">
+            Học kỳ là bắt buộc.
+          </div>
+        </small>
+      </div>
+    </div>
+    <div class="flex justify-content-center mb-1">
+      <!-- <button
+        pButton
+        pRipple
+        label="Khởi tạo ràng buộc"
+        class="p-button-success"
+      ></button> -->
+    </div>
+  </form>
+</div>
+
+<smsedu-crud
+  [columns]="columns"
+  [data]="timetables"
+  [pagination]="paginationTimetables"
+  [loading]="loadingTimetables"
+  [isCreate]="true"
+  [isUploadFile]="true"
+  [isSelected]="true"
+  title="Danh sách thời khóa biểu"
+  (lazyLoad)="onLoadTimesTables($event)"
+  [customActions]="customActions"
+/>

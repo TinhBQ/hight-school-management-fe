@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IYear } from '@features/years/interfaces';
 // #region -- Imports --
 import { read, utils, WorkBook, WorkSheet } from 'xlsx';
+import { ISemester } from '@features/timetables/interfaces';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { YearService } from '@features/years/services/year.service';
+import { IClassRequestParameters } from '@features/classes/interfaces';
 import { ClassService } from '@features/classes/services/class.service';
 import { IClass, IClassDto } from '@features/classes/interfaces/i-class';
+import { semesterData } from '@features/timetables/helpers/semester-data';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
 import { GetFullAndShortNameForTeacherPipe } from '@features/teachers/pipes/get-full-and-short-name-for-teacher.pipe';
 import { SubjectsForClassComponent } from '@features/subject-class/components/subjects-for-class/subjects-for-class.component';
@@ -18,11 +23,15 @@ import {
 } from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
+import { AppComponent } from 'src/app/app.component';
+
 import { CoreModule } from '@core/core.module';
 import { TableExportService } from '@core/services/table-export.service';
+import { CoreDirectivesModule } from '@core/directives/core-directives.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
 import {
@@ -46,8 +55,10 @@ import { ClassDiaglogForCreateCollectionComponent } from '../class-diaglog-for-c
   standalone: true,
   imports: [
     CoreModule,
-    SmseduCrudComponent,
+    DropdownModule,
     DynamicDialogModule,
+    SmseduCrudComponent,
+    CoreDirectivesModule,
     GetFullAndShortNameForTeacherPipe,
     ClassDialogForCreateUpdateComponent,
     ClassDiaglogForCreateCollectionComponent,
@@ -55,6 +66,7 @@ import { ClassDiaglogForCreateCollectionComponent } from '../class-diaglog-for-c
   ],
   templateUrl: './class-list.component.html',
   providers: [
+    YearService,
     ClassService,
     DialogService,
     TableExportService,
@@ -73,9 +85,9 @@ export class ClassListComponent implements OnInit, AfterViewInit {
 
   pagination: IPagination;
 
-  requestParameters: IRequestParameters = {};
+  requestParameters: IClassRequestParameters = {};
 
-  requestParametersForExport: IRequestParameters;
+  requestParametersForExport: IClassRequestParameters = {};
 
   loading: boolean = false;
 
@@ -98,6 +110,24 @@ export class ClassListComponent implements OnInit, AfterViewInit {
   customActions: ICustomAction[] = [];
 
   exportItem: MenuItem[] = [];
+
+  semesterData: ISemester[] = semesterData;
+
+  selectSemester: ISemester;
+
+  // * Years
+  selectYear: IYear;
+
+  schoolYears: IYear[] = [];
+
+  paginationSchoolYears: IPagination;
+
+  loadingSchoolYears: boolean = false;
+
+  requestParametersForSchoolYears: IRequestParameters = {
+    orderBy: 'startYear desc',
+    pageSize: 100,
+  };
 
   // #endregion
 
@@ -122,7 +152,9 @@ export class ClassListComponent implements OnInit, AfterViewInit {
     private confirmationDialogService: ConfirmationDialogService,
     public dialogService: DialogService,
     private tableExportService: TableExportService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent,
+    private yearService: YearService
   ) {}
 
   // * --------------------- OnInit ---------------------
@@ -138,6 +170,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
     this.columns = [
       { field: 'name', header: 'Lớp', isSort: true },
       { field: 'grade', header: 'Khối', isSort: true },
+      { field: 'periodCount', header: 'Số tiết/Tuần', isSort: true },
       { field: 'schoolShift', header: 'Buổi', isSort: true },
       { field: 'year', header: 'Năm học', isSort: false },
       {
@@ -209,7 +242,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
       },
     ];
 
-    this.getClasses();
+    this.getYears(this.requestParametersForSchoolYears);
   }
 
   ngAfterViewInit(): void {
@@ -227,6 +260,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
     this.loading = true;
     const { first, rows, sortField, sortOrder } = event;
     this.requestParameters = {
+      ...this.requestParameters,
       pageNumber: first / rows + 1 || null,
       pageSize: rows || null,
       orderBy: sortField
@@ -250,6 +284,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
           id: x.id,
           name: x.name,
           grade: x.grade,
+          periodCount: x.periodCount,
           schoolShift: x.schoolShift === 0 ? 'Sáng' : 'Chiều',
           year: x.startYear + '-' + x.endYear,
           homeroomTeacher: x.homeroomTeacher,
@@ -263,6 +298,61 @@ export class ClassListComponent implements OnInit, AfterViewInit {
   }
 
   // #endregion
+
+  // * Get Data Years
+  private getYears(params?: IRequestParameters): void {
+    this.loadingSchoolYears = true;
+    this.app.onShowSplashScreenService();
+    this.yearService.getYears(params).subscribe(
+      (response) => {
+        this.schoolYears = response.result.data.map((y) => ({
+          ...y,
+          name: y.startYear + '-' + y.endYear,
+        }));
+
+        this.paginationSchoolYears = response.pagination;
+
+        if (this.paginationSchoolYears?.hasNext) {
+          this.requestParametersForSchoolYears.pageSize =
+            this.paginationSchoolYears.totalCount;
+
+          this.getYears(this.requestParametersForSchoolYears);
+        } else {
+          this.selectYear = this.schoolYears[0];
+          this.classWithHomeroomTeachersUpdateDialogComponent.startYear =
+            this.selectYear.startYear;
+          this.classWithHomeroomTeachersUpdateDialogComponent.endYear =
+            this.selectYear.endYear;
+          this.requestParameters = {
+            ...this.requestParameters,
+            startYear: this.selectYear.startYear,
+            endYear: this.selectYear.endYear,
+          };
+          this.getClasses(this.requestParameters);
+          this.loadingSchoolYears = false;
+          this.app.onHideSplashScreenService();
+        }
+      },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (error) => {
+        this.loadingSchoolYears = false;
+        this.app.onHideSplashScreenService();
+      }
+    );
+  }
+
+  onChangeYear(event: any): void {
+    this.requestParameters = {
+      ...this.requestParameters,
+      startYear: event.value.startYear,
+      endYear: event.value.endYear,
+    };
+    this.classWithHomeroomTeachersUpdateDialogComponent.startYear =
+      event.value.startYear;
+    this.classWithHomeroomTeachersUpdateDialogComponent.endYear =
+      event.value.endYear;
+    this.getClasses(this.requestParameters);
+  }
 
   // #region -- Handel Action
   // @ Acition: Create and Update Class
@@ -317,6 +407,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
 
   onClear(): void {
     this.smseduCrudComponent.onclear();
+    this.getYears(this.requestParametersForSchoolYears);
   }
 
   // @ Acition: Save Classes
@@ -531,6 +622,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
     this.classService.find(this.requestParametersForExport).subscribe(
       (response) => {
         const headers = this.columns.map((col) => col.header);
+        console.log('headers', headers);
 
         const rows = response.result.data
           .map((x) => ({
@@ -539,13 +631,15 @@ export class ClassListComponent implements OnInit, AfterViewInit {
             grade: x.grade,
             schoolShift: x.schoolShift === 0 ? 'Sáng' : 'Chiều',
             year: x.startYear + '-' + x.endYear,
-            fullName: x.homeroomTeacher.fullName ?? 'Chưa phân công',
+            fullName: x.homeroomTeacher?.fullName ?? 'Chưa phân công',
           }))
           .map((row) =>
             this.columns.map((col) =>
               col.field === 'homeroomTeacher' ? row.fullName : row[col.field]
             )
           );
+
+        console.log('rows', rows);
 
         this.tableExportService.exportPdf(
           headers,

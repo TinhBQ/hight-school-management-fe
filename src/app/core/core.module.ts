@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { CoreDirectivesModule } from './directives/core-directives.module';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -11,6 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RouterModule,
     HttpClientModule,
     FormsModule,
+    CoreDirectivesModule,
   ],
   exports: [
     CommonModule,
@@ -18,6 +21,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RouterModule,
     HttpClientModule,
     FormsModule,
+    CoreDirectivesModule,
   ],
 })
 export class CoreModule {}

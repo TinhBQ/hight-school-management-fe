@@ -71,10 +71,15 @@ export class MenuComponent implements OnInit {
             icon: 'pi pi-fw pi-id-card',
             routerLink: paths.smsedu.assignment.teacherLeader,
           },
+          // {
+          //   label: 'Phân công Môn học',
+          //   icon: 'pi pi-fw pi-id-card',
+          //   routerLink: paths.smsedu.assignment.subject,
+          // },
           {
-            label: 'Phân công Môn học',
+            label: 'Phân công giảng dạy',
             icon: 'pi pi-fw pi-id-card',
-            routerLink: paths.smsedu.assignment.subject,
+            routerLink: paths.smsedu.assignment.teaching,
           },
         ],
       },
@@ -84,20 +89,25 @@ export class MenuComponent implements OnInit {
         routerLink: paths.smsedu.timetable.root,
         items: [
           {
+            label: 'Danh sách',
+            icon: 'pi pi-fw pi-id-card',
+            routerLink: paths.smsedu.timetable.list,
+          },
+          {
             label: 'Tạo',
             icon: 'pi pi-fw pi-id-card',
             routerLink: paths.smsedu.timetable.create,
           },
-          {
-            label: 'Chỉnh sửa',
-            icon: 'pi pi-fw pi-id-card',
-            routerLink: paths.smsedu.timetable.edit,
-          },
-          {
-            label: 'Xem',
-            icon: 'pi pi-fw pi-id-card',
-            routerLink: paths.smsedu.timetable.view,
-          },
+          // {
+          //   label: 'Chỉnh sửa',
+          //   icon: 'pi pi-fw pi-id-card',
+          //   routerLink: paths.smsedu.timetable.edit,
+          // },
+          // {
+          //   label: 'Xem',
+          //   icon: 'pi pi-fw pi-id-card',
+          //   routerLink: paths.smsedu.timetable.view,
+          // },
         ],
       },
     ];

@@ -7,6 +7,8 @@ import { CoreModule } from '@core/core.module';
 
 import { TableViewForGradeComponent } from '../table-view-for-grade/table-view-for-grade.component';
 import { TimetableViewForClassComponent } from '../timetable-view-for-class/timetable-view-for-class.component';
+import { TimetableViewForTeacherComponent } from '../timetable-view-for-teacher/timetable-view-for-teacher.component';
+import { TimetableViewForSchoolShiftComponent } from '../timetable-view-for-school-shift/timetable-view-for-school-shift.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -17,6 +19,8 @@ import { TimetableViewForClassComponent } from '../timetable-view-for-class/time
     TabMenuModule,
     TimetableViewForClassComponent,
     TableViewForGradeComponent,
+    TimetableViewForSchoolShiftComponent,
+    TimetableViewForTeacherComponent,
   ],
   templateUrl: './timetable-view.component.html',
 })
@@ -29,6 +33,8 @@ export class TimetableViewComponent implements OnInit {
     this.items = [
       { label: 'Buổi', icon: 'pi pi-home' },
       { label: 'Khối', icon: 'pi pi-chart-line' },
+      { label: 'Lớp', icon: 'pi pi-chart-line' },
+      { label: 'Giáo viên', icon: 'pi pi-chart-line' },
     ];
 
     this.activeItem = this.items[0];

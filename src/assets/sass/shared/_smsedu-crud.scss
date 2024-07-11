@@ -52,6 +52,12 @@
     border: 1px solid var(--purple-300);
   }
 
+  .p-button:hover {
+    background: var(--purple-300);
+    border: 1px solid var(--purple-300);
+    opacity: 0.5;
+  }
+
   .p-splitbutton {
     .p-splitbutton-defaultbutton {
       border-radius: 0;

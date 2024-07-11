@@ -1,0 +1,125 @@
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="">
+      <p-toolbar styleClass="mb-4 ">
+        <!-- ! Action Buttons: Create, Delete -->
+        <ng-template pTemplate="left">
+          <p-dropdown
+            [options]="schoolShifts"
+            [(ngModel)]="selectedSchoolShift"
+            optionLabel="name"
+            placeholder="Chọn buổi"
+            (onChange)="onSchoolShiftChange($event)"
+          />
+        </ng-template>
+
+        <!-- ! Action Buttons: Upload, Export -->
+        <ng-template pTemplate="right">
+          <!-- @ Export File -->
+          <div class="export-wrapper">
+            <p-splitButton
+              label="Xuất file"
+              icon="pi pi-upload"
+              (onClick)="exportItem[0].command.call(this)"
+              [model]="exportItem"
+            />
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <div class="timetable-view-container">
+        <table
+          [ngClass]="
+            selectedSchoolShift.id === 0
+              ? 'timetable-view-morning'
+              : 'timetable-view-afternoon'
+          "
+        >
+          <thead>
+            <tr>
+              <th>Thứ</th>
+              <th>Tiết</th>
+              @for (klass of selectClasses; track $index) {
+                <th>{{ klass.name }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (startAt of startAts; track $index) {
+              @if (
+                selectedSchoolShift.id === 0 && onHandelStartAt(startAt) <= 5
+              ) {
+                <tr>
+                  @if (startAt % 10 === 1) {
+                    <th
+                      rowspan="5"
+                      class="cell-weekday"
+                    >
+                      <div>
+                        <div>
+                          {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                  <th class="cell-startAt">
+                    {{ onHandelStartAt(startAt) }}
+                  </th>
+                  @for (klass of selectClasses; track $index) {
+                    <th class="cell-dnd">
+                      <div>
+                        <div>
+                          {{
+                            getNameAssignment(
+                              timetableUnits[klass.name][startAt]
+                            )
+                          }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                </tr>
+              }
+
+              @if (
+                selectedSchoolShift.id === 1 && onHandelStartAt(startAt) > 5
+              ) {
+                <tr>
+                  @if (startAt % 10 === 6) {
+                    <th
+                      rowspan="5"
+                      class="cell-weekday"
+                    >
+                      <div>
+                        <div>
+                          {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                  <th class="cell-startAt">
+                    {{ onHandelStartAt(startAt) - 5 }}
+                  </th>
+                  @for (klass of selectClasses; track $index) {
+                    <th class="cell-dnd">
+                      <div>
+                        <div>
+                          {{
+                            getNameAssignment(
+                              timetableUnits[klass.name][startAt]
+                            )
+                          }}
+                        </div>
+                      </div>
+                    </th>
+                  }
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

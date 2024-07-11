@@ -204,4 +204,8 @@ export class TimetableViewFullComponent implements OnInit {
       : klass.noAssignTimetableUnits;
     return 30 - (klass.periodCount + num);
   }
+
+  convertNumFloor(num: number): number {
+    return Math.floor(num);
+  }
 }

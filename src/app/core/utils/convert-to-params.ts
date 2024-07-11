@@ -34,6 +34,12 @@ export function convertToParams(params: any): HttpParams {
         params.isAssignedHomeroom
       );
     }
+
+    if (params.isNotAssigned === false || params.isNotAssigned === true) {
+      console.log('BQT', params.isNotAssigned);
+      queryParams = queryParams.set('isNotAssigned', params.isNotAssigned);
+    }
+
     if (params.startYear) {
       queryParams = queryParams.set('startYear', params.startYear);
     }

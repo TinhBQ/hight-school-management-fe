@@ -18,13 +18,29 @@
   (selectFile)="onSelect($event)"
   (uploadFile)="onUpload($event)"
   [exportItem]="exportItem"
-/>
+>
+  <div class="smsedu-toolbar-center flex gap-2">
+    <span class="p-float-label">
+      <p-dropdown
+        [options]="schoolYears"
+        [(ngModel)]="selectYear"
+        optionLabel="name"
+        placeholder="Chọn năm học"
+        (onChange)="onChangeYear($event)"
+      />
+      <label for="inputtext">Năm học</label>
+    </span>
+  </div>
+</smsedu-crud>
 
 <smsedu-class-dialog-for-create-update (save)="onSave()" />
 
-<smsedu-class-with-homeroom-teachers-update-dialog (save)="onClear()" />
+<smsedu-class-with-homeroom-teachers-update-dialog
+  (save)="onClear()"
+  [startYear]="selectYear?.startYear"
+  [endYear]="selectYear?.endYear"
+/>
 
-<!-- * Dialog: Add Class Collection -->
 <smsedu-class-diaglog-for-create-collection
   [excelData]="excelData"
   (clear)="onClear()"

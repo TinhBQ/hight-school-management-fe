@@ -100,7 +100,6 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
               ? this.startAtsMorning
               : this.startAtsAfternoon,
           onChange: this.onChangeMultiple.bind(this),
-          onFocus: this.onFocusMultiple.bind(this),
         },
       },
     ];
@@ -169,11 +168,6 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
               className: klass.name,
             };
           } else {
-            // timeTableUnits2Dimensional[num][i] = {
-            //   startAt: i + (num - 2) * 10,
-            //   classId: this.klass.id,
-            //   className: this.klass.name,
-            // };
             timeTableUnits2Dimensional[num][i] = {
               ...timetableUnits[numIndex],
             };
@@ -243,8 +237,9 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
     );
 
     console.log(this.timeTableUnits[index]);
+    console.log(originalEvent.selected);
 
-    if (!originalEvent.selected) {
+    if (originalEvent.selected == true) {
       if (
         !!this.timeTableUnits[index].teacherName ||
         !!this.timeTableUnits[index].subjectName ||

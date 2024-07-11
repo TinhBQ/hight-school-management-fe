@@ -1,4 +1,3 @@
-import { data } from '@features/timetables/helpers/data';
 import { IClass } from '@features/classes/interfaces/i-class';
 import { ITimetableUnitForEditDto } from '@features/timetables/interfaces';
 
@@ -15,10 +14,7 @@ import { CoreModule } from '@core/core.module';
   styleUrl: './timetable-for-class.component.scss',
 })
 export class TimetableForClassComponent {
-  @Input() klass: IClass = {
-    id: data[0].classId,
-    name: data[0].className,
-  };
+  @Input() klass: IClass;
 
   @Input() data: ITimetableUnitForEditDto[];
 

@@ -1,8 +1,8 @@
 <!-- eslint-disable @angular-eslint/template/elements-content -->
 <div class="grid">
   <div class="col-12">
-    <div class="card px-4 py-4">
-      <p-toolbar styleClass="mb-4">
+    <div class="">
+      <p-toolbar styleClass="mb-4 p-4">
         <!-- ! Action Buttons: Create, Delete -->
         <ng-template pTemplate="left">
           <p-dropdown
@@ -16,13 +16,14 @@
         <!-- ! Action Buttons: Upload, Export -->
         <ng-template pTemplate="right">
           <!-- @ Export File -->
-          <button
-            pButton
-            pRipple
-            label="Export"
-            icon="pi pi-upload"
-            class="p-button-help"
-          ></button>
+          <div class="export-wrapper">
+            <p-splitButton
+              label="Xuất file"
+              icon="pi pi-upload"
+              (onClick)="exportItem[0].command.call(this)"
+              [model]="exportItem"
+            />
+          </div>
         </ng-template>
       </p-toolbar>
 
@@ -46,7 +47,9 @@
                     class="cell-weekday"
                   >
                     <div>
-                      <div>{{ 'Thứ ' + (startAt / 10 + 2) }}</div>
+                      <div>
+                        {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                      </div>
                     </div>
                   </th>
                 }
@@ -64,7 +67,9 @@
                   >
                     <div>
                       <div>
-                        {{ timetableUnits[className][startAt]?.subjectName }}
+                        {{
+                          getNameAssignment(timetableUnits[className][startAt])
+                        }}
                       </div>
                     </div>
                   </th>

@@ -156,7 +156,7 @@ export class TimetableCreateGeneralComponent implements OnInit {
 
   numNoAssignTimetableUnits(klass: IClass): number {
     const num = !klass.noAssignTimetableUnits
-      ? 0
+      ? -1
       : klass.noAssignTimetableUnits;
     return 30 - (klass.periodCount + num);
   }
@@ -265,7 +265,7 @@ export class TimetableCreateGeneralComponent implements OnInit {
   onCheckNumNoAssignTimetableUnits(classes: IClass[]): string[] {
     const result = [];
     for (const klass of classes) {
-      if (this.numNoAssignTimetableUnits(klass) < 0) {
+      if (this.numNoAssignTimetableUnits(klass) !== 0) {
         result.push(
           'Lớp ' +
             klass.name +

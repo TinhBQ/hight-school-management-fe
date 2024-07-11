@@ -7,11 +7,21 @@ import {
 } from '@features/teachers/interfaces';
 import { ClassWithHomeroomTeachersService } from '@features/class-with-homeroom-teachers/services';
 
-import { Output, Component, EventEmitter } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import {
+  Input,
+  Output,
+  OnInit,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { IPagination } from '@core/interfaces';
 import { CoreModule } from '@core/core.module';
@@ -38,7 +48,13 @@ import { SmseduAutoCompleteComponent } from '@shared/smsedu-auto-complete/smsedu
     MessageNotificationService,
   ],
 })
-export class ClassWithHomeroomTeachersUpdateDialogComponent {
+export class ClassWithHomeroomTeachersUpdateDialogComponent
+  implements AfterViewInit, OnInit
+{
+  @Input() startYear: number;
+
+  @Input() endYear: number;
+
   dialog: boolean = false;
 
   dataDto: IClassWithHomeroomTeachers;
@@ -66,15 +82,31 @@ export class ClassWithHomeroomTeachersUpdateDialogComponent {
     private teacherService: TeacherService,
     private confirmationDialogService: ConfirmationDialogService,
     private classWithHomeroomTeachersService: ClassWithHomeroomTeachersService,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
+
+  ngOnInit(): void {
+    this.teachersForClassRequestParameters = {
+      isAssignedHomeroom: false,
+      startYear: this.startYear,
+      endYear: this.endYear,
+    };
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   onHideDialog() {
     this.dialog = false;
   }
 
+  // * --------------------- Save --------------------
   onSave() {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.classWithHomeroomTeachersService
         .update(this._form.value.classId, {
           homeroomTeacherId: this._form.value.homeroomTeacher.id,
@@ -84,29 +116,33 @@ export class ClassWithHomeroomTeachersUpdateDialogComponent {
             this.save.emit();
             this.onHideDialog();
             this.messageNotificationService.showSuccess(
-              'Thêm danh sách lớp tành công!'
+              'Cập nhật giáo viên chủ nhiệm thành công.'
             );
+            this.app.onHideSplashScreenService();
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
             this.onHideDialog();
             this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
+              'Cập nhật giáo viên chủ nhiệm thất bại.'
             );
+            this.app.onHideSplashScreenService();
           }
         );
     });
   }
 
   // * --------------------- Handel AutoComplete --------------------
-
   onSearch(event: any): void {
     if (event.query === '') return;
     const query = event.query;
     this.teachersForClassRequestParameters = {
+      isAssignedHomeroom: false,
+      startYear: this.startYear,
+      endYear: this.endYear,
       pageNumber: null,
       pageSize: null,
       searchTerm: query,
-      isAssignedHomeroom: false,
       fields: null,
       orderBy: null,
     };
@@ -136,8 +172,10 @@ export class ClassWithHomeroomTeachersUpdateDialogComponent {
   onDropdownClick() {
     this.teachersForClassRequestParameters = {
       isAssignedHomeroom: false,
-      searchTerm: null,
+      startYear: this.startYear,
+      endYear: this.endYear,
       pageNumber: null,
+      searchTerm: null,
       pageSize: null,
       fields: null,
       orderBy: null,

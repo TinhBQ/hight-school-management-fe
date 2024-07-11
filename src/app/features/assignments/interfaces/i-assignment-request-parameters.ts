@@ -5,4 +5,7 @@ export interface IAssignmentRequestParameters extends IRequestParameters {
   endYear?: number;
   semester?: number;
   classId?: string;
+  teacherId?: string;
+  subjectId?: string;
+  isNotAssigned?: boolean;
 }

@@ -4,18 +4,28 @@ import { ITimetableUnit } from '@features/timetables/interfaces';
 
 import { Input, OnInit, Component } from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 import { CoreModule } from '@core/core.module';
+import { TableExportService } from '@core/services/table-export.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'smsedu-table-view-for-grade',
   standalone: true,
-  imports: [CoreModule, ToolbarModule, ButtonModule, DropdownModule],
+  imports: [
+    CoreModule,
+    ToolbarModule,
+    ButtonModule,
+    DropdownModule,
+    SplitButtonModule,
+  ],
   templateUrl: './table-view-for-grade.component.html',
+  providers: [TableExportService],
 })
 export class TableViewForGradeComponent implements OnInit {
   grades: number[] = [10, 11, 12];
@@ -30,8 +40,29 @@ export class TableViewForGradeComponent implements OnInit {
 
   timetableUnits: ITimetableUnit[][] = [];
 
+  exportItem: MenuItem[] = [];
+
+  constructor(private tableExportService: TableExportService) {}
+
   ngOnInit(): void {
     this.onHandelTimetableUnits(this.selectedGrade);
+
+    this.exportItem = [
+      {
+        label: 'XLS',
+        icon: 'pi pi-fw pi-file-excel',
+        command: () => {
+          this.onExportExcel();
+        },
+      },
+      {
+        label: 'PDF',
+        icon: 'pi pi-fw pi-file-pdf',
+        command: () => {
+          this.onExportPDF();
+        },
+      },
+    ];
   }
 
   onHandelStartAt(startAt: number): number {
@@ -75,5 +106,69 @@ export class TableViewForGradeComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onGradeChange(event: any): void {
     this.onHandelTimetableUnits(this.selectedGrade);
+  }
+
+  getNameAssignment(timetableUnit: ITimetableUnit): string {
+    if (!timetableUnit) {
+      return '';
+    }
+    return timetableUnit.subjectName + ' - ' + timetableUnit.teacherName;
+  }
+
+  // #region -- Handel Export Data --
+  // @ Acition: Export Excel
+  onExportExcel(): void {
+    const result = [];
+    for (let startAt = 1; startAt <= 60; startAt++) {
+      const obj: object = {};
+      for (const className of this.classNames) {
+        obj[className] = this.getNameAssignment(
+          this.timetableUnits[className][startAt]
+        );
+      }
+
+      result.push({
+        Thứ: 'Thứ ' + this.convertNumFloor(startAt / 10 + 2),
+        Tiết: this.onHandelStartAt(startAt),
+        ...obj,
+      });
+    }
+
+    this.tableExportService.exportExcel(
+      result,
+      'timetable-view-for-school-shift'
+    );
+  }
+
+  // @ Acition: Export PDf
+  onExportPDF(): void {
+    const result = [];
+    for (let startAt = 1; startAt <= 60; startAt++) {
+      const obj: object = {};
+      for (const className of this.classNames) {
+        obj[className] = this.getNameAssignment(
+          this.timetableUnits[className][startAt]
+        );
+      }
+      result.push({
+        Thứ: 'Thứ ' + this.convertNumFloor(startAt / 10 + 2),
+        Tiết: this.onHandelStartAt(startAt),
+        ...obj,
+      });
+    }
+    const headers = ['Thứ', 'Tiết', ...this.classNames];
+    const rows = result.map((row) => headers.map((col) => row[col]));
+    this.tableExportService.exportPdf(
+      headers,
+      rows,
+      'subjects',
+      'Danh sách môn học',
+      true
+    );
+  }
+  // #endregion
+
+  convertNumFloor(num: number): number {
+    return Math.floor(num);
   }
 }

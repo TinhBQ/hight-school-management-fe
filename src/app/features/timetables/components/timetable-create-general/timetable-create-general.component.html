@@ -158,11 +158,11 @@
       (activeItemChange)="onActiveItemChange($event)"
     />
 
-    <div class="card content mb-2">
+    <div class="card content">
       @if (activeItem.label === 'Tiết trống') {
         @if (classes.length > 0) {
-          <p-toolbar>
-            <div class="p-toolbar-group-start mb-1">
+          <p-toolbar styleClass="mb-2">
+            <div class="p-toolbar-group-start">
               <div>
                 <h5 class="p-m-0">
                   Hãy kéo chọn các ô trên bảng nếu bạn muốn tiết trống

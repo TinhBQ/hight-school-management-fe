@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { read, utils, WorkBook, WorkSheet } from 'xlsx';
 import { ISubject } from '@features/subjects/interfaces';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SubjectService } from '@features/subjects/services/subject.service';
@@ -6,12 +7,14 @@ import { SubjectService } from '@features/subjects/services/subject.service';
 import { CommonModule } from '@angular/common';
 import { OnInit, Component, ViewChild } from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 
+import { TableExportService } from '@core/services/table-export.service';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
 import {
@@ -25,6 +28,7 @@ import {
 import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 
 import { SubjectDialogForCreateUpdateComponent } from '../subject-dialog-for-create-update/subject-dialog-for-create-update.component';
+import { SubjectDiaglogForCreateCollectionComponent } from '../subject-diaglog-for-create-collection/subject-diaglog-for-create-collection.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -39,12 +43,14 @@ import { SubjectDialogForCreateUpdateComponent } from '../subject-dialog-for-cre
     FileUploadModule,
     SubjectDialogForCreateUpdateComponent,
     SmseduCrudComponent,
+    SubjectDiaglogForCreateCollectionComponent,
   ],
   templateUrl: './subject-list.component.html',
   providers: [
     SubjectService,
     MessageNotificationService,
     ConfirmationDialogService,
+    TableExportService,
   ],
 })
 export class SubjectListComponent implements OnInit {
@@ -64,16 +70,26 @@ export class SubjectListComponent implements OnInit {
 
   customActions: ICustomAction[] = [];
 
+  requestParametersForExport: IRequestParameters;
+
+  exportItem: MenuItem[] = [];
+
+  excelData: any[] = [];
+
   @ViewChild(SubjectDialogForCreateUpdateComponent)
   subjectDialogForCreateUpdateComponent: SubjectDialogForCreateUpdateComponent;
 
   @ViewChild(SmseduCrudComponent)
   smseduCrudComponent: SmseduCrudComponent;
 
+  @ViewChild(SubjectDiaglogForCreateCollectionComponent)
+  subjectDiaglogForCreateCollectionComponent: SubjectDiaglogForCreateCollectionComponent;
+
   constructor(
     private subjectService: SubjectService,
     private messageNotificationService: MessageNotificationService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private tableExportService: TableExportService
   ) {}
 
   ngOnInit(): void {
@@ -106,6 +122,23 @@ export class SubjectListComponent implements OnInit {
         color: 'warning',
         onClick: (evnet: Event, data: any) => {
           this.onDeleteClass(evnet, data);
+        },
+      },
+    ];
+
+    this.exportItem = [
+      {
+        label: 'XLS',
+        icon: 'pi pi-fw pi-file-excel',
+        command: () => {
+          this.onExportExcel();
+        },
+      },
+      {
+        label: 'PDF',
+        icon: 'pi pi-fw pi-file-pdf',
+        command: () => {
+          this.onExportPDF();
         },
       },
     ];
@@ -163,6 +196,10 @@ export class SubjectListComponent implements OnInit {
     });
 
     this.subjectDialogForCreateUpdateComponent.subjectDialog = true;
+  }
+
+  onClear(): void {
+    this.smseduCrudComponent.onclear();
   }
 
   onSave(): void {
@@ -254,5 +291,104 @@ export class SubjectListComponent implements OnInit {
           );
       });
     }
+  }
+
+  // #region -- Handel Export Data --
+  // @ Acition: Export Excel
+  onExportExcel(): void {
+    this.requestParametersForExport = {
+      ...this.requestParameters,
+      pageNumber: 1,
+      pageSize: this.pagination.totalCount,
+    };
+    this.subjectService.find(this.requestParametersForExport).subscribe(
+      (response) => {
+        const dataExport = response.result.data;
+
+        this.tableExportService.exportExcel(
+          dataExport.map((item: any) => {
+            return {
+              'Môn học': item.name,
+              'Ký hiệu': item.shortName,
+            };
+          }),
+          'subjects'
+        );
+      },
+      (error) => {
+        console.log(error.toString());
+      }
+    );
+  }
+
+  // @ Acition: Export PDf
+  onExportPDF(): void {
+    this.requestParametersForExport = {
+      ...this.requestParameters,
+      pageNumber: 1,
+      pageSize: this.pagination.totalCount,
+    };
+    this.subjectService.find(this.requestParametersForExport).subscribe(
+      (response) => {
+        const headers = this.columns.map((col) => col.header);
+        console.log('headers', headers);
+        const rows = response.result.data.map((row) =>
+          this.columns.map((col) => row[col.field])
+        );
+        console.log('rows', rows);
+        this.tableExportService.exportPdf(
+          headers,
+          rows,
+          'subjects',
+          'Danh sách môn học'
+        );
+      },
+      (error) => {
+        console.log(error.toString());
+      }
+    );
+  }
+  // #endregion
+
+  onSelect(event: any): void {
+    this.excelData = [];
+
+    for (const file of event.files) {
+      const reader: FileReader = new FileReader();
+
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      reader.onload = (e: any) => {
+        const binaryString = e.target.result;
+        const workbook: WorkBook = read(binaryString, {
+          type: 'binary',
+        });
+        const worksheetName: string = workbook.SheetNames[0];
+        const worksheet: WorkSheet = workbook.Sheets[worksheetName];
+
+        this.excelData = utils
+          .sheet_to_json(worksheet, {
+            raw: true,
+          })
+          .filter(
+            (row: any) => row['Môn học'] != null && row['Ký hiệu'] != null
+          )
+          .map((row: any) => ({
+            name: row['Môn học'],
+            shortName: row['Ký hiệu'],
+          }));
+      };
+
+      reader.readAsBinaryString(file);
+    }
+
+    event = null;
+    console.log(this.excelData);
+  }
+
+  // @ Acition: Upload file excel for add to classes
+  onUpload(event: any): void {
+    console.log(event);
+    console.log(this.excelData);
+    this.subjectDiaglogForCreateCollectionComponent.dialog = true;
   }
 }

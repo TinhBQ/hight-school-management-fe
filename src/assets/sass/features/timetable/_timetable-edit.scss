@@ -1,6 +1,17 @@
 .timetable-container {
-  margin: -1.5rem;
-  font-size: 12px;
+  // margin: -1.5rem;
+  font-size: 11px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  .selected {
+    background-color: var(--bluegray-400);
+  }
+
+  .hover {
+    background-color: var(--bluegray-400);
+    opacity: 0.4;
+  }
 
   .timetable-edit {
     width: 100%;
@@ -11,6 +22,7 @@
       background: $primaryColor;
       color: $primaryTextColor;
     }
+
     tbody {
       .cell-weekday {
         background: $primaryColor;

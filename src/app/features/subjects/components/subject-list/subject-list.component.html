@@ -15,6 +15,14 @@
   [customActions]="customActions"
   (lazyLoad)="onLoadClasses($event)"
   [onDeleteCollection]="onDeleteClasses.bind(this)"
+  [exportItem]="exportItem"
+  (selectFile)="onSelect($event)"
+  (uploadFile)="onUpload($event)"
 />
 
 <smsedu-subject-dialog-for-create-update (save)="onSave()" />
+
+<smsedu-subject-diaglog-for-create-collection
+  [excelData]="excelData"
+  (clear)="onClear()"
+/>

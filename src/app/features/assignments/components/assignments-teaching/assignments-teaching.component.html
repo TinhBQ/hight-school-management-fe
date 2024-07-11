@@ -1,0 +1,57 @@
+<smsedu-crud
+  [columns]="columns"
+  [data]="data"
+  [pagination]="pagination"
+  [loading]="loading"
+  [isToolBar]="true"
+  [isCreate]="true"
+  [isUploadFile]="true"
+  [isSelected]="true"
+  [title]="title ?? 'Phân công giảng dạy'"
+  [onCreate]="onShowDialogForCreate.bind(this)"
+  [searchString]="searchString"
+  [searchText$]="searchText$"
+  (lazyLoad)="onLoadAssignments($event)"
+  [customActions]="customActions"
+>
+  <div class="smsedu-toolbar-center flex gap-2">
+    <span class="p-float-label">
+      <p-dropdown
+        [options]="schoolYears"
+        [(ngModel)]="selectYear"
+        optionLabel="name"
+        placeholder="Chọn năm học"
+      />
+      <label for="inputtext">Năm học</label>
+    </span>
+    <span class="p-float-label">
+      <p-dropdown
+        [options]="semesterData"
+        [(ngModel)]="selectSemester"
+        optionLabel="name"
+        placeholder="Select a City"
+        (onChange)="onChangeSemester($event)"
+      />
+      <label for="inputtext">Học kỳ</label>
+    </span>
+    <span class="flex align-items-center gap-1">
+      <p-checkbox
+        [(ngModel)]="assigned"
+        value="Đã phân công"
+        [binary]="true"
+        inputId="ny"
+        (onChange)="onChangeAssigned($event)"
+      />
+      <label for="ny">Đã phân công</label>
+    </span>
+  </div>
+</smsedu-crud>
+
+<smsedu-assignments-teaching-dialog-for-create-update
+  [classes]="classes"
+  [teachers]="teachers"
+  [schoolYears]="schoolYears"
+  [year]="selectYear"
+  [semester]="selectSemester"
+  (save)="onSave()"
+/>

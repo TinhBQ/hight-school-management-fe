@@ -1,5 +1,7 @@
 import { BreadcrumbService } from '@layouts/main/breadcrumb.service';
 import { LayoutMainComponent } from '@layouts/main/layout-main.component';
+import { SplashScreenModule } from '@features/splash-screen/splash-screen.module';
+import { SplashScreenService } from '@features/splash-screen/services/splash-screen.service';
 
 import { RouterOutlet } from '@angular/router';
 import { OnInit, Component } from '@angular/core';
@@ -22,6 +24,7 @@ import { CoreModule } from '@core/core.module';
     LayoutMainComponent,
     ToastModule,
     ConfirmDialogModule,
+    SplashScreenModule,
   ],
   templateUrl: './app.component.html',
   providers: [
@@ -29,6 +32,7 @@ import { CoreModule } from '@core/core.module';
     MessageService,
     ConfirmationService,
     BreadcrumbService,
+    SplashScreenService,
   ],
 })
 export class AppComponent implements OnInit {
@@ -50,7 +54,18 @@ export class AppComponent implements OnInit {
 
   inputStyle: string = 'outlined';
 
-  constructor(private primengConfig: PrimeNGConfig) {}
+  constructor(
+    private primengConfig: PrimeNGConfig,
+    private splashScreenService: SplashScreenService
+  ) {}
+
+  onShowSplashScreenService() {
+    this.splashScreenService.show();
+  }
+
+  onHideSplashScreenService() {
+    this.splashScreenService.hide();
+  }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;

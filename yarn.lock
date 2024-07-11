@@ -3474,6 +3474,11 @@ custom-event@~1.0.0:
   resolved "https://registry.yarnpkg.com/custom-event/-/custom-event-1.0.1.tgz#5d02a46850adf1b4a317946a3928fccb5bfd0425"
   integrity sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==
 
+date-fns@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
+  integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
+
 date-format@^4.0.14:
   version "4.0.14"
   resolved "https://registry.yarnpkg.com/date-format/-/date-format-4.0.14.tgz#7a8e584434fb169a521c8b7aa481f355810d9400"
@@ -6802,10 +6807,10 @@ primeicons@^6.0.1:
   resolved "https://registry.yarnpkg.com/primeicons/-/primeicons-6.0.1.tgz#431fa7c79825934eefd62087d8e1faa6a9e376ad"
   integrity sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==
 
-primeng@^17.6.0:
-  version "17.18.2"
-  resolved "https://registry.yarnpkg.com/primeng/-/primeng-17.18.2.tgz#bbcad56dd771e200c7703acdaa10839430d97976"
-  integrity sha512-2uux//0AOj/EwiOQHmUVFst+9dtf4duNLI+Oo6vN3HLXoQF+Eax5Mfi5eHh+EDSJMFCrzeCUma0N2Nj5pNpSHg==
+primeng@^17.18.2:
+  version "17.18.3"
+  resolved "https://registry.yarnpkg.com/primeng/-/primeng-17.18.3.tgz#120dbe7ce37363954357651c4bf91ac50042cc12"
+  integrity sha512-gbFo9cZF3E2ox8MkIPMp5CuqACMkJwgpjjNofzI2gh/9BKnAWB4Iao7mLKTlU46CtzHsmslQ9lU8OmmKG7LG1A==
   dependencies:
     tslib "^2.3.0"
 

@@ -1,12 +1,25 @@
-<p-tabMenu
-  [model]="items"
-  [activeItem]="activeItem"
-  (activeItemChange)="onActiveItemChange($event)"
-/>
-@if (activeItem.label === 'Buổi') {
-  <smsedu-timetable-view-for-class />
-}
+<div class="timetable-view">
+  <p-tabMenu
+    [model]="items"
+    [activeItem]="activeItem"
+    (activeItemChange)="onActiveItemChange($event)"
+  />
 
-@if (activeItem.label === 'Khối') {
-  <smsedu-table-view-for-grade />
-}
+  <div class="card">
+    @if (activeItem.label === 'Buổi') {
+      <smsedu-timetable-view-for-school-shift />
+    }
+
+    @if (activeItem.label === 'Khối') {
+      <smsedu-table-view-for-grade />
+    }
+
+    @if (activeItem.label === 'Lớp') {
+      <smsedu-timetable-view-for-class />
+    }
+
+    @if (activeItem.label === 'Giáo viên') {
+      <smsedu-timetable-view-for-teacher />
+    }
+  </div>
+</div>
