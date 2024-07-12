@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IYear } from '@features/years/interfaces';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { TeacherService } from '@features/teachers/services/teacher.service';
 import {
@@ -44,6 +45,8 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 })
 export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
   // * Properties for form ClassWithHomeroomTeachersUnassignedComponent
+
+  year?: IYear;
 
   result: IResponseBase<IClassWithHomeroomTeachers[]>;
 
@@ -120,6 +123,8 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
   onLoadClassWithHomeroomTeachers(event: any): void {
     const { first, rows, sortField, sortOrder } = event;
     this.classWithHomeroomTeachersRequestParameters = {
+      startYear: this.year?.startYear,
+      endYear: this.year?.endYear,
       pageNumber: first / rows + 1 || null,
       pageSize: rows || null,
       orderBy: sortField
@@ -192,6 +197,8 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
     if (event.query === '') return;
     const query = event.query;
     this.teachersForClassRequestParameters = {
+      startYear: this.year?.startYear,
+      endYear: this.year?.endYear,
       pageNumber: null,
       pageSize: null,
       searchTerm: query,
@@ -230,6 +237,8 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
       pageSize: null,
       fields: null,
       orderBy: null,
+      startYear: this.year?.startYear,
+      endYear: this.year?.endYear,
     };
     this.loadDataTeachesUnAssignedHomeroom(
       this.teachersForClassRequestParameters
@@ -270,5 +279,9 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
         this.loadingAutoComplete = false;
       }
     );
+  }
+
+  onCLear(): void {
+    this.smseduCrudComponent.onclear();
   }
 }

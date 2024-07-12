@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IClass } from '@features/classes/interfaces';
-import { data } from '@features/timetables/helpers/data';
 import { ITimetableUnit } from '@features/timetables/interfaces';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
@@ -34,7 +33,7 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
   providers: [TableExportService],
 })
 export class TimetableViewForSchoolShiftComponent implements OnInit {
-  @Input() data: ITimetableUnit[] = data;
+  @Input() data: ITimetableUnit[];
 
   schoolShifts: ISchoolShift[] = schoolShiftData;
 

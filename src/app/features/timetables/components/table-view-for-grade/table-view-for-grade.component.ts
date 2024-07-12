@@ -32,7 +32,7 @@ export class TableViewForGradeComponent implements OnInit {
 
   selectedGrade: number = 10;
 
-  @Input() data: ITimetableUnit[] = data;
+  @Input() data: ITimetableUnit[];
 
   startAts: number[] = Array.from({ length: 60 }, (v, k) => k + 1);
 

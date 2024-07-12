@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IClass } from '@features/classes/interfaces';
 import { ITeacher } from '@features/teachers/interfaces';
-import { data } from '@features/timetables/helpers/data';
-import { ITimetableUnit } from '@features/timetables/interfaces';
+import { IGetTimetable, ITimetableUnit } from '@features/timetables/interfaces';
+import { TimetablesService } from '@features/timetables/services/timetables.service';
 
 import { Input, OnInit, Component } from '@angular/core';
 
@@ -11,8 +12,15 @@ import { ButtonModule } from 'primeng/button';
 import { MessagesModule } from 'primeng/messages';
 import { DropdownModule } from 'primeng/dropdown';
 import { DragDropModule } from 'primeng/dragdrop';
+import {
+  DialogService,
+  DynamicDialogConfig,
+  DynamicDialogModule,
+} from 'primeng/dynamicdialog';
 
 import { CoreModule } from '@core/core.module';
+import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
+import { MessageNotificationService } from '@core/services/message-notification.service';
 
 interface IChoose {
   numWeekday: number;
@@ -30,12 +38,19 @@ interface IChoose {
     DropdownModule,
     MessagesModule,
     ButtonModule,
+    DynamicDialogModule,
   ],
   templateUrl: './timetable-edit.component.html',
   styleUrls: ['./timetable-edit.component.scss'],
+  providers: [
+    DialogService,
+    MessageNotificationService,
+    ConfirmationDialogService,
+    TimetablesService,
+  ],
 })
 export class TimetableEditComponent implements OnInit {
-  @Input() data: ITimetableUnit[] = data;
+  @Input() data: ITimetableUnit[];
 
   startAts: number[] = Array.from({ length: 60 }, (v, k) => k + 1);
 
@@ -67,9 +82,26 @@ export class TimetableEditComponent implements OnInit {
 
   startAtsInDay: number[] = Array.from({ length: 10 }, (v, k) => k + 1);
 
+  dataGetTimetable?: IGetTimetable;
+
+  constructor(
+    private config: DynamicDialogConfig,
+    private messageNotificationService: MessageNotificationService,
+    private confirmationDialogService: ConfirmationDialogService,
+    private timetableService: TimetablesService
+  ) {}
+
   ngOnInit(): void {
+    if (this.config.data && this.config.data.timetable) {
+      console.log('classId', this.config.data);
+      this.dataGetTimetable = this.config.data.timetable as IGetTimetable;
+      this.data = this.config.data?.timetable
+        ?.timetableUnits as ITimetableUnit[];
+      this.data = this.onSortTimeTableUnits(this.data);
+      console.log('data', this.data);
+    }
+
     // * Sắp xếp mảng theo thứ tự lớp và startAt
-    this.data = this.onSortTimeTableUnits(this.data);
 
     // * Lấy danh sách lớp học
     this.classes = this.getUniqueClasses(this.data);
@@ -107,6 +139,26 @@ export class TimetableEditComponent implements OnInit {
       this.data,
       this.classes
     );
+  }
+
+  onSave(event: any): void {
+    this.dataGetTimetable = {
+      ...this.dataGetTimetable,
+      timetableUnits: this.data,
+    };
+    this.confirmationDialogService.confirm(event, () => {
+      this.timetableService.updateTimeTable(this.dataGetTimetable).subscribe(
+        () => {
+          this.messageNotificationService.showSuccess(`cập nhật thàn công!`);
+        },
+        (error) => {
+          console.log(error.toString());
+          this.messageNotificationService.showError(
+            error.message ?? 'Đã xảy ra lỗi.'
+          );
+        }
+      );
+    });
   }
 
   onSortTimeTableUnits(timetableUnits: ITimetableUnit[]): ITimetableUnit[] {

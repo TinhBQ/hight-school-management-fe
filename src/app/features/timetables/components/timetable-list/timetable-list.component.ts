@@ -6,6 +6,7 @@ import { TimetablesService } from '@features/timetables/services/timetables.serv
 import {
   ISemester,
   ITimetable,
+  IGetTimetable,
   ITimetableRequestParametersForGet,
 } from '@features/timetables/interfaces';
 
@@ -35,8 +36,8 @@ import {
 
 import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
 
-import { TimetableEditComponent } from '../timetable-edit/timetable-edit.component';
 import { TimetableViewComponent } from '../timetable-view/timetable-view.component';
+import { TimetableEditComponent } from '../timetable-edit/timetable-edit.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -59,6 +60,8 @@ import { TimetableViewComponent } from '../timetable-view/timetable-view.compone
 })
 export class TimetableListComponent implements OnInit, AfterViewInit {
   semesterData: ISemester[] = semesterData;
+
+  data: IGetTimetable;
 
   // * Years
   schoolYears: IYear[] = [];
@@ -107,7 +110,7 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this._form.controls['semester'].setValue(this.semesterData[0]);
-    this.getYears();
+    this.getYears(this.requestParametersForSchoolYears);
 
     this.columns = [
       { field: 'name', header: 'Tên thời khóa biểu', isSort: false },
@@ -132,15 +135,27 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
         color: 'success',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onClick: (evnet: Event, data: any) => {
-          this.ref = this.dialogService.open(TimetableViewComponent, {
-            header: `${data.name}`,
-            width: '100%',
-            maximizable: true,
-            data: {
-              classId: data.id,
+          this.app.onShowSplashScreenService();
+          this.timetablesService.getTimetableById(data.id).subscribe(
+            (response) => {
+              console.log('response', response);
+              this.data = response;
+              this.ref = this.dialogService.open(TimetableViewComponent, {
+                header: `${data.name}`,
+                width: '100%',
+                maximizable: true,
+                data: {
+                  timetable: response,
+                },
+                contentStyle: { overflow: 'auto' },
+              });
+              this.app.onHideSplashScreenService();
             },
-            contentStyle: { overflow: 'auto' },
-          });
+            (error) => {
+              console.log(error.toString());
+              this.app.onHideSplashScreenService();
+            }
+          );
         },
       },
       {
@@ -149,15 +164,26 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
         color: 'success',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onClick: (evnet: Event, data: any) => {
-          this.ref = this.dialogService.open(TimetableEditComponent, {
-            header: `${data.name}`,
-            width: '100%',
-            maximizable: true,
-            data: {
-              classId: data.id,
+          this.timetablesService.getTimetableById(data.id).subscribe(
+            (response) => {
+              console.log('response', response);
+              this.data = response;
+              this.ref = this.dialogService.open(TimetableEditComponent, {
+                header: `${data.name}`,
+                width: '100%',
+                maximizable: true,
+                data: {
+                  timetable: response,
+                },
+                contentStyle: { overflow: 'auto' },
+              });
+              this.app.onHideSplashScreenService();
             },
-            contentStyle: { overflow: 'auto' },
-          });
+            (error) => {
+              console.log(error.toString());
+              this.app.onHideSplashScreenService();
+            }
+          );
         },
       },
     ];
@@ -195,6 +221,8 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
             this.paginationSchoolYears.totalCount;
           this.getYears(this.requestParametersForSchoolYears);
         } else {
+          this.loadingSchoolYears = false;
+          this.onSplashScreenService();
           this.requestParametersForTimetables = {
             ...this.requestParametersForTimetables,
             startYear: this._form.controls['schoolYear'].value.startYear,
@@ -202,10 +230,7 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
             semester: this._form.controls['semester'].value.id,
           };
 
-          console.log(this.requestParametersForTimetables);
           this.getTimesTables(this.requestParametersForTimetables);
-          this.loadingSchoolYears = false;
-          this.onSplashScreenService();
         }
       },
       (error) => {
@@ -251,6 +276,32 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
       (error) => {
         this.loadingTimetables = false;
         console.log(error.toString());
+      }
+    );
+  }
+
+  onChangeYear(event: any): void {
+    console.log(event.toString());
+    this.requestParametersForTimetables = {
+      ...this.requestParametersForTimetables,
+      startYear: event.value.startYear,
+      endYear: event.value.endYear,
+    };
+
+    this.getTimesTables(this.requestParametersForTimetables);
+  }
+
+  getTimeTableById(id: string): void {
+    this.app.onShowSplashScreenService();
+    this.timetablesService.getTimetableById(id).subscribe(
+      (response) => {
+        console.log('response', response);
+        this.data = response;
+        this.app.onHideSplashScreenService();
+      },
+      (error) => {
+        console.log(error.toString());
+        this.app.onHideSplashScreenService();
       }
     );
   }

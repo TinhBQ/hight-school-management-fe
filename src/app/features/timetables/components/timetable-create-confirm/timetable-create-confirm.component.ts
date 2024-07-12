@@ -14,6 +14,7 @@ import { Input, OnInit, Component } from '@angular/core';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
+import { MessagesModule } from 'primeng/messages';
 
 import { AppComponent } from 'src/app/app.component';
 
@@ -34,6 +35,7 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
     ToolbarModule,
     ButtonModule,
     TagModule,
+    MessagesModule,
   ],
   templateUrl: './timetable-create-confirm.component.html',
   providers: [

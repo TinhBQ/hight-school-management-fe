@@ -307,7 +307,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
         this.timetableCreateGeneralComponent._form.value.schoolYear.startYear,
       endYear:
         this.timetableCreateGeneralComponent._form.value.schoolYear.endYear,
-      semester: this.timetableCreateGeneralComponent._form.value.semester.id,
+      // semester: this.timetableCreateGeneralComponent._form.value.semester.id,
     };
 
     this.timetableRequestParameters = {
@@ -349,7 +349,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
         this.timetableCreateGeneralComponent._form.value.schoolYear?.startYear,
       endYear:
         this.timetableCreateGeneralComponent._form.value.schoolYear?.endYear,
-      semester: this.timetableCreateGeneralComponent._form.value.semester.id,
+      // semester: this.timetableCreateGeneralComponent._form.value.semester.id,
     };
 
     this.assignmentsService

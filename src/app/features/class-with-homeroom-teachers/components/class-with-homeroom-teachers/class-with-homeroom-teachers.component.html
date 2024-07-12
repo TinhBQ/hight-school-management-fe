@@ -1,3 +1,18 @@
+<div
+  class="card flex flex-columnalign-items-center justify-content-center py-4"
+>
+  <span class="p-float-label">
+    <p-dropdown
+      [options]="schoolYears"
+      [(ngModel)]="selectYear"
+      optionLabel="name"
+      placeholder="Chọn năm học"
+      (onChange)="onChangeYear($event)"
+    />
+    <label for="inputtext">Năm học</label>
+  </span>
+</div>
+
 <p-splitter [panelSizes]="[50, 50]">
   <ng-template pTemplate>
     <div class="col-12">

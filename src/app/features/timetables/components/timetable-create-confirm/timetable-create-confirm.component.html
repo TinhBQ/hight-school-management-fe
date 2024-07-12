@@ -10,35 +10,61 @@
 
   <div class="col-12 flex gap-2">
     <div class="col-6">
-      <p-toolbar styleClass="mb-3">
-        <div>
-          <h5>Danh sách môn học phân công tiết đôi</h5>
-          <div class="flex flex-wrap gap-2">
-            @for (subject of subjectDoublePeriod; track $index) {
-              <p-tag
-                severity="info"
-                [value]="subject.name"
-              />
-            }
+      @if (subjectDoublePeriod.length > 0) {
+        <p-toolbar styleClass="mb-3">
+          <div>
+            <h5>Danh sách môn học phân công tiết đôi</h5>
+            <div class="flex flex-wrap gap-2">
+              @for (subject of subjectDoublePeriod; track $index) {
+                <p-tag
+                  severity="info"
+                  [value]="subject.name"
+                />
+              }
+            </div>
           </div>
-        </div>
-      </p-toolbar>
+        </p-toolbar>
+      } @else {
+        <p-messages severity="success">
+          <ng-template pTemplate>
+            <div
+              class="w-full flex flex-column gap-2 align-items-center justify-content-center"
+            >
+              <div class="ml-2">Danh sách môn học phân công tiết đôi trống</div>
+            </div>
+          </ng-template>
+        </p-messages>
+      }
     </div>
 
     <div class="col-6">
-      <p-toolbar styleClass="mb-3">
-        <div>
-          <h5>Danh sách môn học phân công có phòng thực hành</h5>
-          <div class="flex flex-wrap gap-2">
-            @for (subject of subjectPracticeRoom; track $index) {
-              <p-tag
-                severity="info"
-                [value]="subject.name + ' - ' + subject.roomCount"
-              />
-            }
+      @if (subjectPracticeRoom.length > 0) {
+        <p-toolbar styleClass="mb-3">
+          <div>
+            <h5>Danh sách môn học phân công có phòng thực hành</h5>
+            <div class="flex flex-wrap gap-2">
+              @for (subject of subjectPracticeRoom; track $index) {
+                <p-tag
+                  severity="info"
+                  [value]="subject.name + ' - ' + subject.roomCount"
+                />
+              }
+            </div>
           </div>
-        </div>
-      </p-toolbar>
+        </p-toolbar>
+      } @else {
+        <p-messages severity="success">
+          <ng-template pTemplate>
+            <div
+              class="w-full flex flex-column gap-2 align-items-center justify-content-center"
+            >
+              <div class="ml-2">
+                Danh sách môn học phân công có phòng thực hành trống
+              </div>
+            </div>
+          </ng-template>
+        </p-messages>
+      }
     </div>
   </div>
 

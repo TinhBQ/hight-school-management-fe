@@ -1,7 +1,15 @@
+import { IGetTimetable } from '@features/timetables/interfaces';
+
 import { OnInit, Component } from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
 import { TabMenuModule } from 'primeng/tabmenu';
+import {
+  DialogService,
+  DynamicDialogRef,
+  DynamicDialogModule,
+  DynamicDialogConfig,
+} from 'primeng/dynamicdialog';
 
 import { CoreModule } from '@core/core.module';
 
@@ -21,15 +29,29 @@ import { TimetableViewForSchoolShiftComponent } from '../timetable-view-for-scho
     TableViewForGradeComponent,
     TimetableViewForSchoolShiftComponent,
     TimetableViewForTeacherComponent,
+    DynamicDialogModule,
   ],
   templateUrl: './timetable-view.component.html',
+  providers: [DialogService],
 })
 export class TimetableViewComponent implements OnInit {
   items: MenuItem[] | undefined;
 
   activeItem: MenuItem | undefined;
 
+  ref: DynamicDialogRef | undefined;
+
+  data?: IGetTimetable;
+
+  constructor(private config: DynamicDialogConfig) {}
+
   ngOnInit() {
+    if (this.config.data && this.config.data.timetable) {
+      console.log('classId', this.config.data);
+      this.data = this.config.data.timetable as IGetTimetable;
+      console.log('data', this.data);
+    }
+
     this.items = [
       { label: 'Buổi', icon: 'pi pi-home' },
       { label: 'Khối', icon: 'pi pi-chart-line' },

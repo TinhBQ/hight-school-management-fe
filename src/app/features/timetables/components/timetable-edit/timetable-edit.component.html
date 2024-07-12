@@ -3,8 +3,8 @@
   <button
     pButton
     pRipple
-    label="Kiểm tra và lưu"
-    (click)="onSwap()"
+    label="lưu"
+    (click)="onSave($event)"
   ></button>
   @if (isCheck) {
     <p-messages severity="success">

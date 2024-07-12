@@ -17,13 +17,14 @@
         <!-- ! Action Buttons: Upload, Export -->
         <ng-template pTemplate="right">
           <!-- @ Export File -->
-          <button
-            pButton
-            pRipple
-            label="Export"
-            icon="pi pi-upload"
-            class="p-button-help"
-          ></button>
+          <div class="export-wrapper">
+            <p-splitButton
+              label="Xuất file"
+              icon="pi pi-upload"
+              (onClick)="exportItem[0].command.call(this)"
+              [model]="exportItem"
+            />
+          </div>
         </ng-template>
       </p-toolbar>
 

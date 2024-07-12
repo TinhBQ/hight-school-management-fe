@@ -9,6 +9,7 @@ import { IPagination, IRequestParameters } from '@core/interfaces';
 
 import {
   ITimetable,
+  IGetTimetable,
   ITimetableDto,
   ITimetableRequestParameters,
   ITimetableRequestParametersForGet,
@@ -52,5 +53,15 @@ export class TimetablesService extends BaseService<
           return { result, pagination: paginationHeader };
         })
       );
+  }
+
+  getTimetableById(id: string): Observable<IGetTimetable> {
+    return this.http.get<IGetTimetable>(`${this.endpoint}/${id}`);
+  }
+
+  updateTimeTable(
+    body: IGetTimetable | Partial<IGetTimetable>
+  ): Observable<IGetTimetable> {
+    return this.http.patch<IGetTimetable>(`${this.endpoint}`, body);
   }
 }

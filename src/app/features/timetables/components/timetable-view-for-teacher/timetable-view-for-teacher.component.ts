@@ -1,25 +1,34 @@
-import { data } from '@features/timetables/helpers/data';
 import { ITeacher } from '@features/teachers/interfaces';
 import { ITeachingTime, ITimetableUnit } from '@features/timetables/interfaces';
 import { teachingTimeData } from '@features/timetables/helpers/teaching-time-data';
 
 import { Input, OnInit, Component } from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 import { CoreModule } from '@core/core.module';
+import { TableExportService } from '@core/services/table-export.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'smsedu-timetable-view-for-teacher',
   standalone: true,
-  imports: [CoreModule, ToolbarModule, ButtonModule, DropdownModule],
+  imports: [
+    CoreModule,
+    ToolbarModule,
+    ButtonModule,
+    DropdownModule,
+    SplitButtonModule,
+  ],
   templateUrl: './timetable-view-for-teacher.component.html',
+  providers: [TableExportService],
 })
 export class TimetableViewForTeacherComponent implements OnInit {
-  @Input() data: ITimetableUnit[] = data;
+  @Input() data: ITimetableUnit[];
 
   startAts: number[] = Array.from({ length: 60 }, (v, k) => k + 1);
 
@@ -34,6 +43,10 @@ export class TimetableViewForTeacherComponent implements OnInit {
   timetableUnits: ITimetableUnit[][] = [];
 
   teachingTimes: ITeachingTime[] = teachingTimeData;
+
+  exportItem: MenuItem[] = [];
+
+  constructor(private tableExportService: TableExportService) {}
 
   ngOnInit(): void {
     this.data = this.data.sort((a, b) => {
@@ -55,6 +68,23 @@ export class TimetableViewForTeacherComponent implements OnInit {
       this.onFilterByTeacher(this.data, this.selectTeacher),
       this.selectTeacher
     );
+
+    this.exportItem = [
+      {
+        label: 'XLS',
+        icon: 'pi pi-fw pi-file-excel',
+        command: () => {
+          this.onExportExcel();
+        },
+      },
+      {
+        label: 'PDF',
+        icon: 'pi pi-fw pi-file-pdf',
+        command: () => {
+          this.onExportPDF();
+        },
+      },
+    ];
   }
 
   onHandelStartAt(startAt: number): number {
@@ -158,4 +188,61 @@ export class TimetableViewForTeacherComponent implements OnInit {
   getTeachingTimeName(num: number): string {
     return this.teachingTimes.find((x) => x.id === num)?.name;
   }
+
+  // #region -- Handel Export Data --
+  // @ Acition: Export Excel
+  onExportExcel(): void {
+    const result = [];
+    for (let startAt = 1; startAt <= 10; startAt++) {
+      const obj: object = {};
+      for (const num of this.numWeekdays) {
+        obj['Thứ ' + num] = this.getNameAssignment(
+          this.timetableUnits[num][startAt]
+        );
+      }
+
+      result.push({
+        Tiết: this.onHandelStartAt(startAt),
+        'Thời gian': this.getTeachingTimeName(this.onHandelStartAt(startAt)),
+        ...obj,
+      });
+    }
+
+    this.tableExportService.exportExcel(
+      result,
+      'timetable-view-for-school-shift'
+    );
+  }
+
+  // @ Acition: Export PDf
+  onExportPDF(): void {
+    const result = [];
+    for (let startAt = 1; startAt <= 10; startAt++) {
+      const obj: object = {};
+      for (const num of this.numWeekdays) {
+        obj['Thứ ' + num] = this.getNameAssignment(
+          this.timetableUnits[num][startAt]
+        );
+      }
+
+      result.push({
+        Tiết: this.onHandelStartAt(startAt),
+        'Thời gian': this.getTeachingTimeName(this.onHandelStartAt(startAt)),
+        ...obj,
+      });
+    }
+    const headers = [
+      'Tiết',
+      'Thời gian',
+      ...this.numWeekdays.map((x) => 'Thứ ' + x),
+    ];
+    const rows = result.map((row) => headers.map((col) => row[col]));
+    this.tableExportService.exportPdf(
+      headers,
+      rows,
+      'subjects',
+      'Danh sách môn học'
+    );
+  }
+  // #endregion
 }

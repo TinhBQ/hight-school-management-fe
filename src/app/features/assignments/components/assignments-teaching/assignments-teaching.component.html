@@ -21,18 +21,9 @@
         [(ngModel)]="selectYear"
         optionLabel="name"
         placeholder="Chọn năm học"
+        (onChange)="onChangeYear($event)"
       />
       <label for="inputtext">Năm học</label>
-    </span>
-    <span class="p-float-label">
-      <p-dropdown
-        [options]="semesterData"
-        [(ngModel)]="selectSemester"
-        optionLabel="name"
-        placeholder="Select a City"
-        (onChange)="onChangeSemester($event)"
-      />
-      <label for="inputtext">Học kỳ</label>
     </span>
     <span class="flex align-items-center gap-1">
       <p-checkbox

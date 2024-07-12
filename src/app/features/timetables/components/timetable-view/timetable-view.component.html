@@ -7,19 +7,19 @@
 
   <div class="card">
     @if (activeItem.label === 'Buổi') {
-      <smsedu-timetable-view-for-school-shift />
+      <smsedu-timetable-view-for-school-shift [data]="data?.timetableUnits" />
     }
 
     @if (activeItem.label === 'Khối') {
-      <smsedu-table-view-for-grade />
+      <smsedu-table-view-for-grade [data]="data?.timetableUnits" />
     }
 
     @if (activeItem.label === 'Lớp') {
-      <smsedu-timetable-view-for-class />
+      <smsedu-timetable-view-for-class [data]="data?.timetableUnits" />
     }
 
     @if (activeItem.label === 'Giáo viên') {
-      <smsedu-timetable-view-for-teacher />
+      <smsedu-timetable-view-for-teacher [data]="data?.timetableUnits" />
     }
   </div>
 </div>

@@ -1,5 +1,4 @@
 import { IClass } from '@features/classes/interfaces';
-import { data } from '@features/timetables/helpers/data';
 import { ITeachingTime, ITimetableUnit } from '@features/timetables/interfaces';
 import { teachingTimeData } from '@features/timetables/helpers/teaching-time-data';
 
@@ -32,7 +31,7 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
   providers: [TableExportService],
 })
 export class TimetableViewForClassComponent implements OnInit {
-  @Input() data: ITimetableUnit[] = data;
+  @Input() data: ITimetableUnit[];
 
   selectedClass: IClass;
 

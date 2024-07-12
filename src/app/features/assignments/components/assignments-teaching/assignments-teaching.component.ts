@@ -169,7 +169,7 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
       ...this.requestParameters,
       startYear: this.startYear,
       endYear: this.endYear,
-      semester: this.selectSemester.id,
+      // semester: this.selectSemester.id,
       classId: this.classId,
       teacherId: this.teacherId,
       subjectId: this.subjectId,
@@ -221,9 +221,6 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
     ];
 
     this.getYears(this.requestParametersForSchoolYears);
-    this.getAssignments(this.requestParameters);
-    this.getClasses(this.requestParametersForClasses);
-    this.getTeachers(this.requestParametersForTeachers);
   }
 
   ngAfterViewInit(): void {
@@ -363,16 +360,27 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
         } else {
           if (!this.startYear && !this.endYear) {
             this.selectYear = this.schoolYears[0];
-            console.log(this.selectYear);
             this.assignmentsTeachingDialogForCreateUpdateComponent._form.controls[
               'year'
             ].setValue(this.selectYear);
           }
-
-          console.log(this.selectYear);
-
           this.loadingSchoolYears = false;
           this.onSplashScreenService();
+
+          this.requestParameters = {
+            ...this.requestParameters,
+            startYear: this.schoolYears[0]?.startYear,
+            endYear: this.schoolYears[0]?.endYear,
+          };
+          this.getAssignments(this.requestParameters);
+
+          this.requestParametersForClasses = {
+            ...this.requestParametersForClasses,
+            startYear: this.schoolYears[0]?.startYear,
+            endYear: this.schoolYears[0]?.endYear,
+          };
+          this.getClasses(this.requestParametersForClasses);
+          this.getTeachers(this.requestParametersForTeachers);
         }
       },
       (error) => {
@@ -437,17 +445,24 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
     this.assignmentsTeachingDialogForCreateUpdateComponent.isDialog = true;
   }
 
-  onChangeSemester(event: any): void {
-    // this.selectYear = event.value;
+  onChangeYear(event: any): void {
     this.requestParameters = {
       ...this.requestParameters,
-      semester: event.value.id,
+      startYear: event.value?.startYear,
+      endYear: event.value?.endYear,
     };
 
     this.getAssignments(this.requestParameters);
 
+    this.requestParametersForClasses = {
+      ...this.requestParametersForClasses,
+      startYear: event.value?.startYear,
+      endYear: event.value?.endYear,
+    };
+    this.getClasses(this.requestParametersForClasses);
+
     this.assignmentsTeachingDialogForCreateUpdateComponent._form.controls[
-      'semester'
+      'year'
     ].setValue(event.value);
   }
 
