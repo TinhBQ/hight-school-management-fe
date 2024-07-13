@@ -14,4 +14,5 @@ export const routes: Routes = [
   ...smseduRoutes,
   ...authRoutes,
   ...errorRoutes,
+  { path: '**', redirectTo: paths.error.notFound, pathMatch: 'full' },
 ];

@@ -146,6 +146,7 @@ export class TeacherListComponent implements OnInit, AfterViewInit {
             maximizable: true,
             data: {
               teacherId: data.id,
+              handleAction: this.onClear(),
             },
             contentStyle: { overflow: 'auto' },
           });
@@ -187,6 +188,7 @@ export class TeacherListComponent implements OnInit, AfterViewInit {
     this.loading = true;
     const { first, rows, sortField, sortOrder } = event;
     this.requestParameters = {
+      ...this.requestParameters,
       pageNumber: first / rows + 1 || null,
       pageSize: rows || null,
       orderBy: sortField

@@ -148,6 +148,7 @@ export class SubjectsForClassComponent implements OnInit {
     const { first, rows, sortField, sortOrder } = event;
 
     this.requestParameters = {
+      ...this.requestParameters,
       classId: this.classId,
       pageNumber: first / rows + 1 || null,
       pageSize: rows || null,

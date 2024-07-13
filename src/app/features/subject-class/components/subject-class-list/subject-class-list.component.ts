@@ -98,6 +98,7 @@ export class SubjectClassListComponent implements OnInit {
     this.loading = true;
     const { first, rows, sortField, sortOrder } = event;
     this.requestParameters = {
+      ...this.requestParameters,
       pageNumber: first / rows + 1 || null,
       pageSize: rows || null,
       orderBy: sortField

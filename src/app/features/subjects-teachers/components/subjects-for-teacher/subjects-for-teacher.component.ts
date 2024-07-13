@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { TeacherListComponent } from '@features/teachers/components/teacher-list/teacher-list.component';
 import { SubjectsTeachersService } from '@features/subjects-teachers/services/subjects-teachers.service';
 import {
   ISubjectsTeachers,
@@ -9,8 +10,10 @@ import {
 import {
   Input,
   OnInit,
+  Output,
   Component,
   ViewChild,
+  EventEmitter,
   ChangeDetectorRef,
 } from '@angular/core';
 
@@ -48,6 +51,7 @@ import { SubjectsForTeacherUpdateIsMainComponent } from '../subjects-for-teacher
     SubjectsForTeacherUnassignedComponent,
     SubjectsForTeacherUpdateIsMainComponent,
     DynamicDialogModule,
+    TeacherListComponent,
   ],
   templateUrl: './subjects-for-teacher.component.html',
   providers: [
@@ -78,6 +82,8 @@ export class SubjectsForTeacherComponent implements OnInit {
 
   ref: DynamicDialogRef | undefined;
 
+  @Output() handleAction = new EventEmitter();
+
   @ViewChild(SmseduCrudComponent)
   smseduCrudComponent: SmseduCrudComponent;
 
@@ -87,12 +93,16 @@ export class SubjectsForTeacherComponent implements OnInit {
   @ViewChild(SubjectsForTeacherUpdateIsMainComponent)
   subjectsForTeacherUpdateIsMainComponent: SubjectsForTeacherUpdateIsMainComponent;
 
+  action: any;
+
   constructor(
     private subjectsTeachersService: SubjectsTeachersService,
     private config: DynamicDialogConfig,
     private cdr: ChangeDetectorRef,
     private confirmationDialogService: ConfirmationDialogService,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+
+    public teacherListComponent: TeacherListComponent
   ) {}
 
   ngOnInit(): void {
@@ -101,7 +111,7 @@ export class SubjectsForTeacherComponent implements OnInit {
       this.requestParameters = {
         teacherId: this.config.data.teacherId,
       };
-      this.cdr.detectChanges();
+      this.action = this.config.data.handleAction;
     }
 
     this.searchText$
@@ -199,7 +209,7 @@ export class SubjectsForTeacherComponent implements OnInit {
           )
           .subscribe(
             () => {
-              this.smseduCrudComponent.onclear();
+              this.onClear();
               this.subjectsForTeacherUpdateIsMainComponent.onHideDialog();
               this.messageNotificationService.showSuccess(
                 `Cập nhật thành công!`
@@ -216,11 +226,15 @@ export class SubjectsForTeacherComponent implements OnInit {
     }
   }
 
+  onAction(): void {
+    this.handleAction.emit();
+  }
+
   onDelete(event: Event, subjecTeacher: ISubjectsTeachers): void {
     this.confirmationDialogService.confirm(event, () => {
       this.subjectsTeachersService.delete(subjecTeacher.id).subscribe(
         () => {
-          this.smseduCrudComponent.onclear();
+          this.onClear();
           this.subjectsForTeacherUnassignedComponent.onCLear();
           this.messageNotificationService.showSuccess(
             `Xóa môn học  ${subjecTeacher.subject.name} thành công!`
@@ -238,6 +252,8 @@ export class SubjectsForTeacherComponent implements OnInit {
 
   onClear(): void {
     this.smseduCrudComponent.onclear();
+    this.handleAction.emit();
+    this.teacherListComponent.onClear();
   }
 
   onDeleteCollection(event: Event, subjecTeachers: ISubjectsTeachers[]): void {
@@ -250,7 +266,7 @@ export class SubjectsForTeacherComponent implements OnInit {
               this.messageNotificationService.showSuccess(
                 `Xóa ${subjecTeachers.length} môn học: ${subjecTeachers.map((x) => x.subject.name).join(', ')} thành công!`
               );
-              this.smseduCrudComponent.onclear();
+              this.onClear();
               this.subjectsForTeacherUnassignedComponent.onCLear();
             },
             (error) => {
