@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard } from '@core/guards/auth.guard';
+
 import { paths } from '../../paths';
 
 export const classRoutes: Routes = [
@@ -19,5 +21,6 @@ export const classRoutes: Routes = [
           ).then((m) => m.ClassListPageComponent),
       },
     ],
+    canActivate: [authGuard],
   },
 ];

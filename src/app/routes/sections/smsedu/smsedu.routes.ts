@@ -2,6 +2,8 @@ import { LayoutMainComponent } from '@layouts/main/layout-main.component';
 
 import { Routes } from '@angular/router';
 
+import { authGuard } from '@core/guards/auth.guard';
+
 import { paths } from '../../paths';
 import { classRoutes } from './class.routes';
 import { teacherRoutes } from './teacher.routes';
@@ -25,5 +27,6 @@ export const smseduRoutes: Routes = [
       ...assignmentRoutes,
       ...timetableRoutes,
     ],
+    canActivate: [authGuard],
   },
 ];

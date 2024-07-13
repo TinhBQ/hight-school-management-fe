@@ -5,6 +5,7 @@
     class="login-form"
     [formGroup]="loginForm"
     autocomplete="off"
+    (ngSubmit)="onSubmit()"
   >
     <div class="login-form-container">
       <div class="login-form-container-banner">

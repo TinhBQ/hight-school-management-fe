@@ -5,6 +5,7 @@ import { SplashScreenService } from '@features/splash-screen/services/splash-scr
 
 import { RouterOutlet } from '@angular/router';
 import { OnInit, Component } from '@angular/core';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 import { PrimeNGConfig } from 'primeng/api';
@@ -14,6 +15,7 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 import { CoreModule } from '@core/core.module';
+import { AuthHeaderInterceptor } from '@core/interceptors/auth-header.interceptor';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +31,11 @@ import { CoreModule } from '@core/core.module';
   templateUrl: './app.component.html',
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthHeaderInterceptor,
+      multi: true,
+    },
     MessageService,
     ConfirmationService,
     BreadcrumbService,

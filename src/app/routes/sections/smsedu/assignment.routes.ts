@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard } from '@core/guards/auth.guard';
+
 import { paths } from '../../paths';
 
 export const assignmentRoutes: Routes = [
@@ -33,5 +35,6 @@ export const assignmentRoutes: Routes = [
           ).then((m) => m.AssignTeachingPageComponent),
       },
     ],
+    canActivate: [authGuard],
   },
 ];

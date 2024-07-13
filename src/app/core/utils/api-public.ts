@@ -1,11 +1,6 @@
 import { environment } from 'src/environments/environment';
 
-const domain: string = environment.baseUrl;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const endpoint: any = environment.endpoint;
+const endpoint: string = environment.apiURL;
 
 // Api không cần kiếm tra
-export const apiPublic = [
-  domain + endpoint.auth.login,
-  domain + endpoint.auth.refreshToken,
-];
+export const apiPublic = [endpoint + +'/auth/login'];

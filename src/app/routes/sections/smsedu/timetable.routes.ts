@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard } from '@core/guards/auth.guard';
+
 import { paths } from '../../paths';
 
 export const timetableRoutes: Routes = [
@@ -40,5 +42,6 @@ export const timetableRoutes: Routes = [
           ).then((m) => m.TimetableCreatePageComponent),
       },
     ],
+    canActivate: [authGuard],
   },
 ];
