@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IClass } from '@features/classes/interfaces';
-import { ITimetableUnit } from '@features/timetables/interfaces';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
+import {
+  ITimetableUnit,
+  IConstraintError,
+} from '@features/timetables/interfaces';
 
 import { Input, OnInit, Component } from '@angular/core';
 
@@ -11,6 +14,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 import { CoreModule } from '@core/core.module';
 import { TableExportService } from '@core/services/table-export.service';
@@ -28,6 +32,7 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
     DropdownModule,
     TimetableViewFullComponent,
     SplitButtonModule,
+    OverlayPanelModule,
   ],
   templateUrl: './timetable-view-for-school-shift.component.html',
   providers: [TableExportService],
@@ -224,9 +229,23 @@ export class TimetableViewForSchoolShiftComponent implements OnInit {
       headers,
       rows,
       'subjects',
-      'Danh sách môn học',
+      'Thời khóa biểu buổi ' + this.selectedSchoolShift.name,
       true
     );
   }
   // #endregion
+
+  getStringConstraintError(item: IConstraintError): string {
+    const code = item?.code;
+    const hardConstraint = item?.isHardConstraint
+      ? 'Ràng buộc cứng'
+      : 'Ràng buộc mềm';
+    const description = item?.description;
+
+    return `[${code}] ${hardConstraint}: ${description}`;
+  }
+
+  isHardConstraint(item: IConstraintError[]): boolean {
+    return item.some((x) => x.isHardConstraint === true);
+  }
 }

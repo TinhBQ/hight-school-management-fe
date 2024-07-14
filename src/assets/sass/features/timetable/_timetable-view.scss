@@ -25,6 +25,29 @@
       .cell-dnd {
         border: 1px solid $primaryColor;
         cursor: pointer;
+        position: relative;
+
+        .timetable-unit {
+          .timetable-unit-constraint {
+            display: none;
+            position: absolute;
+            height: 250px;
+            width: 250px;
+            top: -258px;
+            right: -250px;
+            background: blue;
+            z-index: 1 !important;
+          }
+        }
+      }
+
+      .cell-dnd:hover {
+        .timetable-unit {
+          .timetable-unit-constraint {
+            display: block;
+            z-index: 1 !important;
+          }
+        }
       }
     }
   }

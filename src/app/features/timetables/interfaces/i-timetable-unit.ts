@@ -1,3 +1,5 @@
+import { IConstraintError } from './i-constraint-error';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ITimetableUnit extends ITimetableUnitDto {
   id?: string;
@@ -12,7 +14,7 @@ export interface ITimetableUnitDto {
   subjectId?: string;
   subjectName?: string;
   startAt: number;
-  constraintErrors?: any;
+  constraintErrors?: IConstraintError[];
 }
 
 export interface ITimetableUnitForEditDto {
@@ -25,7 +27,7 @@ export interface ITimetableUnitForEditDto {
   subjectId?: string;
   subjectName?: string;
   startAt: number;
-  constraintErrors?: any;
+  constraintErrors?: IConstraintError[];
   isNoAssignTimetableUnits?: boolean;
   isHover?: boolean;
 }

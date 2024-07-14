@@ -67,9 +67,34 @@
                     {{ onHandelStartAt(startAt) }}
                   </th>
                   @for (klass of selectClasses; track $index) {
-                    <th class="cell-dnd">
-                      <div>
-                        <div>
+                    <th
+                      class="cell-dnd"
+                      (click)="
+                        timetableUnits[klass.name][startAt]?.constraintErrors
+                          .length > 0
+                          ? op.toggle($event)
+                          : null
+                      "
+                    >
+                      <div
+                        [class.constraint-error-0]="
+                          timetableUnits[klass.name][startAt]?.constraintErrors
+                            .length > 0 &&
+                          !isHardConstraint(
+                            timetableUnits[klass.name][startAt]
+                              ?.constraintErrors
+                          )
+                        "
+                        [class.constraint-error-1]="
+                          timetableUnits[klass.name][startAt]?.constraintErrors
+                            .length > 0 &&
+                          isHardConstraint(
+                            timetableUnits[klass.name][startAt]
+                              ?.constraintErrors
+                          )
+                        "
+                      >
+                        <div class="timetable-unit">
                           {{
                             getNameAssignment(
                               timetableUnits[klass.name][startAt]
@@ -77,6 +102,29 @@
                           }}
                         </div>
                       </div>
+
+                      <p-overlayPanel #op>
+                        <div class="flex flex-column gap-3 w-25rem">
+                          <ul>
+                            @for (
+                              error of timetableUnits[klass.name][startAt]
+                                ?.constraintErrors;
+                              track $index
+                            ) {
+                              <li
+                                [class.constraint-error-0]="
+                                  error?.isHardConstraint === false
+                                "
+                                [class.constraint-error-1]="
+                                  error?.isHardConstraint === true
+                                "
+                              >
+                                {{ getStringConstraintError(error) }}
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </p-overlayPanel>
                     </th>
                   }
                 </tr>
@@ -102,9 +150,34 @@
                     {{ onHandelStartAt(startAt) - 5 }}
                   </th>
                   @for (klass of selectClasses; track $index) {
-                    <th class="cell-dnd">
-                      <div>
-                        <div>
+                    <th
+                      class="cell-dnd"
+                      (click)="
+                        timetableUnits[klass.name][startAt]?.constraintErrors
+                          .length > 0
+                          ? op.toggle($event)
+                          : null
+                      "
+                    >
+                      <div
+                        [class.constraint-error-0]="
+                          timetableUnits[klass.name][startAt]?.constraintErrors
+                            .length > 0 &&
+                          !isHardConstraint(
+                            timetableUnits[klass.name][startAt]
+                              ?.constraintErrors
+                          )
+                        "
+                        [class.constraint-error-1]="
+                          timetableUnits[klass.name][startAt]?.constraintErrors
+                            .length > 0 &&
+                          isHardConstraint(
+                            timetableUnits[klass.name][startAt]
+                              ?.constraintErrors
+                          )
+                        "
+                      >
+                        <div class="timetable-unit">
                           {{
                             getNameAssignment(
                               timetableUnits[klass.name][startAt]
@@ -112,6 +185,29 @@
                           }}
                         </div>
                       </div>
+
+                      <p-overlayPanel #op>
+                        <div class="flex flex-column gap-3 w-25rem">
+                          <ul>
+                            @for (
+                              error of timetableUnits[klass.name][startAt]
+                                ?.constraintErrors;
+                              track $index
+                            ) {
+                              <li
+                                [class.constraint-error-0]="
+                                  error?.isHardConstraint === false
+                                "
+                                [class.constraint-error-1]="
+                                  error?.isHardConstraint === true
+                                "
+                              >
+                                {{ getStringConstraintError(error) }}
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </p-overlayPanel>
                     </th>
                   }
                 </tr>
