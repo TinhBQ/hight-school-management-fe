@@ -59,64 +59,16 @@
               />
             </span>
             <span class="profile-info-wrapper">
-              <h3>Bùi Quốc Tĩnh</h3>
+              <h3>{{ decodedToken.name }}</h3>
             </span>
           </a>
           <ul class="profile-item-submenu fadeInDown">
-            <li class="profile-submenu-header">
-              <div class="performance">
-                <span>Weekly Performance</span>
-                <img
-                  src="assets/layout/images/topbar/asset-bars.svg"
-                  alt="mirage-layout"
-                />
-              </div>
-              <div class="profile">
-                <img
-                  src="assets/layout/images/topbar/avatar-eklund.png"
-                  alt="mirage-layout"
-                  width="40"
-                />
-                <h1>Olivia Eklund</h1>
-                <span>Design</span>
-              </div>
-            </li>
-            <li class="layout-submenu-item">
-              <i class="pi pi-list icon icon-1"></i>
-              <div class="menu-text">
-                <p>Tasks</p>
-                <span>3 open issues</span>
-              </div>
-              <i class="pi pi-angle-right"></i>
-            </li>
-            <li class="layout-submenu-item">
-              <i class="pi pi-shopping-cart icon icon-2"></i>
-              <div class="menu-text">
-                <p>Payments</p>
-                <span>24 new</span>
-              </div>
-              <i class="pi pi-angle-right"></i>
-            </li>
-            <li class="layout-submenu-item">
-              <i class="pi pi-users icon icon-3"></i>
-              <div class="menu-text">
-                <p>Clients</p>
-                <span>+80%</span>
-              </div>
-              <i class="pi pi-angle-right"></i>
-            </li>
             <li class="layout-submenu-footer">
               <button
-                type="button"
-                class="signout-button"
+                class="logout-button"
+                (click)="onConfirmLogout()"
               >
-                Sign Out
-              </button>
-              <button
-                type="button"
-                class="buy-mirage-button"
-              >
-                Buy Mirage
+                Đăng xuất
               </button>
             </li>
           </ul>
