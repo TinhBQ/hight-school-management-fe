@@ -14,13 +14,17 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DragDropModule } from 'primeng/dragdrop';
 import {
   DialogService,
+  DynamicDialogRef,
   DynamicDialogConfig,
-  DynamicDialogModule,
 } from 'primeng/dynamicdialog';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
 import { MessageNotificationService } from '@core/services/message-notification.service';
+
+import { TimetableEditCheckAndSaveComponent } from '../timetable-edit-check-and-save/timetable-edit-check-and-save.component';
 
 interface IChoose {
   numWeekday: number;
@@ -38,7 +42,8 @@ interface IChoose {
     DropdownModule,
     MessagesModule,
     ButtonModule,
-    DynamicDialogModule,
+
+    TimetableEditCheckAndSaveComponent,
   ],
   templateUrl: './timetable-edit.component.html',
   styleUrls: ['./timetable-edit.component.scss'],
@@ -84,11 +89,15 @@ export class TimetableEditComponent implements OnInit {
 
   dataGetTimetable?: IGetTimetable;
 
+  ref: DynamicDialogRef | undefined;
+
   constructor(
     private config: DynamicDialogConfig,
     private messageNotificationService: MessageNotificationService,
     private confirmationDialogService: ConfirmationDialogService,
-    private timetableService: TimetablesService
+    private timetableService: TimetablesService,
+    public dialogService: DialogService,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -376,42 +385,6 @@ export class TimetableEditComponent implements OnInit {
     return timetableUnits.filter((x) => x.className === className);
   }
 
-  // onSwap(timetableUnit1: ITimetableUnit, timetableUnit2: ITimetableUnit): void {
-  //   this.timetableUnits[timetableUnit1.className][timetableUnit1.startAt] = {
-  //     ...timetableUnit2,
-  //     startAt: timetableUnit1.startAt,
-  //     className: timetableUnit1.className,
-  //     classId: timetableUnit1.classId,
-  //   };
-
-  //   this.timetableUnits[timetableUnit2.className][timetableUnit2.startAt] = {
-  //     ...timetableUnit1,
-  //     startAt: timetableUnit2.startAt,
-  //     className: timetableUnit2.className,
-  //     classId: timetableUnit2.classId,
-  //   };
-  // }
-
-  // dragData: ITimetableUnit;
-
-  // onDragStart(dataCell: ITimetableUnit): void {
-  //   this.dragData = dataCell;
-  // }
-
-  // onDragEnd(): void {
-  //   console.log('dragEnd', data);
-  // }
-
-  // onDrop(dropData: ITimetableUnit): void {
-  //   console.log('dragData', this.dragData);
-  //   console.log('dragData', dropData);
-  //   this.onSwap(this.dragData, dropData);
-  //   // this.timetableUnits = this.initTimeTableUnits2Dimensional(
-  //   //   this.data,
-  //   //   this.classes
-  //   // );
-  // }
-
   onHandelStartAt(startAt: number): number {
     return startAt % 10 === 0 ? 10 : startAt % 10;
   }
@@ -567,5 +540,27 @@ export class TimetableEditComponent implements OnInit {
     this.choose1 = null;
     this.choose2 = null;
     this.isCheck = false;
+  }
+
+  onCheck(): void {
+    this.app.onShowSplashScreenService();
+    this.timetableService.getTimetableById(this.dataGetTimetable.id).subscribe(
+      (response) => {
+        this.ref = this.dialogService.open(TimetableEditCheckAndSaveComponent, {
+          header: 'Vi phạm ràng buộc',
+          width: '100%',
+          maximizable: true,
+          data: {
+            timetableUnits: response?.timetableUnits,
+          },
+          contentStyle: { overflow: 'auto' },
+        });
+        this.app.onHideSplashScreenService();
+      },
+      (error) => {
+        console.log(error.toString());
+        this.app.onHideSplashScreenService();
+      }
+    );
   }
 }

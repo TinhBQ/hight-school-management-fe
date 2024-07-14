@@ -56,11 +56,54 @@
                         ? 'cell-dnd-afternoon'
                         : 'cell-dnd-morning'
                     "
+                    (click)="
+                      timetableUnits[num][startAt]?.constraintErrors?.length > 0
+                        ? op.toggle($event)
+                        : null
+                    "
                   >
-                    <div>
+                    <div
+                      [class.constraint-error-0]="
+                        timetableUnits[num][startAt]?.constraintErrors?.length >
+                          0 &&
+                        !isHardConstraint(
+                          timetableUnits[num][startAt]?.constraintErrors
+                        )
+                      "
+                      [class.constraint-error-1]="
+                        timetableUnits[num][startAt]?.constraintErrors?.length >
+                          0 &&
+                        isHardConstraint(
+                          timetableUnits[num][startAt]?.constraintErrors
+                        )
+                      "
+                    >
                       <div>
                         {{ getNameAssignment(timetableUnits[num][startAt]) }}
                       </div>
+
+                      <p-overlayPanel #op>
+                        <div class="flex flex-column gap-3 w-25rem">
+                          <ul>
+                            @for (
+                              error of timetableUnits[num][startAt]
+                                ?.constraintErrors;
+                              track $index
+                            ) {
+                              <li
+                                [class.constraint-error-0]="
+                                  error?.isHardConstraint === false
+                                "
+                                [class.constraint-error-1]="
+                                  error?.isHardConstraint === true
+                                "
+                              >
+                                {{ getStringConstraintError(error) }}
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </p-overlayPanel>
                     </div>
                   </th>
                 }

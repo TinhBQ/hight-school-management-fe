@@ -38,6 +38,8 @@ export class TableViewForGradeComponent implements OnInit {
 
   @Input() data: ITimetableUnit[];
 
+  selectedData: ITimetableUnit[];
+
   startAts: number[] = Array.from({ length: 60 }, (v, k) => k + 1);
 
   classNames: string[] = [];
@@ -74,7 +76,7 @@ export class TableViewForGradeComponent implements OnInit {
   }
 
   onHandelTimetableUnits(grade: number): void {
-    this.data = this.data
+    this.selectedData = this.data
       .filter((x) => x.className.slice(0, 2) === grade.toString())
       .sort((a, b) => {
         if (a.className > b.className) {
@@ -86,10 +88,10 @@ export class TableViewForGradeComponent implements OnInit {
       });
 
     // * Lấy danh sách lớp học
-    this.classNames = [...new Set(this.data.map((x) => x.className))];
+    this.classNames = [...new Set(this.selectedData.map((x) => x.className))];
 
     // * Khới tạo mảng 2 chiều cho thời khóa biểu
-    this.data.forEach((x) => {
+    this.selectedData.forEach((x) => {
       // Ensure the inner array/object exists before assignment
       if (!this.timetableUnits[x.className]) {
         this.timetableUnits[x.className] = [];

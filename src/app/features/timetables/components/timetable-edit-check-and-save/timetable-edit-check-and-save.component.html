@@ -1,1 +1,98 @@
-<p>timetable-edit-check-and-save works!</p>
+<!-- eslint-disable @angular-eslint/template/elements-content -->
+<div class="grid">
+  <div class="col-12">
+    <div class="">
+      <div class="timetable-view-container">
+        <table class="timetable-view-morning">
+          <thead>
+            <tr>
+              <th>Thứ</th>
+              <th>Tiết</th>
+              @for (klass of classes; track $index) {
+                <th>{{ klass.name }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (startAt of startAts; track $index) {
+              <tr>
+                @if (startAt % 10 === 1) {
+                  <th
+                    rowspan="10"
+                    class="cell-weekday"
+                  >
+                    <div>
+                      <div>
+                        {{ 'Thứ ' + convertNumFloor(startAt / 10 + 2) }}
+                      </div>
+                    </div>
+                  </th>
+                }
+                <th class="cell-startAt">
+                  {{ onHandelStartAt(startAt) }}
+                </th>
+                @for (klass of classes; track $index) {
+                  <th
+                    class="cell-dnd"
+                    (click)="
+                      timetableUnits[klass.name][startAt]?.constraintErrors
+                        .length > 0
+                        ? op.toggle($event)
+                        : null
+                    "
+                  >
+                    <div
+                      [class.constraint-error-0]="
+                        timetableUnits[klass.name][startAt]?.constraintErrors
+                          .length > 0 &&
+                        !isHardConstraint(
+                          timetableUnits[klass.name][startAt]?.constraintErrors
+                        )
+                      "
+                      [class.constraint-error-1]="
+                        timetableUnits[klass.name][startAt]?.constraintErrors
+                          .length > 0 &&
+                        isHardConstraint(
+                          timetableUnits[klass.name][startAt]?.constraintErrors
+                        )
+                      "
+                    >
+                      <div>
+                        {{
+                          getNameAssignment(timetableUnits[klass.name][startAt])
+                        }}
+                      </div>
+                    </div>
+
+                    <p-overlayPanel #op>
+                      <div class="flex flex-column gap-3 w-25rem">
+                        <ul>
+                          @for (
+                            error of timetableUnits[klass.name][startAt]
+                              ?.constraintErrors;
+                            track $index
+                          ) {
+                            <li
+                              [class.constraint-error-0]="
+                                error?.isHardConstraint === false
+                              "
+                              [class.constraint-error-1]="
+                                error?.isHardConstraint === true
+                              "
+                            >
+                              {{ getStringConstraintError(error) }}
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    </p-overlayPanel>
+                  </th>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,10 @@
 import { IClass } from '@features/classes/interfaces';
-import { ITeachingTime, ITimetableUnit } from '@features/timetables/interfaces';
 import { teachingTimeData } from '@features/timetables/helpers/teaching-time-data';
+import {
+  ITeachingTime,
+  ITimetableUnit,
+  IConstraintError,
+} from '@features/timetables/interfaces';
 
 import { Input, OnInit, Component } from '@angular/core';
 
@@ -9,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 import { CoreModule } from '@core/core.module';
 import { TableExportService } from '@core/services/table-export.service';
@@ -26,6 +31,7 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
     DropdownModule,
     TimetableViewFullComponent,
     SplitButtonModule,
+    OverlayPanelModule,
   ],
   templateUrl: './timetable-view-for-class.component.html',
   providers: [TableExportService],
@@ -245,9 +251,23 @@ export class TimetableViewForClassComponent implements OnInit {
     this.tableExportService.exportPdf(
       headers,
       rows,
-      'subjects',
-      'Danh sách môn học'
+      'timetable-view-for-class',
+      'Thời khóa biểu lớp ' + this.selectedClass.name
     );
   }
   // #endregion
+
+  getStringConstraintError(item: IConstraintError): string {
+    const code = item?.code;
+    const hardConstraint = item?.isHardConstraint
+      ? 'Ràng buộc cứng'
+      : 'Ràng buộc mềm';
+    const description = item?.description;
+
+    return `[${code}] ${hardConstraint}: ${description}`;
+  }
+
+  isHardConstraint(item: IConstraintError[]): boolean {
+    return item.some((x) => x.isHardConstraint === true);
+  }
 }
