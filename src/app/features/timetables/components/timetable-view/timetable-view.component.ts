@@ -47,9 +47,7 @@ export class TimetableViewComponent implements OnInit {
 
   ngOnInit() {
     if (this.config.data && this.config.data.timetable) {
-      console.log('classId', this.config.data);
       this.data = this.config.data.timetable as IGetTimetable;
-      console.log('data', this.data);
     }
 
     this.items = [

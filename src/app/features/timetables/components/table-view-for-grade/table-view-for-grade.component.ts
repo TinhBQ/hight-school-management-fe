@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { data } from '@features/timetables/helpers/data';
-import { ITimetableUnit } from '@features/timetables/interfaces';
+import {
+  ITimetableUnit,
+  IConstraintError,
+} from '@features/timetables/interfaces';
 
 import { Input, OnInit, Component } from '@angular/core';
 
@@ -9,6 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 import { CoreModule } from '@core/core.module';
 import { TableExportService } from '@core/services/table-export.service';
@@ -23,6 +26,7 @@ import { TableExportService } from '@core/services/table-export.service';
     ButtonModule,
     DropdownModule,
     SplitButtonModule,
+    OverlayPanelModule,
   ],
   templateUrl: './table-view-for-grade.component.html',
   providers: [TableExportService],
@@ -70,7 +74,7 @@ export class TableViewForGradeComponent implements OnInit {
   }
 
   onHandelTimetableUnits(grade: number): void {
-    this.data = data
+    this.data = this.data
       .filter((x) => x.className.slice(0, 2) === grade.toString())
       .sort((a, b) => {
         if (a.className > b.className) {
@@ -161,8 +165,8 @@ export class TableViewForGradeComponent implements OnInit {
     this.tableExportService.exportPdf(
       headers,
       rows,
-      'subjects',
-      'Danh sách môn học',
+      'table-view-for-grade',
+      'Danh sách thời khóa biểu ' + this.selectedGrade,
       true
     );
   }
@@ -170,5 +174,19 @@ export class TableViewForGradeComponent implements OnInit {
 
   convertNumFloor(num: number): number {
     return Math.floor(num);
+  }
+
+  getStringConstraintError(item: IConstraintError): string {
+    const code = item?.code;
+    const hardConstraint = item?.isHardConstraint
+      ? 'Ràng buộc cứng'
+      : 'Ràng buộc mềm';
+    const description = item?.description;
+
+    return `[${code}] ${hardConstraint}: ${description}`;
+  }
+
+  isHardConstraint(item: IConstraintError[]): boolean {
+    return item.some((x) => x.isHardConstraint === true);
   }
 }

@@ -64,13 +64,57 @@
                         ? 'cell-dnd-afternoon'
                         : 'cell-dnd-morning'
                     "
+                    (click)="
+                      timetableUnits[className][startAt]?.constraintErrors
+                        .length > 0
+                        ? op1.toggle($event)
+                        : null
+                    "
                   >
-                    <div>
+                    <div
+                      [class.constraint-error-0]="
+                        timetableUnits[className][startAt]?.constraintErrors
+                          .length > 0 &&
+                        !isHardConstraint(
+                          timetableUnits[className][startAt]?.constraintErrors
+                        )
+                      "
+                      [class.constraint-error-1]="
+                        timetableUnits[className][startAt]?.constraintErrors
+                          .length > 0 &&
+                        isHardConstraint(
+                          timetableUnits[className][startAt]?.constraintErrors
+                        )
+                      "
+                    >
                       <div>
                         {{
                           getNameAssignment(timetableUnits[className][startAt])
                         }}
                       </div>
+
+                      <p-overlayPanel #op1>
+                        <div class="flex flex-column gap-3 w-25rem">
+                          <ul>
+                            @for (
+                              error of timetableUnits[className][startAt]
+                                ?.constraintErrors;
+                              track $index
+                            ) {
+                              <li
+                                [class.constraint-error-0]="
+                                  error?.isHardConstraint === false
+                                "
+                                [class.constraint-error-1]="
+                                  error?.isHardConstraint === true
+                                "
+                              >
+                                {{ getStringConstraintError(error) }}
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </p-overlayPanel>
                     </div>
                   </th>
                 }
