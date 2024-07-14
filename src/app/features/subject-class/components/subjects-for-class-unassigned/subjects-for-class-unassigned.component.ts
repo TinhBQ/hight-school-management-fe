@@ -6,13 +6,21 @@ import {
 } from '@features/subject-class/services';
 
 import { FormsModule } from '@angular/forms';
-import { Input, OnInit, Component } from '@angular/core';
+import {
+  Input,
+  OnInit,
+  Component,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ChipModule } from 'primeng/chip';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -43,7 +51,9 @@ import { SubjectsForClassComponent } from '../subjects-for-class/subjects-for-cl
     ConfirmationDialogService,
   ],
 })
-export class SubjectsForClassUnassignedComponent implements OnInit {
+export class SubjectsForClassUnassignedComponent
+  implements OnInit, AfterViewInit
+{
   @Input() classId: string = '';
 
   subjectsForClass: ISubjectClassDto[] = [];
@@ -54,7 +64,9 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
     private confirmationDialogService: ConfirmationDialogService,
     private subjectClassService: SubjectClassService,
     private subjectService: SubjectService,
-    private config: DynamicDialogConfig
+    private config: DynamicDialogConfig,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -63,6 +75,10 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
     }
 
     this.getUnassignedSubjectsForClass();
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   // * --------------------- Load Unassigned Classes for Table --------------------
@@ -78,8 +94,9 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
           } as ISubjectClassDto;
         });
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
       }
     );
   }
@@ -91,6 +108,7 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
 
   onCreate(event: Event, subjectClass: ISubjectClassDto): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.subjectClassService.create(subjectClass).subscribe(
         () => {
           this.messageNotificationService.showSuccess(
@@ -99,12 +117,12 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
           this.subjectsForClassComponent.smseduCrudComponent.onclear();
           this.onCLear();
           this.subjectsForClassComponent.onClose();
+          this.app.onHideSplashScreenService();
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
+          this.app.onHideSplashScreenService();
         }
       );
     });
@@ -112,6 +130,7 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
 
   onCreateCollection(event: Event): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.subjectClassService
         .createCollection(
           this.subjectsForClass.filter(
@@ -124,12 +143,12 @@ export class SubjectsForClassUnassignedComponent implements OnInit {
               'Thêm danh sách phân công thành công!'
             );
             this.getUnassignedSubjectsForClass();
+            this.app.onHideSplashScreenService();
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
-            this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
-            );
+            this.messageNotificationService.showError('Đã xảy ra lỗi.');
+            this.app.onHideSplashScreenService();
           }
         );
     });

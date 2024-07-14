@@ -1,9 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ISubjectClass } from '@features/subject-class/interfaces';
 import { SubjectClassService } from '@features/subject-class/services';
 
-import { OnInit, Component, ViewChild } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -30,7 +39,7 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
     SubjectClassService,
   ],
 })
-export class SubjectClassListComponent implements OnInit {
+export class SubjectClassListComponent implements OnInit, AfterViewInit {
   columns: IColumn[] = [];
 
   result: IResponseBase<ISubjectClass[]>;
@@ -53,7 +62,9 @@ export class SubjectClassListComponent implements OnInit {
   constructor(
     private subjectClassService: SubjectClassService,
     private messageNotificationService: MessageNotificationService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -76,7 +87,7 @@ export class SubjectClassListComponent implements OnInit {
         icon: 'pi pi-pencil',
         color: 'success',
         onClick: (evnet: Event, data: any) => {
-          console.log(data);
+          // console.log(data);
           // this.onShowDialogForEdit(data);
         },
       },
@@ -91,6 +102,10 @@ export class SubjectClassListComponent implements OnInit {
         },
       },
     ];
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   // * --------------------- Load Data Classes for Table --------------------
@@ -121,7 +136,8 @@ export class SubjectClassListComponent implements OnInit {
         this.loading = false;
       },
       (error) => {
-        console.log(error.toString());
+        // console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
       }
     );
   }

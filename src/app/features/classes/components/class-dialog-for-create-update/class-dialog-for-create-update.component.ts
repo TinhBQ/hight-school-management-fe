@@ -2,14 +2,22 @@ import { IClassDto } from '@features/classes/interfaces/i-class';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
 
-import { Output, Component, EventEmitter } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import {
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputMaskModule } from 'primeng/inputmask';
 import { InputTextModule } from 'primeng/inputtext';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 
@@ -27,7 +35,7 @@ import { CoreModule } from '@core/core.module';
   ],
   templateUrl: './class-dialog-for-create-update.component.html',
 })
-export class ClassDialogForCreateUpdateComponent {
+export class ClassDialogForCreateUpdateComponent implements AfterViewInit {
   dialog: boolean = false;
 
   classDto: IClassDto;
@@ -53,7 +61,15 @@ export class ClassDialogForCreateUpdateComponent {
     }
   );
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
+  ) {}
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   onHideDialog() {
     this.dialog = false;

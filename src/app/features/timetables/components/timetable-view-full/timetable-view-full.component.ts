@@ -4,7 +4,7 @@ import { ITimetableUnitForEditDto } from '@features/timetables/interfaces';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
 
-import { Input, OnInit, Component } from '@angular/core';
+import { Input, Component } from '@angular/core';
 
 import { ToolbarModule } from 'primeng/toolbar';
 
@@ -19,7 +19,7 @@ import { CoreModule } from '@core/core.module';
   templateUrl: './timetable-view-full.component.html',
   styleUrl: './timetable-view-full.component.scss',
 })
-export class TimetableViewFullComponent implements OnInit {
+export class TimetableViewFullComponent {
   @Input() classes: IClass[];
 
   @Input() startAts: number[];
@@ -34,10 +34,6 @@ export class TimetableViewFullComponent implements OnInit {
   classesForFilter: IClass[] = [];
 
   schoolShifts: ISchoolShift[] = schoolShiftData;
-
-  ngOnInit(): void {
-    console.log('classesForFilter', this.classesForFilter);
-  }
 
   getClassForShift(): IClass[] {
     if (this.numSchoolShifts === 1) {

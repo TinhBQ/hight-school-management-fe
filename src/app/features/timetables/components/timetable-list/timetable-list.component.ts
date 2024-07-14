@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IYear } from '@features/years/interfaces';
 import { YearService } from '@features/years/services/year.service';
@@ -26,6 +27,7 @@ import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
+import { MessageNotificationService } from '@core/services/message-notification.service';
 import { ConvertToVietnameseDatePipe } from '@core/pipes/convert-to-vietnamese-date.pipe';
 import {
   IColumn,
@@ -56,6 +58,7 @@ import { TimetableEditComponent } from '../timetable-edit/timetable-edit.compone
     YearService,
     TimetablesService,
     DialogService,
+    MessageNotificationService,
   ],
 })
 export class TimetableListComponent implements OnInit, AfterViewInit {
@@ -105,7 +108,8 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
     private yearService: YearService,
     public app: AppComponent,
     private timetablesService: TimetablesService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private messageNotificationService: MessageNotificationService
   ) {}
 
   ngOnInit(): void {
@@ -132,13 +136,12 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
       {
         label: 'Xem',
         icon: 'pi pi-eye',
-        color: 'success',
+        color: 'blue',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onClick: (evnet: Event, data: any) => {
           this.app.onShowSplashScreenService();
           this.timetablesService.getTimetableById(data.id).subscribe(
             (response) => {
-              console.log('response', response);
               this.data = response;
               this.ref = this.dialogService.open(TimetableViewComponent, {
                 header: `${data.name}`,
@@ -152,7 +155,7 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
               this.app.onHideSplashScreenService();
             },
             (error) => {
-              console.log(error.toString());
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
               this.app.onHideSplashScreenService();
             }
           );
@@ -164,9 +167,9 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
         color: 'success',
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onClick: (evnet: Event, data: any) => {
+          this.app.onShowSplashScreenService();
           this.timetablesService.getTimetableById(data.id).subscribe(
             (response) => {
-              console.log('response', response);
               this.data = response;
               this.ref = this.dialogService.open(TimetableEditComponent, {
                 header: `${data.name}`,
@@ -180,7 +183,7 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
               this.app.onHideSplashScreenService();
             },
             (error) => {
-              console.log(error.toString());
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
               this.app.onHideSplashScreenService();
             }
           );
@@ -234,7 +237,7 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
         }
       },
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.loadingSchoolYears = false;
         this.onSplashScreenService();
       }
@@ -268,20 +271,18 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
     this.loadingTimetables = true;
     this.timetablesService.getAllTimetables(params).subscribe(
       (response) => {
-        console.log(response);
         this.timetables = response.result;
         this.paginationTimetables = response.pagination;
         this.loadingTimetables = false;
       },
       (error) => {
         this.loadingTimetables = false;
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
       }
     );
   }
 
   onChangeYear(event: any): void {
-    console.log(event.toString());
     this.requestParametersForTimetables = {
       ...this.requestParametersForTimetables,
       startYear: event.value.startYear,
@@ -295,12 +296,11 @@ export class TimetableListComponent implements OnInit, AfterViewInit {
     this.app.onShowSplashScreenService();
     this.timetablesService.getTimetableById(id).subscribe(
       (response) => {
-        console.log('response', response);
         this.data = response;
         this.app.onHideSplashScreenService();
       },
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.app.onHideSplashScreenService();
       }
     );

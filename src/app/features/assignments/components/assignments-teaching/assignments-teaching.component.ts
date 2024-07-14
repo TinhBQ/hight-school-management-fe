@@ -193,7 +193,6 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
     this.searchText$
       .pipe(debounceTime(1000), distinctUntilChanged())
       .subscribe((packageName) => {
-        console.log(packageName);
         this.requestParameters.searchTerm = packageName;
         this.getAssignments(this.requestParameters);
       });
@@ -275,9 +274,9 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
         }));
         this.loading = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
         this.loading = false;
-        console.log(error.toString());
       }
     );
   }
@@ -302,8 +301,11 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
           this.onSplashScreenService();
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError(
+          'Lấy danh sách lớp học thất bại'
+        );
         this.loadingForClasses = false;
         this.onSplashScreenService();
       }
@@ -329,8 +331,11 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
           this.onSplashScreenService();
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError(
+          'Lấy danh sách Giáo viên thất bại'
+        );
         this.loadingForTeachers = false;
         this.onSplashScreenService();
       }
@@ -384,8 +389,11 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
           this.getTeachers(this.requestParametersForTeachers);
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError(
+          'Lấy danh sách năm học thất bại'
+        );
         this.loadingSchoolYears = false;
         this.onSplashScreenService();
       }
@@ -398,7 +406,6 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
   }
 
   onShowDialogForEdit(assignment: any): void {
-    console.log('assignment', assignment);
     const semester = this.semesterData[assignment.semester];
     const year = {
       startYear: assignment.startYear,
@@ -411,8 +418,6 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
     );
     const teacher = this.teachers.find((t) => t.id === assignment?.teacherId);
 
-    console.log(teacher);
-
     this.assignmentsTeachingDialogForCreateUpdateComponent.teachers =
       this.teachers.filter(
         (t) =>
@@ -420,10 +425,6 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
             (s) => s.subject.id === assignment.subjectId
           ).length > 0
       );
-
-    console.log(
-      this.assignmentsTeachingDialogForCreateUpdateComponent.teachers
-    );
 
     this.assignmentsTeachingDialogForCreateUpdateComponent.subjects =
       klass.subjectClasses
@@ -468,14 +469,11 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
   }
 
   onSave(): void {
-    console.log('Bùi Quốc Tĩnh');
-
     if (!this.assignmentsTeachingDialogForCreateUpdateComponent.isDisabled()) {
       // ! Update class
       if (
         this.assignmentsTeachingDialogForCreateUpdateComponent._form.value.id
       ) {
-        console.log('Update');
         this.assignmentsTeachingDialogForCreateUpdateComponent.onSetDTO();
         this.assignmentsService
           .update(
@@ -491,11 +489,9 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
                 `Cập nhật phân công thành công!`
               );
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Cập nhật thất bại');
             }
           );
       } else {
@@ -509,19 +505,6 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
               this.assignmentsTeachingDialogForCreateUpdateComponent._form.value
                 .class?.id
         );
-
-        console.log(
-          'teacherId',
-          this.assignmentsTeachingDialogForCreateUpdateComponent._form.value
-            .teacher?.id
-        );
-
-        console.log(
-          'classId',
-          this.assignmentsTeachingDialogForCreateUpdateComponent._form.value
-            .class?.id
-        );
-        console.log('index', index);
 
         if (index !== -1) {
           this.messageNotificationService.showError('Phân công đã tồn tại');
@@ -537,13 +520,13 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
                 this.smseduCrudComponent.onclear();
                 this.assignmentsTeachingDialogForCreateUpdateComponent.onHideDialog();
                 this.messageNotificationService.showSuccess(
-                  `Thêm phân công thành công!`
+                  `Thêm phân công thành công.`
                 );
               },
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               (error) => {
-                console.log(error.toString());
                 this.messageNotificationService.showError(
-                  error.message ?? 'Đã xảy ra lỗi.'
+                  'Thêm phân công thất bại.'
                 );
               }
             );

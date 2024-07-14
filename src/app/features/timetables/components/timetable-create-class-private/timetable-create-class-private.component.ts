@@ -213,7 +213,6 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
               ? this.startAtsMorning
               : this.startAtsAfternoon,
           onChange: this.onChangeMultiple.bind(this),
-          onFocus: this.onFocusMultiple.bind(this),
         },
       },
     ];
@@ -229,15 +228,11 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChangeMultiple(event: any, data: any): void {
     const { originalEvent } = event;
-    console.log('data', data);
 
     const index = this.timeTableUnits.findIndex(
       (a) =>
         a.classId === data.classId && a.startAt === originalEvent.option.startAt
     );
-
-    console.log(this.timeTableUnits[index]);
-    console.log(originalEvent.selected);
 
     if (originalEvent.selected == true) {
       if (
@@ -286,15 +281,6 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
         assignmentId: null,
       };
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onFocusMultiple(event: any, data: any): void {
-    console.log('onFocus', event, data);
-    console.log('event: ', event);
-    console.log('data', data);
-    console.log('assignments', this.assignments);
-    console.log('assignments', this.selectAssignments);
   }
 
   onSave(): void {

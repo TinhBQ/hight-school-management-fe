@@ -1,7 +1,13 @@
 import { ITeacherDto } from '@features/teachers/interfaces';
 
-import { Output, Component, EventEmitter } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import {
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -17,7 +23,7 @@ import { CoreModule } from '@core/core.module';
   imports: [CoreModule, DialogModule, InputTextModule, ButtonModule],
   templateUrl: './teacher-dialog-for-create-update.component.html',
 })
-export class TeacherDialogForCreateUpdateComponent {
+export class TeacherDialogForCreateUpdateComponent implements AfterViewInit {
   dialog: boolean = false;
 
   teacherDto: ITeacherDto;
@@ -30,7 +36,14 @@ export class TeacherDialogForCreateUpdateComponent {
     shortName: [null, Validators.compose([Validators.required])],
   });
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   onHideDialog() {
     this.dialog = false;
@@ -50,6 +63,5 @@ export class TeacherDialogForCreateUpdateComponent {
       lastName: split[2],
       shortName: this.formGroup.value.shortName,
     };
-    console.log(this.teacherDto);
   }
 }

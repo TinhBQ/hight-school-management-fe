@@ -89,8 +89,8 @@ export class TeacherDiaglogForCreateCollectionComponent
         };
       }) as ITeacherDto[];
 
-      this.app.onShowSplashScreenService();
       this.confirmationDialogService.confirm(event, () => {
+        this.app.onShowSplashScreenService();
         this.teacherService.createCollection(teacherDtos).subscribe(
           () => {
             this.messageNotificationService.showSuccess(

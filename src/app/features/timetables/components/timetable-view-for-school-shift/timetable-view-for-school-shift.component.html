@@ -75,6 +75,9 @@
                           ? op.toggle($event)
                           : null
                       "
+                      [class.hightlight-border-0]="
+                        onHandelStartAt(startAt) % 5 === 0
+                      "
                     >
                       <div
                         [class.constraint-error-0]="
@@ -157,6 +160,9 @@
                           .length > 0
                           ? op.toggle($event)
                           : null
+                      "
+                      [class.hightlight-border-1]="
+                        onHandelStartAt(startAt) % 5 === 0
                       "
                     >
                       <div

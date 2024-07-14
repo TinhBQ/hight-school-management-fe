@@ -71,9 +71,8 @@ export class TimetableCreateGeneralFromSubjectsComponent implements OnInit {
         typeEidt: 'multiSelect',
         options: {
           data: this.startAtsAfternoon,
-          onchange: (value) => {
-            console.log('value', value);
-          },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          onchange: (value) => {},
         },
       },
     ];

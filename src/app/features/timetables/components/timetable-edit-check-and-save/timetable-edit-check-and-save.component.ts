@@ -38,11 +38,8 @@ export class TimetableEditCheckAndSaveComponent implements OnInit {
   constructor(private config: DynamicDialogConfig) {}
 
   ngOnInit(): void {
-    console.log('this.config', this.config);
     if (this.config?.data && this.config.data?.timetableUnits) {
-      console.log('this.config?.data', this.config?.data);
       this.data = this.config.data?.timetableUnits;
-      console.log('data', this.config.data);
     }
 
     this.data = this.data.sort((a, b) => {

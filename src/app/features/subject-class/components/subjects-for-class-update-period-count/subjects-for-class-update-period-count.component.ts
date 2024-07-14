@@ -1,12 +1,20 @@
 import { ISubjectClassDto } from '@features/subject-class/interfaces';
 
-import { Output, Component, EventEmitter } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import {
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 
@@ -23,7 +31,9 @@ import { CoreModule } from '@core/core.module';
   ],
   templateUrl: './subjects-for-class-update-period-count.component.html',
 })
-export class SubjectsForClassUpdatePeriodCountComponent {
+export class SubjectsForClassUpdatePeriodCountComponent
+  implements AfterViewInit
+{
   dialogVisible: boolean = false;
 
   subjectClassDto: ISubjectClassDto;
@@ -39,7 +49,15 @@ export class SubjectsForClassUpdatePeriodCountComponent {
     class: [null, Validators.compose([Validators.required])],
   });
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
+  ) {}
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   onHideDialog() {
     this.dialogVisible = false;

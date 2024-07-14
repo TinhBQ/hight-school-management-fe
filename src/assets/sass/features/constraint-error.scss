@@ -5,3 +5,11 @@
 .constraint-error-0 {
   color: #f57c00;
 }
+
+.hightlight-border-0 {
+  border-bottom: 3px solid $primaryColor !important;
+}
+
+.hightlight-border-1 {
+  border-bottom: 3px solid var(--bluegray-300) !important;
+}

@@ -98,8 +98,8 @@ export class SubjectDiaglogForCreateCollectionComponent
         };
       }) as ISubjectDto[];
 
-      this.app.onShowSplashScreenService();
       this.confirmationDialogService.confirm(event, () => {
+        this.app.onShowSplashScreenService();
         this.subjectService.createCollection(subjectDtos).subscribe(
           () => {
             this.messageNotificationService.showSuccess(

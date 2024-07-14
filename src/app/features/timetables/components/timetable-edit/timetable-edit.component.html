@@ -1,12 +1,17 @@
 <!-- eslint-disable @angular-eslint/template/elements-content -->
 <div class="card flex flex-column gap-2">
-  <div class="flex flex-column gap-2 justify-content-center align-items-center">
+  <div
+    class="flex flex-row gap-2 justify-content-center align-items-center mb-2"
+  >
     <div>
       <button
         pButton
         pRipple
-        label="lưu"
+        label="Lưu"
         (click)="onSave($event)"
+        class="p-button-success"
+        icon="pi pi-check"
+        [disabled]="!isSave"
       ></button>
     </div>
 
@@ -16,41 +21,44 @@
         pRipple
         label="Xem vi phạm ràng buộc"
         (click)="onCheck()"
+        severity="warning"
       ></button>
     </div>
   </div>
 
-  @if (isCheck) {
-    <p-messages severity="success">
-      <ng-template pTemplate>
-        <div
-          class="w-full flex flex-column gap-2 align-items-center justify-content-center"
-        >
-          <div class="ml-2">Đổi được</div>
-          <button
-            pButton
-            pRipple
-            label="Đổi"
-            class="p-button-success"
-            (click)="onSwap()"
-          ></button>
-        </div>
-      </ng-template>
-    </p-messages>
-  } @else {
-    <p-messages severity="warn">
-      <ng-template pTemplate>
-        <div
-          class="w-full flex flex-column gap-2 align-items-center justify-content-center"
-        >
-          <div class="ml-2">Không đổi được</div>
-        </div>
-      </ng-template>
-    </p-messages>
+  @if (!!selectedTeacher1 && !!selectedTeacher2) {
+    @if (isCheck) {
+      <p-messages severity="success">
+        <ng-template pTemplate>
+          <div
+            class="w-full flex flex-column gap-2 align-items-center justify-content-center"
+          >
+            <div class="ml-2">Đổi được</div>
+            <button
+              pButton
+              pRipple
+              label="Đổi"
+              class="p-button-success"
+              (click)="onSwap()"
+            ></button>
+          </div>
+        </ng-template>
+      </p-messages>
+    } @else {
+      <p-messages severity="warn">
+        <ng-template pTemplate>
+          <div
+            class="w-full flex flex-column gap-2 align-items-center justify-content-center"
+          >
+            <div class="ml-2">Không đổi được</div>
+          </div>
+        </ng-template>
+      </p-messages>
+    }
   }
 
   <!-- *Lớp học -->
-  <div class="flex flex-column justify-content-center gap-2">
+  <div class="flex flex-column justify-content-center gap-2 mt-2">
     <div class="flex flex-row gap-2 justify-content-center">
       <span class="p-float-label">
         <p-dropdown

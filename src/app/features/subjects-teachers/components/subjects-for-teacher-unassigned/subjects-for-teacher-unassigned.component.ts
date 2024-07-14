@@ -3,13 +3,21 @@ import { SubjectService } from '@features/subjects/services/subject.service';
 import { ISubjectsTeachersDto } from '@features/subjects-teachers/interfaces';
 import { SubjectsTeachersService } from '@features/subjects-teachers/services/subjects-teachers.service';
 
-import { Input, OnInit, Component, ChangeDetectorRef } from '@angular/core';
+import {
+  Input,
+  OnInit,
+  Component,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ChipModule } from 'primeng/chip';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -37,8 +45,10 @@ import { SubjectsForTeacherComponent } from '../subjects-for-teacher/subjects-fo
     MessageNotificationService,
   ],
 })
-export class SubjectsForTeacherUnassignedComponent implements OnInit {
-  @Input() teacherId: string = '67174939-7dbf-44b7-a94d-42f3cc73457a';
+export class SubjectsForTeacherUnassignedComponent
+  implements OnInit, AfterViewInit
+{
+  @Input() teacherId: string = '';
 
   subjectsForTeacher: ISubjectsTeachersDto[] = [];
 
@@ -49,7 +59,8 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
     private confirmationDialogService: ConfirmationDialogService,
     private subjectsTeachersService: SubjectsTeachersService,
     private messageNotificationService: MessageNotificationService,
-    private subjectsForTeacherComponent: SubjectsForTeacherComponent
+    private subjectsForTeacherComponent: SubjectsForTeacherComponent,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +70,10 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
     }
 
     this.getUnassignedSubjectsForTeacher();
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   getUnassignedSubjectsForTeacher(): void {
@@ -75,14 +90,16 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
             } as ISubjectsTeachersDto;
           });
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
         }
       );
   }
 
   onCreate(event: Event, subjectTeacher: ISubjectsTeachersDto): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.subjectsTeachersService.create(subjectTeacher).subscribe(
         () => {
           this.messageNotificationService.showSuccess(
@@ -91,12 +108,12 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
 
           this.onCLear();
           this.subjectsForTeacherComponent.onClear();
+          this.app.onHideSplashScreenService();
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
+          this.app.onHideSplashScreenService();
         }
       );
     });
@@ -104,6 +121,7 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
 
   onCreateCollection(event: Event): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.subjectsTeachersService
         .createCollection(
           this.subjectsForTeacher.filter((item) => item.isMain !== null)
@@ -115,12 +133,12 @@ export class SubjectsForTeacherUnassignedComponent implements OnInit {
             );
             this.subjectsForTeacherComponent.onClear();
             this.onCLear();
+            this.app.onHideSplashScreenService();
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
-            this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
-            );
+            this.messageNotificationService.showError('Đã xảy ra lỗi.');
+            this.app.onHideSplashScreenService();
           }
         );
     });

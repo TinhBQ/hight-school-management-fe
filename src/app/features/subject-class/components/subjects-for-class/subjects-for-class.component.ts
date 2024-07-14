@@ -14,6 +14,7 @@ import {
   OnInit,
   Component,
   ViewChild,
+  AfterViewInit,
   ChangeDetectorRef,
 } from '@angular/core';
 
@@ -25,6 +26,8 @@ import {
   DynamicDialogConfig,
   DynamicDialogModule,
 } from 'primeng/dynamicdialog';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -62,7 +65,7 @@ import { SubjectsForClassUpdatePeriodCountComponent } from '../subjects-for-clas
     DialogService,
   ],
 })
-export class SubjectsForClassComponent implements OnInit {
+export class SubjectsForClassComponent implements OnInit, AfterViewInit {
   @Input() classId: string = '';
 
   columns: IColumn[] = [];
@@ -101,7 +104,8 @@ export class SubjectsForClassComponent implements OnInit {
     private messageNotificationService: MessageNotificationService,
     private confirmationDialogService: ConfirmationDialogService,
     public dialogService: DialogService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -143,6 +147,10 @@ export class SubjectsForClassComponent implements OnInit {
     ];
   }
 
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
+
   onLoadSubjectsForClass(event: any): void {
     this.loading = true;
     const { first, rows, sortField, sortOrder } = event;
@@ -173,8 +181,9 @@ export class SubjectsForClassComponent implements OnInit {
         this.loading = false;
         this.cdr.detectChanges(); // Mark for change detection
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
       }
     );
   }
@@ -187,6 +196,7 @@ export class SubjectsForClassComponent implements OnInit {
         this.subjectsForClassUpdatePeriodCountComponent.subjectsForClassForm
           .value.id
       ) {
+        this.app.onShowSplashScreenService();
         this.subjectsForClassUpdatePeriodCountComponent.onSetSubjectClassDto();
         this.sbjectClassService
           .update(
@@ -201,12 +211,12 @@ export class SubjectsForClassComponent implements OnInit {
               this.messageNotificationService.showSuccess(
                 `Cập nhật thành công!`
               );
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
+              this.app.onHideSplashScreenService();
             }
           );
       }
@@ -214,7 +224,6 @@ export class SubjectsForClassComponent implements OnInit {
   }
 
   onShowDialogForEdit(subjecClass: ISubjectClass): void {
-    console.log(subjecClass);
     this.subjectsForClassUpdatePeriodCountComponent.subjectsForClassForm.setValue(
       {
         id: subjecClass.id,
@@ -233,6 +242,7 @@ export class SubjectsForClassComponent implements OnInit {
 
   onDelete(event: Event, subjecClass: ISubjectClass): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.sbjectClassService.delete(subjecClass.id).subscribe(
         () => {
           this.smseduCrudComponent.onclear();
@@ -240,12 +250,12 @@ export class SubjectsForClassComponent implements OnInit {
           this.messageNotificationService.showSuccess(
             `Xóa môn học  ${subjecClass.subject.name} thành công!`
           );
+          this.app.onHideSplashScreenService();
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
+          this.app.onHideSplashScreenService();
         }
       );
     });
@@ -254,6 +264,7 @@ export class SubjectsForClassComponent implements OnInit {
   onDeleteCollection(event: Event, subjecClasses: ISubjectClass[]): void {
     if (subjecClasses.length > 0) {
       this.confirmationDialogService.confirm(event, () => {
+        this.app.onShowSplashScreenService();
         this.sbjectClassService
           .deleteByIds(subjecClasses.map((x) => x.id))
           .subscribe(
@@ -263,12 +274,12 @@ export class SubjectsForClassComponent implements OnInit {
               );
               this.smseduCrudComponent.onclear();
               this.subjectsForClassUnassignedComponent.onCLear();
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
+              this.app.onHideSplashScreenService();
             }
           );
       });

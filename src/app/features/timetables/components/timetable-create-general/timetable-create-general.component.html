@@ -72,7 +72,7 @@
               incrementButtonIcon="pi pi-plus"
               decrementButtonIcon="pi pi-minus"
             />
-            <label for="inputtext">Tiết học tối thiểu</label>
+            <label for="inputtext">Tiết dạy tối thiểu</label>
           </span>
           <small
             *ngIf="
@@ -84,7 +84,7 @@
             class="block p-error mt-2"
           >
             <div *ngIf="_form.controls['minPeriodPerDay'].errors?.['required']">
-              Tiết học tối thiểu là bắt buộc.
+              Tiết dạy tối thiểu< là bắt buộc.
             </div>
 
             <div
@@ -93,7 +93,7 @@
                 _form.hasError('periodPerDay')
               "
             >
-              Tiết học tối thiểu phải nhỏ hơn hoặc bằng tiết học tối đa
+              Tiết dạy tối thiểu< phải nhỏ hơn hoặc bằng tiết học tối đa
             </div>
           </small>
         </div>
@@ -113,7 +113,7 @@
               incrementButtonIcon="pi pi-plus"
               decrementButtonIcon="pi pi-minus"
             />
-            <label for="inputtext">Tiết học tối đa</label>
+            <label for="inputtext">Tiết dạy tối đa</label>
           </span>
           <small
             *ngIf="
@@ -125,7 +125,7 @@
             class="block p-error mt-2"
           >
             <div *ngIf="_form.controls['maxPeriodPerDay'].errors?.['required']">
-              Tiết học tối đa là bắt buộc.
+              Tiết dạy tối đa là bắt buộc.
             </div>
 
             <div
@@ -134,7 +134,7 @@
                 _form.hasError('periodPerDay')
               "
             >
-              Tiết học tối đa phải lớn hơn hoặc bằng tiết học tối thiểu
+              Tiết dạy tối đa phải lớn hơn hoặc bằng tiết học tối thiểu
             </div>
           </small>
         </div>

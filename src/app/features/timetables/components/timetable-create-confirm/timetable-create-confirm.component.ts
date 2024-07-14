@@ -81,8 +81,6 @@ export class TimetableCreateConfirmComponent implements OnInit {
     this.subjectPracticeRoom = this.subjectPracticeRoom.filter(
       (x) => x?.roomCount > 0
     );
-
-    console.log('this.timeTableUnits', this.timeTableUnits);
   }
 
   private initEmptyTimeTableUnits2Dimensional(
@@ -143,8 +141,8 @@ export class TimetableCreateConfirmComponent implements OnInit {
             );
             this.app.onHideSplashScreenService();
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
             this.messageNotificationService.showSuccess(
               'Tạo thời khóa biểu không thành công!'
             );

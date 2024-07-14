@@ -26,28 +26,6 @@
         border: 1px solid $primaryColor;
         cursor: pointer;
         position: relative;
-
-        .timetable-unit {
-          .timetable-unit-constraint {
-            display: none;
-            position: absolute;
-            height: 250px;
-            width: 250px;
-            top: -258px;
-            right: -250px;
-            background: blue;
-            z-index: 1 !important;
-          }
-        }
-      }
-
-      .cell-dnd:hover {
-        .timetable-unit {
-          .timetable-unit-constraint {
-            display: block;
-            z-index: 1 !important;
-          }
-        }
       }
     }
   }
@@ -55,24 +33,24 @@
   .timetable-view-afternoon {
     width: 100%;
     padding: 1px;
-    border: 2px solid var(--orange-300);
+    border: 2px solid var(--bluegray-300);
 
     thead {
-      background: var(--orange-300);
+      background: var(--bluegray-300);
       color: $primaryTextColor;
     }
     tbody {
       .cell-weekday {
-        background: var(--orange-300);
+        background: var(--bluegray-300);
         color: $primaryTextColor;
       }
 
       .cell-startAt {
-        border: 1px solid var(--orange-300);
+        border: 1px solid var(--bluegray-300);
       }
 
       .cell-dnd {
-        border: 1px solid var(--orange-300);
+        border: 1px solid var(--bluegray-300);
         cursor: pointer;
       }
     }

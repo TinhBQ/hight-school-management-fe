@@ -210,8 +210,9 @@ export class ClassWithHomeroomTeachersUpdateDialogComponent
         this.paginationForTeachesUnAssignedHomeroom = response.pagination;
         this.loadingAutoComplete = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Xảy ra lỗi');
         this.loadingAutoComplete = false;
       }
     );

@@ -14,6 +14,7 @@ import {
   Component,
   ViewChild,
   EventEmitter,
+  AfterViewInit,
   ChangeDetectorRef,
 } from '@angular/core';
 
@@ -24,6 +25,8 @@ import {
   DynamicDialogConfig,
   DynamicDialogModule,
 } from 'primeng/dynamicdialog';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -61,7 +64,7 @@ import { SubjectsForTeacherUpdateIsMainComponent } from '../subjects-for-teacher
     MessageNotificationService,
   ],
 })
-export class SubjectsForTeacherComponent implements OnInit {
+export class SubjectsForTeacherComponent implements OnInit, AfterViewInit {
   @Input() teacherId: string = '';
 
   columns: IColumn[] = [];
@@ -101,8 +104,8 @@ export class SubjectsForTeacherComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private confirmationDialogService: ConfirmationDialogService,
     private messageNotificationService: MessageNotificationService,
-
-    public teacherListComponent: TeacherListComponent
+    public teacherListComponent: TeacherListComponent,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -146,6 +149,10 @@ export class SubjectsForTeacherComponent implements OnInit {
     ];
   }
 
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
+
   onLoadSubjectsForTeacher(event: any): void {
     const { first, rows, sortField, sortOrder } = event;
 
@@ -175,15 +182,15 @@ export class SubjectsForTeacherComponent implements OnInit {
         this.loading = false;
         this.cdr.detectChanges(); // Mark for change detection
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
         this.loading = false;
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
       }
     );
   }
 
   onShowDialogForEdit(subjecTeacher: ISubjectsTeachers): void {
-    console.log(subjecTeacher);
     this.subjectsForTeacherUpdateIsMainComponent._form.setValue({
       id: subjecTeacher.id,
       teacher: subjecTeacher.teacher,
@@ -201,6 +208,7 @@ export class SubjectsForTeacherComponent implements OnInit {
   onSave(): void {
     if (this.subjectsForTeacherUpdateIsMainComponent._form.valid) {
       if (this.subjectsForTeacherUpdateIsMainComponent._form.value.id) {
+        this.app.onShowSplashScreenService();
         this.subjectsForTeacherUpdateIsMainComponent.onSetDto();
         this.subjectsTeachersService
           .update(
@@ -214,12 +222,12 @@ export class SubjectsForTeacherComponent implements OnInit {
               this.messageNotificationService.showSuccess(
                 `Cập nhật thành công!`
               );
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
+              this.app.onHideSplashScreenService();
             }
           );
       }
@@ -240,11 +248,9 @@ export class SubjectsForTeacherComponent implements OnInit {
             `Xóa môn học  ${subjecTeacher.subject.name} thành công!`
           );
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
         }
       );
     });
@@ -269,11 +275,9 @@ export class SubjectsForTeacherComponent implements OnInit {
               this.onClear();
               this.subjectsForTeacherUnassignedComponent.onCLear();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
             }
           );
       });

@@ -14,7 +14,7 @@ export class ConvertToVietnameseDatePipe implements PipeTransform {
     }
     const date = parseISO(value);
 
-    const vietnameseDateStr = format(date, 'dd/MM/yyyy');
+    const vietnameseDateStr = format(date, 'dd/MM/yyyy HH:mm');
 
     return vietnameseDateStr;
   }

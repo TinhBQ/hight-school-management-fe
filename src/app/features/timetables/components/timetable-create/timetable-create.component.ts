@@ -36,6 +36,7 @@ import { AppComponent } from 'src/app/app.component';
 import { CoreModule } from '@core/core.module';
 import { IPagination, IRequestParameters } from '@core/interfaces';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
+import { MessageNotificationService } from '@core/services/message-notification.service';
 
 import { TimetableForClassComponent } from '../timetable-for-class/timetable-for-class.component';
 import { TimetableCreateConfirmComponent } from '../timetable-create-confirm/timetable-create-confirm.component';
@@ -58,7 +59,12 @@ import { TimetableCreateClassPrivateComponent } from '../timetable-create-class-
     StepsModule,
   ],
   templateUrl: './timetable-create.component.html',
-  providers: [YearService, AssignmentsService, ConfirmationDialogService],
+  providers: [
+    YearService,
+    AssignmentsService,
+    ConfirmationDialogService,
+    MessageNotificationService,
+  ],
 })
 export class TimetableCreateComponent implements OnInit, AfterViewInit {
   items: MenuItem[] | undefined;
@@ -127,7 +133,8 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
     private assignmentsService: AssignmentsService,
     private cdr: ChangeDetectorRef,
     private confirmationDialogService: ConfirmationDialogService,
-    public app: AppComponent
+    public app: AppComponent,
+    private messageNotificationService: MessageNotificationService
   ) {}
 
   ngAfterViewInit(): void {
@@ -191,8 +198,9 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
           this.onSplashScreenService();
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.loadingSchoolYears = false;
         this.onSplashScreenService();
       }
@@ -225,8 +233,9 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
 
         this.onSplashScreenService();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.loadingForClasses = false;
         this.onSplashScreenService();
       }
@@ -274,8 +283,9 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
         this.loadingForSubjects = false;
         this.onSplashScreenService();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.loadingForSubjects = false;
         this.onSplashScreenService();
       }
@@ -292,8 +302,9 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
         this.loadingForSubjectsNotSameTeacher = false;
         this.onSplashScreenService();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.loadingForSubjectsNotSameTeacher = true;
         this.onSplashScreenService();
       }
@@ -460,8 +471,9 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
 
           actionNext.emit();
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
           this.loadingForAssignments = false;
           this.onSplashScreenService();
         }

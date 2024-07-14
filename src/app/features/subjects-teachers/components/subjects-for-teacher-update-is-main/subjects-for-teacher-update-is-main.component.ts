@@ -1,7 +1,13 @@
 import { ISubjectsTeachersDto } from '@features/subjects-teachers/interfaces';
 
-import { Output, Component, EventEmitter } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import {
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -23,7 +29,7 @@ import { CoreModule } from '@core/core.module';
   ],
   templateUrl: './subjects-for-teacher-update-is-main.component.html',
 })
-export class SubjectsForTeacherUpdateIsMainComponent {
+export class SubjectsForTeacherUpdateIsMainComponent implements AfterViewInit {
   dialogVisible: boolean = false;
 
   subjectTeacherDto: ISubjectsTeachersDto;
@@ -39,7 +45,14 @@ export class SubjectsForTeacherUpdateIsMainComponent {
     isMain: [null, Validators.compose([Validators.required])],
   });
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   onHideDialog() {
     this.dialogVisible = false;

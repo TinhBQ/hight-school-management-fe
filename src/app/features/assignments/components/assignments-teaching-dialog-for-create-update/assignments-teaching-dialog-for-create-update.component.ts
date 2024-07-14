@@ -108,7 +108,6 @@ export class AssignmentsTeachingDialogForCreateUpdateComponent
   }
 
   onSave() {
-    console.log('Bùi Quốc Tĩnh 1');
     this.save.emit();
   }
 
@@ -120,8 +119,6 @@ export class AssignmentsTeachingDialogForCreateUpdateComponent
     this._form.controls['schoolShift'].setValue(
       this.schoolShifts[event.value.schoolShift]
     );
-
-    console.log('Class', event);
   }
 
   onChangeSubject(event: any) {
@@ -189,7 +186,6 @@ export class AssignmentsTeachingDialogForCreateUpdateComponent
   }
 
   isDisabled(): boolean {
-    console.log(this._form.invalid, this.onCheckPeriodCount().length > 0);
     return this._form.invalid || this.onCheckPeriodCount().length > 0;
   }
 }

@@ -5,7 +5,13 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SubjectService } from '@features/subjects/services/subject.service';
 
 import { CommonModule } from '@angular/common';
-import { OnInit, Component, ViewChild } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -13,6 +19,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { TableExportService } from '@core/services/table-export.service';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -53,7 +61,7 @@ import { SubjectDiaglogForCreateCollectionComponent } from '../subject-diaglog-f
     TableExportService,
   ],
 })
-export class SubjectListComponent implements OnInit {
+export class SubjectListComponent implements OnInit, AfterViewInit {
   columns: IColumn[] = [];
 
   result: IResponseBase<ISubject[]>;
@@ -89,7 +97,9 @@ export class SubjectListComponent implements OnInit {
     private subjectService: SubjectService,
     private messageNotificationService: MessageNotificationService,
     private confirmationDialogService: ConfirmationDialogService,
-    private tableExportService: TableExportService
+    private tableExportService: TableExportService,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -144,6 +154,10 @@ export class SubjectListComponent implements OnInit {
     ];
   }
 
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
+
   @ViewChild('dt', {}) tableEL: Table;
 
   // * --------------------- Load Data Classes for Table --------------------
@@ -173,9 +187,10 @@ export class SubjectListComponent implements OnInit {
         this.pagination = response.pagination;
         this.loading = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
         this.loading = false;
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
       }
     );
   }
@@ -206,6 +221,7 @@ export class SubjectListComponent implements OnInit {
   onSave(): void {
     if (this.subjectDialogForCreateUpdateComponent.subjectForm.valid) {
       // ! Update class
+      this.app.onShowSplashScreenService();
       if (this.subjectDialogForCreateUpdateComponent.subjectForm.value.id) {
         this.subjectDialogForCreateUpdateComponent.onSetSubjectDTO();
         this.subjectService
@@ -220,12 +236,12 @@ export class SubjectListComponent implements OnInit {
               this.messageNotificationService.showSuccess(
                 `Cập nhật môn học ${this.subjectDialogForCreateUpdateComponent.subjectForm.value.name} thành công!`
               );
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
+              this.app.onHideSplashScreenService();
             }
           );
       } else {
@@ -240,12 +256,12 @@ export class SubjectListComponent implements OnInit {
               this.messageNotificationService.showSuccess(
                 `Thêm  môn học ${this.subjectDialogForCreateUpdateComponent.subjectForm.value.name} thành công!`
               );
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
+              this.app.onHideSplashScreenService();
             }
           );
       }
@@ -254,18 +270,19 @@ export class SubjectListComponent implements OnInit {
 
   onDeleteClass(event: Event, subject: ISubject): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.subjectService.delete(subject.id).subscribe(
         () => {
           this.smseduCrudComponent.onclear();
           this.messageNotificationService.showSuccess(
             `Xóa môn học  ${subject.name} thành công!`
           );
+          this.app.onHideSplashScreenService();
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
+          this.app.onHideSplashScreenService();
         }
       );
     });
@@ -274,6 +291,7 @@ export class SubjectListComponent implements OnInit {
   onDeleteClasses(event: Event, selectedSubjects: ISubject[]): void {
     if (selectedSubjects.length > 0) {
       this.confirmationDialogService.confirm(event, () => {
+        this.app.onShowSplashScreenService();
         this.subjectService
           .deleteByIds(selectedSubjects.map((x) => x.id))
           .subscribe(
@@ -282,12 +300,12 @@ export class SubjectListComponent implements OnInit {
                 `Xóa ${selectedSubjects.length} môn học: ${selectedSubjects.map((x) => x.name).join(', ')} thành công!`
               );
               this.smseduCrudComponent.onclear();
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Đã xảy ra lỗi.');
+              this.app.onHideSplashScreenService();
             }
           );
       });
@@ -302,6 +320,8 @@ export class SubjectListComponent implements OnInit {
       pageNumber: 1,
       pageSize: this.pagination.totalCount,
     };
+
+    this.app.onShowSplashScreenService();
     this.subjectService.find(this.requestParametersForExport).subscribe(
       (response) => {
         const dataExport = response.result.data;
@@ -315,9 +335,13 @@ export class SubjectListComponent implements OnInit {
           }),
           'subjects'
         );
+
+        this.app.onHideSplashScreenService();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
+        this.app.onHideSplashScreenService();
       }
     );
   }
@@ -329,23 +353,27 @@ export class SubjectListComponent implements OnInit {
       pageNumber: 1,
       pageSize: this.pagination.totalCount,
     };
+
+    this.app.onShowSplashScreenService();
     this.subjectService.find(this.requestParametersForExport).subscribe(
       (response) => {
         const headers = this.columns.map((col) => col.header);
-        console.log('headers', headers);
         const rows = response.result.data.map((row) =>
           this.columns.map((col) => row[col.field])
         );
-        console.log('rows', rows);
         this.tableExportService.exportPdf(
           headers,
           rows,
           'subjects',
           'Danh sách môn học'
         );
+
+        this.app.onHideSplashScreenService();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
+        this.app.onHideSplashScreenService();
       }
     );
   }
@@ -383,13 +411,11 @@ export class SubjectListComponent implements OnInit {
     }
 
     event = null;
-    console.log(this.excelData);
   }
 
   // @ Acition: Upload file excel for add to classes
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onUpload(event: any): void {
-    console.log(event);
-    console.log(this.excelData);
     this.subjectDiaglogForCreateCollectionComponent.dialog = true;
   }
 }

@@ -91,6 +91,8 @@ export class TimetableEditComponent implements OnInit {
 
   ref: DynamicDialogRef | undefined;
 
+  isSave: boolean = false;
+
   constructor(
     private config: DynamicDialogConfig,
     private messageNotificationService: MessageNotificationService,
@@ -102,12 +104,10 @@ export class TimetableEditComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.config.data && this.config.data.timetable) {
-      console.log('classId', this.config.data);
       this.dataGetTimetable = this.config.data.timetable as IGetTimetable;
       this.data = this.config.data?.timetable
         ?.timetableUnits as ITimetableUnit[];
       this.data = this.onSortTimeTableUnits(this.data);
-      console.log('data', this.data);
     }
 
     // * Sắp xếp mảng theo thứ tự lớp và startAt
@@ -159,12 +159,10 @@ export class TimetableEditComponent implements OnInit {
       this.timetableService.updateTimeTable(this.dataGetTimetable).subscribe(
         () => {
           this.messageNotificationService.showSuccess(`cập nhật thàn công!`);
+          this.isSave = false;
         },
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Đã xảy ra lỗi.');
         }
       );
     });
@@ -408,7 +406,6 @@ export class TimetableEditComponent implements OnInit {
       numWeekday: num,
       startAt: startAt,
     };
-    console.log('onCellClick', event, data1, num, startAt);
     this.selectedTeacher1 = {
       id: data1.teacherId,
       shortName: data1.teacherName,
@@ -429,7 +426,6 @@ export class TimetableEditComponent implements OnInit {
       numWeekday: num,
       startAt: startAt,
     };
-    console.log('onCellClick', event, data1, num, startAt);
     this.selectedTeacher2 = {
       id: data1.teacherId,
       shortName: data1.teacherName,
@@ -497,6 +493,10 @@ export class TimetableEditComponent implements OnInit {
   }
 
   onSwap(): void {
+    if (this.isSave === false) {
+      this.isSave = true;
+    }
+
     const index1 = this.data.findIndex(
       (x) =>
         x.id ===
@@ -558,7 +558,7 @@ export class TimetableEditComponent implements OnInit {
         this.app.onHideSplashScreenService();
       },
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi.');
         this.app.onHideSplashScreenService();
       }
     );

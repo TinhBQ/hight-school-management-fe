@@ -13,9 +13,17 @@ import {
   IClassWithHomeroomTeachersRequestParameters,
 } from '@features/class-with-homeroom-teachers/interfaces';
 
-import { OnInit, Component, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ICusAutoCompleteColumn } from '@core/interfaces/i-column';
@@ -43,7 +51,9 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
     MessageNotificationService,
   ],
 })
-export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
+export class ClassWithHomeroomTeachersUnassignedComponent
+  implements OnInit, AfterViewInit
+{
   // * Properties for form ClassWithHomeroomTeachersUnassignedComponent
 
   year?: IYear;
@@ -90,7 +100,8 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private teacherService: TeacherService,
     private confirmationDialogService: ConfirmationDialogService,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -117,6 +128,10 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
         typeEidt: 'autocomplete',
       },
     ];
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   // * --------------------- Load Data for Table --------------------
@@ -153,8 +168,9 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
         this.data = this.result.data;
         this.loading = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Xảy ra lỗi');
         this.loading = false;
       }
     );
@@ -162,20 +178,21 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
 
   onSaveAssignedHomeroom(): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.classWithHomeroomTeachersService
         .updateCollection(this.selected)
         .subscribe(
           () => {
+            this.app.onHideSplashScreenService();
             this.smseduCrudComponent.onclear();
             this.messageNotificationService.showSuccess(
               'Thêm danh sách lớp tành công!'
             );
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
-            this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
-            );
+            this.app.onHideSplashScreenService();
+            this.messageNotificationService.showError('Đã xảy ra lỗi.');
           }
         );
     });
@@ -246,7 +263,6 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
   }
 
   private onSelectTeacher(event, data) {
-    console.log(event, data);
     this.selected = [
       ...this.selected,
       {
@@ -274,8 +290,9 @@ export class ClassWithHomeroomTeachersUnassignedComponent implements OnInit {
         this.paginationForTeachesUnAssignedHomeroom = response.pagination;
         this.loadingAutoComplete = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Đã xảy ra lỗi');
         this.loadingAutoComplete = false;
       }
     );

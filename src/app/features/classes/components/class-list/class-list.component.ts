@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IYear } from '@features/years/interfaces';
 // #region -- Imports --
@@ -162,7 +163,6 @@ export class ClassListComponent implements OnInit, AfterViewInit {
     this.searchText$
       .pipe(debounceTime(1000), distinctUntilChanged())
       .subscribe((packageName) => {
-        console.log(packageName);
         this.requestParameters.searchTerm = packageName;
         return this.getClasses(this.requestParameters);
       });
@@ -180,7 +180,6 @@ export class ClassListComponent implements OnInit, AfterViewInit {
         isSort: false,
         isAction: true,
         onAction: (evnet: Event, data: any) => {
-          console.log('data', data);
           this.classWithHomeroomTeachersUpdateDialogComponent._form.setValue({
             classId: data.id,
             homeroomTeacher: data.homeroomTeacher,
@@ -290,9 +289,10 @@ export class ClassListComponent implements OnInit, AfterViewInit {
           homeroomTeacher: x.homeroomTeacher,
         }));
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
         this.loading = false;
-        console.log(error.toString());
+        this.messageNotificationService.showError('Xảy ra lỗi');
       }
     );
   }
@@ -358,6 +358,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
   // @ Acition: Create and Update Class
   onSave(): void {
     if (this.classDialogForCreateUpdateComponent.classForm.valid) {
+      this.app.onShowSplashScreenService();
       // ! Update class
       if (this.classDialogForCreateUpdateComponent.classForm.value.id) {
         this.classDialogForCreateUpdateComponent.onSetClassDTO();
@@ -373,12 +374,12 @@ export class ClassListComponent implements OnInit, AfterViewInit {
               this.messageNotificationService.showSuccess(
                 `Cập nhật lớp học ${this.classDialogForCreateUpdateComponent.classForm.value.name} thành công!`
               );
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.app.onHideSplashScreenService();
+              this.messageNotificationService.showError('Xảy ra lỗi');
             }
           );
       } else {
@@ -393,12 +394,12 @@ export class ClassListComponent implements OnInit, AfterViewInit {
               this.messageNotificationService.showSuccess(
                 `Thêm lớp học ${this.classDialogForCreateUpdateComponent.classForm.value.name} thành công!`
               );
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.app.onHideSplashScreenService();
+              this.messageNotificationService.showError('Xảy ra lỗi');
             }
           );
       }
@@ -424,6 +425,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
         };
       }) as IClassDto[];
       this.confirmationDialogService.confirm(event, () => {
+        this.app.onShowSplashScreenService();
         this.classService.createCollection(this.classDtos).subscribe(
           () => {
             this.messageNotificationService.showSuccess(
@@ -432,12 +434,12 @@ export class ClassListComponent implements OnInit, AfterViewInit {
             this.addClassCollectionDialog = false;
             this.excelData = [];
             this.smseduCrudComponent.onclear();
+            this.app.onHideSplashScreenService();
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
-            this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
-            );
+            this.messageNotificationService.showError('Xảy ra lỗi');
+            this.app.onHideSplashScreenService();
           }
         );
       });
@@ -447,18 +449,19 @@ export class ClassListComponent implements OnInit, AfterViewInit {
   // @ Acition: delete Class
   onDeleteClass(event: Event, klass: IClass): void {
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.classService.delete(klass.id).subscribe(
         () => {
           this.smseduCrudComponent.onclear();
           this.messageNotificationService.showSuccess(
             `Xóa lớp  ${klass.name} thành công!`
           );
+          this.app.onHideSplashScreenService();
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
-          console.log(error.toString());
-          this.messageNotificationService.showError(
-            error.message ?? 'Đã xảy ra lỗi.'
-          );
+          this.messageNotificationService.showError('Xảy ra lỗi');
+          this.app.onHideSplashScreenService();
         }
       );
     });
@@ -466,8 +469,8 @@ export class ClassListComponent implements OnInit, AfterViewInit {
 
   // @ Acition: delete Classes
   onDeleteClasses(event: Event, selectedClasses: any[]): void {
-    console.log(selectedClasses);
     if (selectedClasses.length > 0) {
+      this.app.onShowSplashScreenService();
       this.confirmationDialogService.confirm(event, () => {
         this.classService
           .deleteByIds(selectedClasses.map((x) => x.id))
@@ -477,12 +480,12 @@ export class ClassListComponent implements OnInit, AfterViewInit {
                 `Xóa ${selectedClasses.length} lớp: ${selectedClasses.map((x) => x.name).join(', ')} thành công!`
               );
               this.smseduCrudComponent.onclear();
+              this.app.onHideSplashScreenService();
             },
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
-              console.log(error.toString());
-              this.messageNotificationService.showError(
-                error.message ?? 'Đã xảy ra lỗi.'
-              );
+              this.messageNotificationService.showError('Xảy ra lỗi');
+              this.app.onHideSplashScreenService();
             }
           );
       });
@@ -547,7 +550,6 @@ export class ClassListComponent implements OnInit, AfterViewInit {
             schoolShift:
               this.classDialogForCreateUpdateComponent.schoolShifts.find(
                 (x) => {
-                  console.log(x.name.toString(), row['Buổi'].toString());
                   return x.name.toString() === row['Buổi'].toString();
                 }
               ),
@@ -564,7 +566,6 @@ export class ClassListComponent implements OnInit, AfterViewInit {
 
   // @ Acition: Upload file excel for add to classes
   onUpload(event: any): void {
-    console.log(event);
     this.classDiaglogForCreateCollectionComponent.dialog = true;
     this.addClassCollectionDialog = true;
   }
@@ -579,7 +580,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
       pageNumber: 1,
       pageSize: this.pagination.totalCount,
     };
-
+    this.app.onShowSplashScreenService();
     this.classService.find(this.requestParametersForExport).subscribe(
       (response) => {
         const dataExport = response.result.data.map((x) => ({
@@ -604,9 +605,12 @@ export class ClassListComponent implements OnInit, AfterViewInit {
           }),
           'classes'
         );
+
+        this.app.onHideSplashScreenService();
       },
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Xảy ra lỗi');
+        this.app.onHideSplashScreenService();
       }
     );
   }
@@ -619,10 +623,10 @@ export class ClassListComponent implements OnInit, AfterViewInit {
       pageSize: this.pagination.totalCount,
     };
 
+    this.app.onShowSplashScreenService();
     this.classService.find(this.requestParametersForExport).subscribe(
       (response) => {
         const headers = this.columns.map((col) => col.header);
-        console.log('headers', headers);
 
         const rows = response.result.data
           .map((x) => ({
@@ -639,17 +643,18 @@ export class ClassListComponent implements OnInit, AfterViewInit {
             )
           );
 
-        console.log('rows', rows);
-
         this.tableExportService.exportPdf(
           headers,
           rows,
           'classes',
           'Danh sách lớp học'
         );
+
+        this.app.onHideSplashScreenService();
       },
       (error) => {
-        console.log(error.toString());
+        this.app.onHideSplashScreenService();
+        this.messageNotificationService.showError('Xảy ra lỗi');
       }
     );
   }

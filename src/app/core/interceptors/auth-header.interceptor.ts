@@ -28,14 +28,11 @@ export class AuthHeaderInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    console.log('request.url', request.url);
     if (apiPublic.includes(request.url)) {
       return next.handle(request);
     }
 
     const accessToken = localStorage.getItem('accessToken');
-
-    console.log('accessToken', accessToken);
 
     if (!accessToken || this.isTokenExpired(accessToken)) {
       this.router.navigate([paths.error.forbidden]);

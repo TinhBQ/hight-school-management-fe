@@ -29,8 +29,6 @@ export class SplashScreenDirective implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription = this.splashScreenService.isVisible$.subscribe(
       (isVisible) => {
-        console.log('isVisible', isVisible);
-        console.log('prevIsVisible', this.prevIsVisible);
         if (isVisible === true && this.prevIsVisible === false) {
           this.prevIsVisible = true;
           this.renderer.setStyle(document.body, 'overflow', 'hidden');

@@ -13,7 +13,15 @@ import {
   IClassWithHomeroomTeachersRequestParameters,
 } from '@features/class-with-homeroom-teachers/interfaces';
 
-import { OnInit, Component, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ICusAutoCompleteColumn } from '@core/interfaces/i-column';
@@ -36,7 +44,9 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
     MessageNotificationService,
   ],
 })
-export class ClassWithHomeroomTeachersAssignedComponent implements OnInit {
+export class ClassWithHomeroomTeachersAssignedComponent
+  implements OnInit, AfterViewInit
+{
   // * Properties for form ClassWithHomeroomTeachersAssignedComponent
 
   year?: IYear;
@@ -81,8 +91,13 @@ export class ClassWithHomeroomTeachersAssignedComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private teacherService: TeacherService,
     private confirmationDialogService: ConfirmationDialogService,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+    public app: AppComponent
   ) {}
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
   ngOnInit(): void {
     this.searchText$
@@ -144,8 +159,9 @@ export class ClassWithHomeroomTeachersAssignedComponent implements OnInit {
         this.data = this.result.data;
         this.loading = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Lấy danh sách thất bại');
         this.loading = false;
       }
     );
@@ -222,13 +238,13 @@ export class ClassWithHomeroomTeachersAssignedComponent implements OnInit {
         .subscribe(
           () => {
             this.messageNotificationService.showSuccess(
-              'Thêm danh sách lớp tành công!'
+              'Thêm danh sách lớp thành công!'
             );
           },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
-            console.log(error.toString());
             this.messageNotificationService.showError(
-              error.message ?? 'Đã xảy ra lỗi.'
+              'Thêm danh sách lớp thất bại'
             );
           }
         );
@@ -253,8 +269,9 @@ export class ClassWithHomeroomTeachersAssignedComponent implements OnInit {
         this.paginationForTeachesUnAssignedHomeroom = response.pagination;
         this.loadingAutoComplete = false;
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (error) => {
-        console.log(error.toString());
+        this.messageNotificationService.showError('Xảy ra lỗi');
         this.loadingAutoComplete = false;
       }
     );

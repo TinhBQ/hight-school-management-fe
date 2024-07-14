@@ -3,7 +3,15 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ISubjectsTeachers } from '@features/subjects-teachers/interfaces';
 import { SubjectsTeachersService } from '@features/subjects-teachers/services/subjects-teachers.service';
 
-import { OnInit, Component, ViewChild } from '@angular/core';
+import {
+  OnInit,
+  Component,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
+
+import { AppComponent } from 'src/app/app.component';
 
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
@@ -30,7 +38,7 @@ import { SmseduCrudComponent } from '@shared/smsedu-crud/smsedu-crud.component';
     ConfirmationDialogService,
   ],
 })
-export class SubjectsTeachersListComponent implements OnInit {
+export class SubjectsTeachersListComponent implements OnInit, AfterViewInit {
   columns: IColumn[] = [];
 
   result: IResponseBase<ISubjectsTeachers[]>;
@@ -53,7 +61,9 @@ export class SubjectsTeachersListComponent implements OnInit {
   constructor(
     private subjectsTeachersService: SubjectsTeachersService,
     private messageNotificationService: MessageNotificationService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private cdr: ChangeDetectorRef,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -75,8 +85,9 @@ export class SubjectsTeachersListComponent implements OnInit {
         label: 'Chỉnh sửa',
         icon: 'pi pi-pencil',
         color: 'success',
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onClick: (evnet: Event, data: any) => {
-          console.log(data);
+          // console.log(data);
           // this.onShowDialogForEdit(data);
         },
       },
@@ -84,13 +95,17 @@ export class SubjectsTeachersListComponent implements OnInit {
         label: 'Xóa',
         icon: 'pi pi-trash',
         color: 'warning',
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onClick: (evnet: Event, data: any) => {
-          console.log(data);
-
+          // console.log(data);
           // this.onDeleteClass(evnet, data);
         },
       },
     ];
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   // * --------------------- Load Data Classes for Table --------------------
