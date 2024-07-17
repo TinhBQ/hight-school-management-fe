@@ -17,8 +17,11 @@ export class AssignHomeroomTeacherPageComponent {
   constructor(private breadcrumbService: BreadcrumbService) {
     this.breadcrumbService.setItems([
       { label: 'SMSEdu' },
-      { label: 'Phân công', routerLink: paths.smsedu.teacher.root },
-      { label: 'Giáo viên chủ nhiệm', routerLink: paths.smsedu.teacher.list },
+      { label: 'Phân công', routerLink: paths.smsedu.assignment.root },
+      {
+        label: 'Phân công giảng dạy',
+        routerLink: paths.smsedu.assignment.teacherLeader,
+      },
     ]);
   }
 }

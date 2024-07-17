@@ -5,6 +5,7 @@ import { YearService } from '@features/years/services/year.service';
 import { ClassService } from '@features/classes/services/class.service';
 import { semesterData } from '@features/timetables/helpers/semester-data';
 import { SubjectService } from '@features/subjects/services/subject.service';
+import { IAssignmentRequestParameters } from '@features/assignments/interfaces';
 import { ISchoolShift } from '@features/school-shift/interfaces/i-school-shift';
 import { schoolShiftData } from '@features/school-shift/helpers/school-shift-data';
 import { AssignmentsService } from '@features/assignments/services/assignments.service';
@@ -31,8 +32,12 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 
+import { AppComponent } from 'src/app/app.component';
+
+import { IPagination } from '@core/interfaces';
 import { CoreModule } from '@core/core.module';
 import { ConfirmationDialogService } from '@core/services/confirmation-dialog.service';
+import { MessageNotificationService } from '@core/services/message-notification.service';
 
 import { TimetableViewFullComponent } from '../timetable-view-full/timetable-view-full.component';
 import { TimetableCreateGeneralFromSubjectsComponent } from '../timetable-create-general-from-subjects/timetable-create-general-from-subjects.component';
@@ -57,7 +62,13 @@ import { TimetableCreateGeneralFromSubjectsWithPracticeRoomComponent } from '../
     TimetableCreateGeneralFromSubjectsWithDoublePeriodComponent,
   ],
   templateUrl: './timetable-create-general.component.html',
-  providers: [SubjectService, YearService, ClassService, AssignmentsService],
+  providers: [
+    SubjectService,
+    YearService,
+    ClassService,
+    AssignmentsService,
+    MessageNotificationService,
+  ],
   styleUrl: './timetable-create-general.component.scss',
 })
 export class TimetableCreateGeneralComponent implements OnInit {
@@ -116,7 +127,10 @@ export class TimetableCreateGeneralComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private assignmentsService: AssignmentsService,
+    private messageNotificationService: MessageNotificationService,
+    public app: AppComponent
   ) {}
 
   ngOnInit(): void {
@@ -140,6 +154,45 @@ export class TimetableCreateGeneralComponent implements OnInit {
     this.activeItem = this.items[0];
   }
 
+  getAssignments(params?: IAssignmentRequestParameters): void {
+    params = {
+      startYear: this._form.value.schoolYear?.startYear,
+      endYear: this._form.value.schoolYear?.endYear,
+      isNotAssigned: true,
+      pageSize: 100,
+    };
+    this.app.onShowSplashScreenService();
+    this.assignmentsService.find(params).subscribe(
+      (response) => {
+        const pagination = response.pagination as IPagination;
+        if (pagination.hasNext) {
+          params = {
+            startYear: this._form.value.schoolYear?.startYear,
+            endYear: this._form.value.schoolYear?.endYear,
+            isNotAssigned: true,
+            pageSize: pagination.totalCount,
+          };
+
+          this.getAssignments(params);
+        } else {
+          if (response.result?.data?.length > 0) {
+            this.messageNotificationService.showError(
+              'Chưa phân công hết phân công giảng dạy'
+            );
+          } else {
+            this.initiEmptyConstraints.emit();
+          }
+          this.app.onHideSplashScreenService();
+        }
+      },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (error) => {
+        this.messageNotificationService.showError('Xảy ra lỗi');
+        this.app.onHideSplashScreenService();
+      }
+    );
+  }
+
   onInitiEmptyConstraints(): void {
     if (
       this.classes.length > 0 &&
@@ -147,10 +200,10 @@ export class TimetableCreateGeneralComponent implements OnInit {
       this.schoolYears.length > 0
     ) {
       this.confirmationDialogService.confirm(event, () => {
-        this.initiEmptyConstraints.emit();
+        this.getAssignments();
       });
     } else {
-      this.initiEmptyConstraints.emit();
+      this.getAssignments();
     }
   }
 
