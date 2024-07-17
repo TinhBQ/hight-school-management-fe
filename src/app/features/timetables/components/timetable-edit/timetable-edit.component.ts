@@ -156,13 +156,16 @@ export class TimetableEditComponent implements OnInit {
       timetableUnits: this.data,
     };
     this.confirmationDialogService.confirm(event, () => {
+      this.app.onShowSplashScreenService();
       this.timetableService.updateTimeTable(this.dataGetTimetable).subscribe(
         () => {
           this.messageNotificationService.showSuccess(`cập nhật thàn công!`);
           this.isSave = false;
+          this.app.onHideSplashScreenService();
         },
         (error) => {
           this.messageNotificationService.showError('Đã xảy ra lỗi.');
+          this.app.onHideSplashScreenService();
         }
       );
     });

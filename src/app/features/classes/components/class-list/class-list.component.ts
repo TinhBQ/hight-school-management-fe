@@ -256,7 +256,6 @@ export class ClassListComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.loading = true;
     const { first, rows, sortField, sortOrder } = event;
     this.requestParameters = {
       ...this.requestParameters,
@@ -375,6 +374,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
                 `Cập nhật lớp học ${this.classDialogForCreateUpdateComponent.classForm.value.name} thành công!`
               );
               this.app.onHideSplashScreenService();
+              this.getYears(this.requestParametersForSchoolYears);
             },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
@@ -395,6 +395,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
                 `Thêm lớp học ${this.classDialogForCreateUpdateComponent.classForm.value.name} thành công!`
               );
               this.app.onHideSplashScreenService();
+              this.getYears(this.requestParametersForSchoolYears);
             },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {
@@ -435,6 +436,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
             this.excelData = [];
             this.smseduCrudComponent.onclear();
             this.app.onHideSplashScreenService();
+            this.getYears(this.requestParametersForSchoolYears);
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (error) => {
@@ -457,6 +459,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
             `Xóa lớp  ${klass.name} thành công!`
           );
           this.app.onHideSplashScreenService();
+          this.getYears(this.requestParametersForSchoolYears);
         },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (error) => {
@@ -481,6 +484,7 @@ export class ClassListComponent implements OnInit, AfterViewInit {
               );
               this.smseduCrudComponent.onclear();
               this.app.onHideSplashScreenService();
+              this.getYears(this.requestParametersForSchoolYears);
             },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (error) => {

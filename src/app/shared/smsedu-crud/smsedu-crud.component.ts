@@ -143,14 +143,21 @@ export class SmseduCrudComponent implements OnInit {
     return keys.reduce((acc, key) => acc?.[key], obj);
   }
 
+  getString(value: any): string {
+    if (!!value || value === '' || value === 0 || value === false) {
+      return value;
+    }
+    return 'Chưa xác định';
+  }
+
   getDataCell(rowData: any, col: IColumn): string {
     return !col.field.includes('.')
       ? col.pipe
         ? col.pipe.transform(rowData[col.field]) || 'Chưa xác định'
-        : rowData[col.field] || 'Chưa xác định'
+        : this.getString(rowData[col.field])
       : col.pipe
         ? col.pipe.transform(this.getNestedValue(rowData, col.field)) ||
           'Chưa xác định'
-        : this.getNestedValue(rowData, col.field) || 'Chưa xác định';
+        : this.getString(this.getNestedValue(rowData, col.field));
   }
 }

@@ -70,6 +70,8 @@ export class ClassWithHomeroomTeachersUnassignedComponent
 
   searchString = '';
 
+  isFirstLoad: boolean = true;
+
   searchText$ = new Subject<string>();
 
   classWithHomeroomTeachersRequestParameters: IClassWithHomeroomTeachersRequestParameters =
@@ -136,6 +138,11 @@ export class ClassWithHomeroomTeachersUnassignedComponent
 
   // * --------------------- Load Data for Table --------------------
   onLoadClassWithHomeroomTeachers(event: any): void {
+    if (this.isFirstLoad) {
+      this.isFirstLoad = false;
+      return;
+    }
+
     const { first, rows, sortField, sortOrder } = event;
     this.classWithHomeroomTeachersRequestParameters = {
       startYear: this.year?.startYear,

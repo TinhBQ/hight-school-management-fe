@@ -208,15 +208,15 @@ export class AssignmentsTeachingComponent implements OnInit, AfterViewInit {
         },
       },
 
-      {
-        label: 'Xóa',
-        icon: 'pi pi-trash',
-        color: 'warning',
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        onClick: (evnet: Event, data: any) => {
-          // this.onDeleteClass(evnet, data);
-        },
-      },
+      // {
+      //   label: 'Xóa',
+      //   icon: 'pi pi-trash',
+      //   color: 'warning',
+      //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      //   onClick: (evnet: Event, data: any) => {
+      //     // this.onDeleteClass(evnet, data);
+      //   },
+      // },
     ];
 
     this.getYears(this.requestParametersForSchoolYears);

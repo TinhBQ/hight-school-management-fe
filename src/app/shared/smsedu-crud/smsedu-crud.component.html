@@ -29,15 +29,17 @@
                 ></button>
               }
               <!-- @ Delete Colection-->
-              <button
-                pButton
-                pRipple
-                label="Xóa"
-                icon="pi pi-trash"
-                class="p-button-danger mr-2"
-                (click)="onDeleteCollection($event, selected)"
-                [disabled]="selected.length <= 1"
-              ></button>
+              @if (isSelected) {
+                <button
+                  pButton
+                  pRipple
+                  label="Xóa"
+                  icon="pi pi-trash"
+                  class="p-button-danger mr-2"
+                  (click)="onDeleteCollection($event, selected)"
+                  [disabled]="selected.length <= 1"
+                ></button>
+              }
             </div>
           </ng-template>
 

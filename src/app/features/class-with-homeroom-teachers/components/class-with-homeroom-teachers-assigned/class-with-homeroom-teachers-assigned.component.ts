@@ -78,6 +78,8 @@ export class ClassWithHomeroomTeachersAssignedComponent
 
   loadingAutoComplete: boolean = false;
 
+  isFirstLoad: boolean = true;
+
   teachersForClassRequestParameters: ITeachersForClassRequestParameters = {
     isAssignedHomeroom: false,
   };
@@ -127,6 +129,11 @@ export class ClassWithHomeroomTeachersAssignedComponent
 
   // * --------------------- Load Data for Table --------------------
   onLoadClassWithHomeroomTeachers(event: any): void {
+    if (this.isFirstLoad) {
+      this.isFirstLoad = false;
+      return;
+    }
+
     const { first, rows, sortField, sortOrder } = event;
     this.classWithHomeroomTeachersRequestParameters = {
       startYear: this.year?.startYear,

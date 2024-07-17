@@ -104,14 +104,36 @@ export class ClassWithHomeroomTeachersComponent
 
           this.classWithHomeroomTeachersAssignedComponent.year =
             this.schoolYears[0];
-          this.classWithHomeroomTeachersAssignedComponent.onCLear();
+
+          const tempt = {
+            ...this.classWithHomeroomTeachersAssignedComponent
+              .classWithHomeroomTeachersRequestParameters,
+            startYear: this.schoolYears[0]?.startYear,
+            endYear: this.schoolYears[0]?.endYear,
+          };
+
+          this.classWithHomeroomTeachersAssignedComponent.getClassWithHomeroomTeachers(
+            tempt
+          );
 
           this.classWithHomeroomTeachersUnassignedComponent.year =
             this.schoolYears[0];
-          this.classWithHomeroomTeachersUnassignedComponent.onCLear();
+
+          const tempt1 = {
+            ...this.classWithHomeroomTeachersUnassignedComponent
+              .classWithHomeroomTeachersRequestParameters,
+            startYear: this.schoolYears[0]?.startYear,
+            endYear: this.schoolYears[0]?.endYear,
+          };
+
+          this.classWithHomeroomTeachersUnassignedComponent.getClassWithHomeroomTeachers(
+            tempt1
+          );
 
           this.loadingSchoolYears = false;
           this.app.onHideSplashScreenService();
+
+          // this.classWithHomeroomTeachersUnassignedComponent.onCLear();
         }
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
