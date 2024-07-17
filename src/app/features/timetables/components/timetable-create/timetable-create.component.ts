@@ -401,7 +401,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
                         teacherId: classTeacher?.teacher?.id,
                         teacherName: classTeacher?.teacher?.shortName,
                         subjectId: item?.subject?.id,
-                        subjectName: item?.subject?.name,
+                        subjectName: item?.subject?.shortName,
                         startAt: startAtSession?.startAt,
                         assignmentId: this.assignments[index].id,
                       };
@@ -430,6 +430,8 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
                           assignment.teacherId === classTeacher?.teacher?.id
                       );
 
+                      console.log('subjet', item?.subject);
+
                       handelTimeTableUnits2Dimensional[classTeacher.class.name][
                         startAtSession.startAt
                       ] = {
@@ -439,7 +441,7 @@ export class TimetableCreateComponent implements OnInit, AfterViewInit {
                         teacherId: classTeacher?.teacher?.id,
                         teacherName: classTeacher?.teacher?.shortName,
                         subjectId: item?.subject?.id,
-                        subjectName: item?.subject?.name,
+                        subjectName: item?.subject?.shortName,
                         startAt: startAtSession?.startAt,
                         assignmentId: this.assignments[index].id,
                       };

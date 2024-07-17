@@ -32,7 +32,7 @@ export class MenuComponent implements OnInit {
         items: [
           {
             label: 'Danh sách lớp học',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-microsoft',
             routerLink: paths.smsedu.class.list,
           },
         ],
@@ -44,7 +44,7 @@ export class MenuComponent implements OnInit {
         items: [
           {
             label: 'Danh sách môn học',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-book',
             routerLink: paths.smsedu.subject.list,
           },
         ],
@@ -68,7 +68,7 @@ export class MenuComponent implements OnInit {
         items: [
           {
             label: 'Phân công chủ nhiệm',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-users',
             routerLink: paths.smsedu.assignment.teacherLeader,
           },
           // {
@@ -78,7 +78,7 @@ export class MenuComponent implements OnInit {
           // },
           {
             label: 'Phân công giảng dạy',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-wrench',
             routerLink: paths.smsedu.assignment.teaching,
           },
         ],
@@ -90,12 +90,12 @@ export class MenuComponent implements OnInit {
         items: [
           {
             label: 'Danh sách',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-calendar',
             routerLink: paths.smsedu.timetable.list,
           },
           {
             label: 'Tạo',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-slack',
             routerLink: paths.smsedu.timetable.create,
           },
           // {

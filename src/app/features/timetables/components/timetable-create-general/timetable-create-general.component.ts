@@ -22,7 +22,15 @@ import {
 } from '@features/subjects/interfaces';
 
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { Input, OnInit, Output, Component, EventEmitter } from '@angular/core';
+import {
+  Input,
+  OnInit,
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -71,7 +79,7 @@ import { TimetableCreateGeneralFromSubjectsWithPracticeRoomComponent } from '../
   ],
   styleUrl: './timetable-create-general.component.scss',
 })
-export class TimetableCreateGeneralComponent implements OnInit {
+export class TimetableCreateGeneralComponent implements OnInit, AfterViewInit {
   @Input() timetableRequestParameters: ITimetableRequestParameters;
 
   @Input() classes: IClass[] = [];
@@ -130,7 +138,8 @@ export class TimetableCreateGeneralComponent implements OnInit {
     private confirmationDialogService: ConfirmationDialogService,
     private assignmentsService: AssignmentsService,
     private messageNotificationService: MessageNotificationService,
-    public app: AppComponent
+    public app: AppComponent,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -152,6 +161,10 @@ export class TimetableCreateGeneralComponent implements OnInit {
     ];
 
     this.activeItem = this.items[0];
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   getAssignments(params?: IAssignmentRequestParameters): void {

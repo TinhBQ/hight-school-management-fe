@@ -9,7 +9,13 @@ import {
   ISubjectForCreateTimeTableWithPracticeRoom,
 } from '@features/subjects/interfaces';
 
-import { Input, OnInit, Component } from '@angular/core';
+import {
+  Input,
+  OnInit,
+  Component,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -44,7 +50,7 @@ import { TimetableViewFullComponent } from '../timetable-view-full/timetable-vie
     MessageNotificationService,
   ],
 })
-export class TimetableCreateConfirmComponent implements OnInit {
+export class TimetableCreateConfirmComponent implements OnInit, AfterViewInit {
   @Input() timetableRequestParameters: ITimetableRequestParameters;
 
   @Input() classes: IClass[] = [];
@@ -65,7 +71,8 @@ export class TimetableCreateConfirmComponent implements OnInit {
     private confirmationDialogService: ConfirmationDialogService,
     private timetablesService: TimetablesService,
     public app: AppComponent,
-    private messageNotificationService: MessageNotificationService
+    private messageNotificationService: MessageNotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -81,6 +88,10 @@ export class TimetableCreateConfirmComponent implements OnInit {
     this.subjectPracticeRoom = this.subjectPracticeRoom.filter(
       (x) => x?.roomCount > 0
     );
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   private initEmptyTimeTableUnits2Dimensional(

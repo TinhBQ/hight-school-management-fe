@@ -214,7 +214,11 @@
                         } @else if (col?.typeEidt === 'multiSelect') {
                           <p-multiSelect
                             [options]="col?.options?.data"
-                            (onChange)="col?.options?.onChange($event, rowData)"
+                            (onChange)="
+                              !!col?.options?.onChange
+                                ? col?.options?.onChange($event, rowData)
+                                : null
+                            "
                             [(ngModel)]="rowData[col.field]"
                             optionLabel="name"
                             appendTo="body"

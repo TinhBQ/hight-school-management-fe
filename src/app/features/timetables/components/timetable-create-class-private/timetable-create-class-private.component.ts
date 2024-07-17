@@ -7,7 +7,15 @@ import {
 } from '@features/timetables/interfaces';
 import { ConvertStartAtSessionPipe } from '@features/timetables/pipes/convert-start-at-session.pipe';
 
-import { Input, OnInit, Output, Component, EventEmitter } from '@angular/core';
+import {
+  Input,
+  OnInit,
+  Output,
+  Component,
+  EventEmitter,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -39,7 +47,9 @@ import { TimetableForClassComponent } from '../timetable-for-class/timetable-for
   templateUrl: './timetable-create-class-private.component.html',
   providers: [MessageNotificationService],
 })
-export class TimetableCreateClassPrivateComponent implements OnInit {
+export class TimetableCreateClassPrivateComponent
+  implements OnInit, AfterViewInit
+{
   @Input() timeTableUnits: ITimetableUnitForEditDto[] = [];
 
   @Input() classes: IClass[] = [];
@@ -64,7 +74,10 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
 
   startAtsMorning: IStartAtSession[] = [];
 
-  constructor(private messageNotificationService: MessageNotificationService) {}
+  constructor(
+    private messageNotificationService: MessageNotificationService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.selectedClass = this.classes[0];
@@ -119,6 +132,10 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
         });
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
   }
 
   onFilterByClass(
