@@ -227,6 +227,7 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChangeMultiple(event: any, data: any): void {
+    console.log(event, data);
     const { originalEvent } = event;
 
     const index = this.timeTableUnits.findIndex(
@@ -234,52 +235,63 @@ export class TimetableCreateClassPrivateComponent implements OnInit {
         a.classId === data.classId && a.startAt === originalEvent.option.startAt
     );
 
-    if (originalEvent.selected == true) {
-      if (
-        !!this.timeTableUnits[index].teacherName ||
-        !!this.timeTableUnits[index].subjectName ||
-        !!this.timeTableUnits[index].priority ||
-        !!this.timeTableUnits[index].teacherId ||
-        !!this.timeTableUnits[index].subjectId
-      ) {
-        this.messageNotificationService.showWarn(`Đã có môn học tồn tại`);
-        if (data.schoolShift === 0) {
-          data.startAtsMorning.pop();
+    if (data.periodCount <= 0) {
+      this.messageNotificationService.showWarn(
+        `Số tiết/Tuần đã phân công hết.`
+      );
+      if (data.schoolShift === 0) {
+        data.startAtsMorning.pop();
+      } else {
+        data.startAtsAfternoon.pop();
+      }
+    } else {
+      if (originalEvent.selected == true) {
+        if (
+          !!this.timeTableUnits[index].teacherName ||
+          !!this.timeTableUnits[index].subjectName ||
+          !!this.timeTableUnits[index].priority ||
+          !!this.timeTableUnits[index].teacherId ||
+          !!this.timeTableUnits[index].subjectId
+        ) {
+          this.messageNotificationService.showWarn(`Đã có môn học tồn tại`);
+          if (data.schoolShift === 0) {
+            data.startAtsMorning.pop();
+          } else {
+            data.startAtsAfternoon.pop();
+          }
+        } else if (this.timeTableUnits[index].isNoAssignTimetableUnits) {
+          this.messageNotificationService.showWarn(`Đã phân công môn trống`);
+          if (data.schoolShift === 0) {
+            data.startAtsMorning.pop();
+          } else {
+            data.startAtsAfternoon.pop();
+          }
         } else {
-          data.startAtsAfternoon.pop();
-        }
-      } else if (this.timeTableUnits[index].isNoAssignTimetableUnits) {
-        this.messageNotificationService.showWarn(`Đã phân công môn trống`);
-        if (data.schoolShift === 0) {
-          data.startAtsMorning.pop();
-        } else {
-          data.startAtsAfternoon.pop();
+          data.periodCount = data.periodCount - 1;
+
+          this.timeTableUnits[index] = {
+            ...this.timeTableUnits[index],
+            priority: 0,
+            teacherId: data?.teacherId,
+            teacherName: data?.shortName,
+            subjectId: data?.subjectId,
+            subjectName: data?.subjectName,
+            assignmentId: data?.id,
+          };
         }
       } else {
-        data.periodCount = data.periodCount - 1;
+        data.periodCount = data.periodCount + 1;
 
         this.timeTableUnits[index] = {
           ...this.timeTableUnits[index],
-          priority: 0,
-          teacherId: data?.teacherId,
-          teacherName: data?.shortName,
-          subjectId: data?.subjectId,
-          subjectName: data?.subjectName,
-          assignmentId: data?.id,
+          priority: null,
+          teacherId: null,
+          teacherName: null,
+          subjectId: null,
+          subjectName: null,
+          assignmentId: null,
         };
       }
-    } else {
-      data.periodCount = data.periodCount + 1;
-
-      this.timeTableUnits[index] = {
-        ...this.timeTableUnits[index],
-        priority: null,
-        teacherId: null,
-        teacherName: null,
-        subjectId: null,
-        subjectName: null,
-        assignmentId: null,
-      };
     }
   }
 
